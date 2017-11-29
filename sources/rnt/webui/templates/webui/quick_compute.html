@@ -1,44 +1,77 @@
 {% extends "base.html" %}
 {% load bootstrap %}
-{% block page_title %}Compute consensuses{% endblock %}
-{% block title %}Compute consensuses{% endblock %}
+{% load static %}
+{% load i18n %}
+{% block page_title %}Compute a consensus{% endblock %}
+{% block title %}Compute a consensus{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{%  static 'css/quick_compute.css' %}"/>
+{% endblock %}
 
 {% block content %}
-<div class="col-xs-12">
-    <div class="panel panel-default">
-        <div class="panel-heading">Data</div>
-        <div class="panel-body">
-            <textarea></textarea>
+<form method="post">
+    <div class="col-xs-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">Data</div>
+            <div class="panel-body" id="data-host">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-8 col-md-9 col-lg-10 col-xl-11">
+                        <div class="form-group">
+                        <textarea spellcheck="false" id="id_dataset" class="form-control text-area" rows="8"
+                                  name="rankings">{% for field in full_form %}{% if field.name == "dataset" %}{{ field.initial }}{% endif %}{% endfor %}</textarea>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2 col-xl-1">
+                        <div class="form-group">
+                            <table class="table table-condensed">
+                                <thead>
+                                <tr>
+                                    <th colspan="2">Stats</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <th>n</th>
+                                    <td id="stats-n">5</td>
+                                </tr>
+                                <tr>
+                                    <th>m</th>
+                                    <td id="stats-m">4</td>
+                                </tr>
+                                <tr>
+                                    <th>complet</th>
+                                    <td id="stats-complet">
+                                        <i class="fa fa-check-circle-o yes"></i>
+                                        <i class="fa fa-times-circle-o no" style="display:none"></i>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th colspan="2" class="text-danger" style="display:none">invalide</th>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</div>
-<div class="col-xs-12">
-    <div class="panel panel-default">
-        <div class="panel-heading">Normalization</div>
-        <div class="panel-body">
-        </div>
+    {%trans 'Normalisation' as norm_verbose%}
+    {% include "webui/quick_compute_param_panel.html" with full_form=full_form param_name='norm' param_name_auto='norm_auto' param_verbose_name=norm_verbose %}
+    {%trans 'Distance' as dist_verbose%}
+    {% include "webui/quick_compute_param_panel.html" with full_form=full_form param_name='dist' param_name_auto='dist_auto' param_verbose_name=dist_verbose %}
+    {%trans 'Algorithms' as algo_verbose%}
+    {% include "webui/quick_compute_param_panel.html" with full_form=full_form param_name='algo' param_name_auto='algo_auto' param_verbose_name=algo_verbose %}
+    <div class="col-xs-12">
+        <center>
+            <button role="button" class="btn btn-lg btn-primary">
+                Compute
+            </button>
+        </center>
     </div>
-</div>
-<div class="col-xs-12">
-    <div class="panel panel-default">
-        <div class="panel-heading">Distance</div>
-        <div class="panel-body">
-        </div>
+    <div class="col-xs-12">
+        {{full_form|bootstrap_horizontal:'col-xs-3'}}
     </div>
-</div>
-<div class="col-xs-12">
-    <div class="panel panel-default">
-        <div class="panel-heading">Algorithms</div>
-        <div class="panel-body">
-        </div>
-    </div>
-</div>
-<div class="col-xs-12">
-    <center>
-        <button role="button" class="btn btn-lg btn-primary">
-            Compute
-        </button>
-    </center>
-</div>
+</form>
 {% endblock %}

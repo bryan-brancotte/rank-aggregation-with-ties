@@ -1,7 +1,7 @@
 from django.test import TestCase
 
 # Create your tests here.
-from mediane.algorithms.algorithm_enumeration import get_median_ranking_algorithms
+from mediane.algorithms.enumeration import get_median_ranking_algorithms
 from mediane.median_ranking_tools import parse_ranking_with_ties, parse_ranking_with_ties_of_str, \
     parse_ranking_with_ties_of_int
 
@@ -27,6 +27,16 @@ class RankingParserTestCase(TestCase):
         self.assertIsNotNone(r)
         self.assertEqual(r, [[1, 2], [3, 4]])
         self.assertEqual(r, parse_ranking_with_ties_of_int(self.ranking))
+
+
+class NameAllDifferentTestCase(TestCase):
+    def test_names(self):
+        names = {}
+        for Algo in get_median_ranking_algorithms():
+            instance = Algo()
+            with self.assertRaises(KeyError):
+                trash = names[instance.get_full_name()]
+            names[instance.get_full_name()] = instance
 
 
 class FullyImplementedAlgorithmTestCase(TestCase):
