@@ -6,11 +6,21 @@
 {% block title %}Compute a consensus{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{%  static 'css/quick_compute.css' %}"/>
+<link rel="stylesheet" href="{% static '/css/quick_compute.css' %}"/>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static '/js/quick_compute.js' %}"></script>
+<script type="text/javascript">
+	stack_onload(function () {
+        refresh_settings_from_datasets($('form'))
+    });
+</script>
 {% endblock %}
 
 {% block content %}
-<form method="post">
+<form method="post" data-check-url="{%url 'rnt:dataset_evaluate'%}">
+    {% csrf_token %}
     <div class="col-xs-12">
         <div class="panel panel-default">
             <div class="panel-heading">Data</div>
@@ -19,35 +29,36 @@
                     <div class="col-xs-12 col-sm-8 col-md-9 col-lg-10 col-xl-11">
                         <div class="form-group">
                         <textarea spellcheck="false" id="id_dataset" class="form-control text-area" rows="8"
-                                  name="rankings">{% for field in full_form %}{% if field.name == "dataset" %}{{ field.initial }}{% endif %}{% endfor %}</textarea>
+                                  name="dataset" onkeyup="refresh_settings_from_datasets($('form'));">{% for field in full_form %}{% if field.name == "dataset" %}{{ field.initial }}{% endif %}{% endfor %}</textarea>
                         </div>
+                        {% for field in full_form %}{% if field.name == "dataset" %}{{ field.help_text }}{% endif %}{% endfor %}
                     </div>
                     <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2 col-xl-1">
                         <div class="form-group">
                             <table class="table table-condensed">
                                 <thead>
                                 <tr>
-                                    <th colspan="2">Stats</th>
+                                    <th colspan="2">{%trans 'Stats'%}</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <tr>
                                     <th>n</th>
-                                    <td id="stats-n">5</td>
+                                    <td id="stats-n">-</td>
                                 </tr>
                                 <tr>
                                     <th>m</th>
-                                    <td id="stats-m">4</td>
+                                    <td id="stats-m">-</td>
                                 </tr>
                                 <tr>
-                                    <th>complet</th>
+                                    <th>{%trans 'Complet'%}</th>
                                     <td id="stats-complet">
-                                        <i class="fa fa-check-circle-o yes"></i>
+                                        <i class="fa fa-check-circle-o yes" style="display:none"></i>
                                         <i class="fa fa-times-circle-o no" style="display:none"></i>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th colspan="2" class="text-danger" style="display:none">invalide</th>
+                                    <th id="stats-invalid" colspan="2" class="text-danger" style="display:none">{%trans 'Invalid'%}</th>
                                 </tr>
                                 </tbody>
                             </table>
@@ -63,15 +74,16 @@
     {% include "webui/quick_compute_param_panel.html" with full_form=full_form param_name='dist' param_name_auto='dist_auto' param_verbose_name=dist_verbose %}
     {%trans 'Algorithms' as algo_verbose%}
     {% include "webui/quick_compute_param_panel.html" with full_form=full_form param_name='algo' param_name_auto='algo_auto' param_verbose_name=algo_verbose %}
+</form>
     <div class="col-xs-12">
         <center>
-            <button role="button" class="btn btn-lg btn-primary">
-                Compute
+            <button role="button" id="btn-compute" class="btn btn-lg btn-primary" onclick="refresh_settings_from_datasets($('form'));">
+                <span class="glyphicon glyphicon-refresh spin" style="display:none"></span>
+                {%trans 'Compute'%}
             </button>
         </center>
     </div>
     <div class="col-xs-12">
         {{full_form|bootstrap_horizontal:'col-xs-3'}}
     </div>
-</form>
 {% endblock %}

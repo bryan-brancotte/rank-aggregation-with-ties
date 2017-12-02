@@ -1,0 +1,4 @@
+.spin {
+    -webkit-animation: spin 700ms infinite linear;
+    animation: spin 700ms infinite linear;
+}

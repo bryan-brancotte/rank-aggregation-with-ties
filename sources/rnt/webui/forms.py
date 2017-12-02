@@ -1,4 +1,5 @@
 from django import forms
+from django.utils.html import format_html
 from django.utils.translation import ugettext as _
 
 from mediane.algorithms import enumeration as enum_algo
@@ -35,11 +36,11 @@ class ComputeConsensusForm(forms.Form):
     dataset = forms.CharField(
         required=True,
         widget=forms.Textarea(attrs={'rows': '8'}),
-        help_text=_("""Format
-One ranking per line
-A ranking should have the structure X := LIST (X is the name of the ranking)
-A list should have the structure [BUCKET, ..., BUCKET]
-A bucket should have the structure [element, ..., element] (the elements of the bucket should not contain [, ] and ,)"""),
+        help_text=format_html(_("""<u><b>Format:</b></u><br/>
+One ranking per line<br/>
+A ranking should have the structure X := LIST (X is the name of the ranking)<br/>
+A list should have the structure [BUCKET, ..., BUCKET]<br/>
+A bucket should have the structure [element, ..., element] (the elements of the bucket should not contain [, ] and ,)""")),
         initial="""r1 := [[A, C],[B, D],[E]]
 r2 := [[A],[D],[B,E],[C]]
 r3 := [[B,D],[C],[A],[E]]
