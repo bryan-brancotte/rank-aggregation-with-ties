@@ -5,7 +5,7 @@ class MedianRanking:
     def compute_median_rankings(
             self,
             rankings: List[List[List[int]]],
-            return_at_most_one_ranking: bool,
+            return_at_most_one_ranking: bool = True,
     ) -> List[List[List[int]]]:
         """
         :param rankings: A set of rankings

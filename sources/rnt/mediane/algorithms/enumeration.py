@@ -15,3 +15,10 @@ def as_tuple_list():
         instance = Algo()
         ret.append((instance.get_full_name(), _(instance.get_full_name())))
     return ret
+
+
+def get_from(id):
+    for Algo in get_median_ranking_algorithms():
+        if Algo().get_full_name() == id:
+            return Algo
+    return None

@@ -1,0 +1,119 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-12-04 07:43+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "Unification"
+msgstr ""
+
+msgid "Projection"
+msgstr ""
+
+msgid "None"
+msgstr ""
+
+msgid "English"
+msgstr ""
+
+msgid "French"
+msgstr ""
+
+msgid "dataset_format_help_text"
+msgstr ""
+"<u><b>Format :</b></u><br/>\n"
+"Un classement par ligne<br/>\n"
+"Un classement doit avoir la structure `X: = LISTE` (X est le nom du "
+"classement) ou` LISTE`<br/>\n"
+"La LISTE doit avoir la structure [GROUPE, ..., GROUPE]<br/>\n"
+"GROUPE doit avoir la structure [élément, ..., élément] (les éléments du "
+"groupe ne doivent pas contenir [,] et,)"
+
+msgid "Dataset"
+msgstr ""
+
+msgid "precise time measurement"
+msgstr ""
+
+msgid "The number of rankings"
+msgstr ""
+
+msgid "The number of elements"
+msgstr ""
+
+msgid "The number of steps used to generate the dataset, if pertinent"
+msgstr ""
+
+msgid "Should be deleted when the associated job is removed"
+msgstr ""
+
+msgid "User who created this job"
+msgstr ""
+
+msgid "The distance used for this job"
+msgstr ""
+
+msgid "Creation time"
+msgstr ""
+
+msgid "the consensus(es) computed for the givent dataset and job's distance"
+msgstr ""
+
+msgid "Stats"
+msgstr ""
+
+msgid "The number of elements in the dataset"
+msgstr ""
+
+msgid "The number of rankings in the dataset"
+msgstr ""
+
+msgid "Are every elements present in each rankings of the dataset"
+msgstr ""
+
+msgid "Complete"
+msgstr ""
+
+msgid "Invalid"
+msgstr ""
+
+msgid "Normalisation"
+msgstr ""
+
+msgid "Distance"
+msgstr ""
+
+msgid "Algorithms"
+msgstr ""
+
+msgid "Auto compute"
+msgstr ""
+
+msgid "Auto compute allowed explanation"
+msgstr ""
+
+msgid "Auto compute disallowed explanation"
+msgstr ""
+"En fonction de l'ensemble de données que vous avez fourni et des paramètres "
+"que vous avez saisis, le calcul automatique <b>n'</b>est <b>pas</b> "
+"autorisé: vous devrez cliquer manuellement sur «Calculer» pour calculer le "
+"consensus de l'ensemble de données fourni."
+
+msgid "Compute"
+msgstr "Calculer"
+
+msgid "Results"
+msgstr ""

@@ -6,6 +6,7 @@ from mediane.algorithms import enumeration as enum_algo
 from mediane.distances import enumeration as enum_dist
 from mediane.normalizations import enumeration as enum_norm
 from webui.models import DataSet
+from webui.process import evaluate_dataset_and_provide_stats
 
 
 class TypeDatasetModelForm(forms.ModelForm):
@@ -20,11 +21,7 @@ class TypeDatasetModelForm(forms.ModelForm):
             'n',
         ]
         help_texts = {
-            'content': _("""Format
-One ranking per line
-A ranking should have the structure X := LIST (X is the name of the ranking)
-A list should have the structure [BUCKET, ..., BUCKET]
-A bucket should have the structure [element, ..., element] (the elements of the bucket should not contain [, ] and ,)"""),
+            'content': _('dataset_format_help_text'),
             # 'requirements':' '
         }
         labels = {
@@ -36,11 +33,7 @@ class ComputeConsensusForm(forms.Form):
     dataset = forms.CharField(
         required=True,
         widget=forms.Textarea(attrs={'rows': '8'}),
-        help_text=format_html(_("""<u><b>Format:</b></u><br/>
-One ranking per line<br/>
-A ranking should have the structure X := LIST (X is the name of the ranking)<br/>
-A list should have the structure [BUCKET, ..., BUCKET]<br/>
-A bucket should have the structure [element, ..., element] (the elements of the bucket should not contain [, ] and ,)""")),
+        help_text=format_html(_('dataset_format_help_text')),
         initial="""r1 := [[A, C],[B, D],[E]]
 r2 := [[A],[D],[B,E],[C]]
 r3 := [[B,D],[C],[A],[E]]
@@ -70,3 +63,17 @@ r4 := [[B],[C],[A,D,E]]""",
     algo_auto = forms.BooleanField(
         initial=True,
     )
+    bench = forms.BooleanField(
+        initial=True,
+        label=_('precise time measurement'),
+        required=False,
+    )
+
+    def clean(self):
+        cleaned_data = super(ComputeConsensusForm, self).clean()
+        evaluation = evaluate_dataset_and_provide_stats(cleaned_data.get("dataset").split("\n"))
+        self.cleaned_data["rankings"] = evaluation["rankings"]
+
+        if evaluation["invalid"]:
+            for line, msg in evaluation["invalid_rankings_id"].items():
+                self.add_error('dataset', "At line %d: %s" % (line, msg))

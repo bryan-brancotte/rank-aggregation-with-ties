@@ -24,6 +24,7 @@
 
     <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static '/css/base.css' %}"/>
     {% block extra_css %}{% endblock %}
 
@@ -33,19 +34,16 @@
             crossorigin="anonymous"></script>
     <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
     <script src="{% static '/js/base.js' %}"></script>
+    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
     {% block extra_js %}{% endblock %}
 
 </head>
 <body>
-<div class="container">
-    <div class="row">
-        <div class="col-xs-12">
-            <h1>{% block page_title %}{% endblock %}</h1>
-        </div>
+<div class="container-full">
+    <div class="col-xs-12">
+        <h1>{% block page_title %}{% endblock %}</h1>
     </div>
-    <div class="row">
-        {% block content %}{% endblock %}
-    </div>
+    {% block content %}{% endblock %}
 </div>
 </body>
 </html>

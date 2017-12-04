@@ -1,0 +1,120 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-12-04 07:43+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Unification"
+msgstr ""
+
+msgid "Projection"
+msgstr ""
+
+msgid "None"
+msgstr ""
+
+msgid "English"
+msgstr ""
+
+msgid "French"
+msgstr ""
+
+msgid "dataset_format_help_text"
+msgstr ""
+"<u><b>Format:</b></u><br/>\n"
+"One ranking per line<br/>\n"
+"A ranking should have the structure `X := LIST` (X is the name of the "
+"ranking) or `LIST`<br/>\n"
+"LIST must have the structure [BUCKET, ..., BUCKET]<br/>\n"
+"BUCKET must have the structure [element, ..., element] (the elements of the "
+"bucket should not contain [, ] and ,)"
+
+msgid "Dataset"
+msgstr ""
+
+msgid "precise time measurement"
+msgstr ""
+
+msgid "The number of rankings"
+msgstr ""
+
+msgid "The number of elements"
+msgstr ""
+
+msgid "The number of steps used to generate the dataset, if pertinent"
+msgstr ""
+
+msgid "Should be deleted when the associated job is removed"
+msgstr ""
+
+msgid "User who created this job"
+msgstr ""
+
+msgid "The distance used for this job"
+msgstr ""
+
+msgid "Creation time"
+msgstr ""
+
+msgid "the consensus(es) computed for the givent dataset and job's distance"
+msgstr ""
+
+msgid "Stats"
+msgstr ""
+
+msgid "The number of elements in the dataset"
+msgstr ""
+
+msgid "The number of rankings in the dataset"
+msgstr ""
+
+msgid "Are every elements present in each rankings of the dataset"
+msgstr ""
+
+msgid "Complete"
+msgstr ""
+
+msgid "Invalid"
+msgstr ""
+
+msgid "Normalisation"
+msgstr ""
+
+msgid "Distance"
+msgstr ""
+
+msgid "Algorithms"
+msgstr ""
+
+msgid "Auto compute"
+msgstr ""
+
+msgid "Auto compute allowed explanation"
+msgstr ""
+"Based on the dataset you provided and the settings you entered, the auto-"
+"compute is allowed: at each modification of your dataset, the consensus will "
+"automatically be recomputed"
+
+msgid "Auto compute disallowed explanation"
+msgstr ""
+"Based on the dataset you provided and the settings you entered, the auto-"
+"compute is <b>not</b> allowed: you will have to manually click on `Compute` "
+"to compute the consensus of the provided dataset."
+
+msgid "Compute"
+msgstr ""
+
+msgid "Results"
+msgstr ""

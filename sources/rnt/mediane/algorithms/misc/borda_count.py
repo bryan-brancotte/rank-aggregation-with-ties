@@ -7,7 +7,7 @@ class BordaCount(MedianRanking):
     def __init__(self,  use_bucket_id=False):
         self.useBucketIdAndNotBucketSize = use_bucket_id
 
-    def compute_median_rankings(self, rankings: List[List[List[int]]], return_at_most_one_ranking: bool):
+    def compute_median_rankings(self, rankings: List[List[List[int]]], return_at_most_one_ranking: bool = False):
         """
         :param rankings: A set of rankings
         :type rankings: list

@@ -11,50 +11,51 @@
 
 {% block extra_js %}
 <script src="{% static '/js/quick_compute.js' %}"></script>
-<script type="text/javascript">
-	stack_onload(function () {
-        refresh_settings_from_datasets($('form'))
-    });
-</script>
+<script src="{% static '/js/median_ranking_tools.js' %}"></script>
 {% endblock %}
 
 {% block content %}
-<form method="post" data-check-url="{%url 'rnt:dataset_evaluate'%}">
+<form method="post" data-check-url="{%url 'rnt:dataset_evaluate'%}" data-submit-url="{%url 'rnt:dataset_compute'%}">
     {% csrf_token %}
-    <div class="col-xs-12">
+    <div class="col-xs-12 col-lg-8">
         <div class="panel panel-default">
-            <div class="panel-heading">Data</div>
+            <div class="panel-heading">{%trans 'Dataset'%}</div>
             <div class="panel-body" id="data-host">
                 <div class="row">
                     <div class="col-xs-12 col-sm-8 col-md-9 col-lg-10 col-xl-11">
                         <div class="form-group">
                         <textarea spellcheck="false" id="id_dataset" class="form-control text-area" rows="8"
-                                  name="dataset" onkeyup="refresh_settings_from_datasets($('form'));">{% for field in full_form %}{% if field.name == "dataset" %}{{ field.initial }}{% endif %}{% endfor %}</textarea>
+                                  name="dataset" onkeyupaa="refresh_settings_from_datasets($('form'));">{% for field in full_form %}{% if field.name == "dataset" %}{{ field.initial }}{% endif %}{% endfor %}</textarea>
+                        <span class="help-block"></span>
                         </div>
                         {% for field in full_form %}{% if field.name == "dataset" %}{{ field.help_text }}{% endif %}{% endfor %}
                     </div>
-                    <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2 col-xl-1">
+                    <div class="col-xs-8 col-xs-offset-2 col-sm-offset-0 col-sm-4 col-md-3 col-lg-2 col-xl-1">
                         <div class="form-group">
                             <table class="table table-condensed">
                                 <thead>
                                 <tr>
-                                    <th colspan="2">{%trans 'Stats'%}</th>
+                                    <th>{%trans 'Stats'%}</th>
+                                    <th>
+                                        <i id="future-update-indicator" class="fa fa-pencil" style="display:none"></i>
+                                        <i id="updating-stats-indicator" class="fa fa-refresh spin" style="display:none"></i>
+                                    </th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <th>n</th>
+                                    <th title="{%trans 'The number of elements in the dataset'%}">n</th>
                                     <td id="stats-n">-</td>
                                 </tr>
                                 <tr>
-                                    <th>m</th>
+                                    <th title="{%trans 'The number of rankings in the dataset'%}">m</th>
                                     <td id="stats-m">-</td>
                                 </tr>
                                 <tr>
-                                    <th>{%trans 'Complet'%}</th>
+                                    <th title="{%trans 'Are every elements present in each rankings of the dataset'%}">{%trans 'Complete'%}</th>
                                     <td id="stats-complet">
-                                        <i class="fa fa-check-circle-o yes" style="display:none"></i>
-                                        <i class="fa fa-times-circle-o no" style="display:none"></i>
+                                        <i class="fa fa-check yes" style="display:none"></i>
+                                        <i class="fa fa-times no" style="display:none"></i>
                                     </td>
                                 </tr>
                                 <tr>
@@ -68,22 +69,86 @@
             </div>
         </div>
     </div>
-    {%trans 'Normalisation' as norm_verbose%}
-    {% include "webui/quick_compute_param_panel.html" with full_form=full_form param_name='norm' param_name_auto='norm_auto' param_verbose_name=norm_verbose %}
-    {%trans 'Distance' as dist_verbose%}
-    {% include "webui/quick_compute_param_panel.html" with full_form=full_form param_name='dist' param_name_auto='dist_auto' param_verbose_name=dist_verbose %}
-    {%trans 'Algorithms' as algo_verbose%}
-    {% include "webui/quick_compute_param_panel.html" with full_form=full_form param_name='algo' param_name_auto='algo_auto' param_verbose_name=algo_verbose %}
+    <div class="col-xs-12 col-lg-4">
+        <div class="row">
+            {%trans 'Normalisation' as norm_verbose%}
+            {% include "webui/quick_compute_param_panel.html" with full_form=full_form param_name='norm' param_name_auto='norm_auto' param_verbose_name=norm_verbose %}
+            {%trans 'Distance' as dist_verbose%}
+            {% include "webui/quick_compute_param_panel.html" with full_form=full_form param_name='dist' param_name_auto='dist_auto' param_verbose_name=dist_verbose %}
+            {%trans 'Algorithms' as algo_verbose%}
+            {% include "webui/quick_compute_param_panel.html" with full_form=full_form param_name='algo' param_name_auto='algo_auto' param_verbose_name=algo_verbose %}
+            <div class="col-xs-12">
+                <div class="panel-group">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <div class="row">
+                                    <a data-toggle="collapse" class="color-inherit" href="#collapse-auto-compute" aria-expanded="false">
+                                        <div class="col-xs-6">
+                                            <i class="fa fa-plus to-expand-icon"></i>
+                                            <i class="fa fa-minus to-collapse-icon"></i>
+                                            {%trans 'Auto compute'%}
+                                        </div>
+                                    </a>
+                                    <div class="col-xs-6 text-right">
+                                            <input type="checkbox"
+                                                   class="param-auto"
+                                                   data-toggle="toggle"
+                                                   data-on="<i class='fa fa-magic'></i> Auto"
+                                                   data-onstyle="primary"
+                                                   data-off="&nbsp;&nbsp;<i class='fa fa-hand-pointer-o'></i> No&nbsp;&nbsp;&nbsp;&nbsp;"
+                                                   data-offstyle="default"
+                                                   data-size="mini"
+                                                   id="id_auto_compute"
+                                                   name="auto-compute">
+                                        </div>
+                                    </div>
+                            </h4>
+                        </div>
+                        <div id="collapse-auto-compute" class="panel-collapse collapse">
+                            <div class="panel-body param-host" id="auto-compute-host">
+                                {% for field in full_form %}
+                                    {% if field.name == 'bench' %}
+                                        {{ field|bootstrap }}
+                                    {% endif %}
+                                {% endfor %}
+                                <span class="yes" style="display:none">{%trans 'Auto compute allowed explanation'%}</span>
+                                <span class="no" style="display:none">{%trans 'Auto compute disallowed explanation'%}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12">
+                <center>
+                    <a role="button" id="btn-compute" class="btn btn-lg btn-primary" onclick="compute_consensus_from_dataset($('form'));">
+                        <span class="glyphicon glyphicon-refresh spin" style="display:none"></span>
+                        {%trans 'Compute'%}
+                    </a>
+                </center>
+            </div>
+        </div>
+    </div>
 </form>
-    <div class="col-xs-12">
-        <center>
-            <button role="button" id="btn-compute" class="btn btn-lg btn-primary" onclick="refresh_settings_from_datasets($('form'));">
-                <span class="glyphicon glyphicon-refresh spin" style="display:none"></span>
-                {%trans 'Compute'%}
-            </button>
-        </center>
+<div class="clearfix"></div>
+<div class="col-xs-12 col-lg-8">
+    <div class="panel panel-default">
+        <div class="panel-heading">{%trans 'Results'%} <i id="computing-indicator" class="fa fa-refresh spin" style="display: none;"></i></div>
+        <div class="panel-body" id="results-host">
+            <table id="results_table" class="display compact" width="100%"></table>
+        </div>
     </div>
-    <div class="col-xs-12">
-        {{full_form|bootstrap_horizontal:'col-xs-3'}}
+</div>
+<div class="col-xs-12 col-lg-4">
+    <div class="panel panel-default">
+        <div class="panel-heading">Nothing yet</div>
+        <div class="panel-body" id="results-log-host">
+        </div>
     </div>
+</div>
+{% if full_form_bis %}
+    <div class="col-xs-12">
+        {{full_form_bis|bootstrap_horizontal:'col-xs-3'}}
+    </div>
+{% endif %}
 {% endblock %}

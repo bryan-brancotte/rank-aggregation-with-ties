@@ -1,4 +1,32 @@
+@-moz-keyframes spin {
+    from { -moz-transform: rotate(0deg); }
+    to { -moz-transform: rotate(360deg); }
+}
+@-webkit-keyframes spin {
+    from { -webkit-transform: rotate(0deg); }
+    to { -webkit-transform: rotate(360deg); }
+}
+@keyframes spin {
+    from {transform:rotate(0deg);}
+    to {transform:rotate(360deg);}
+}
 .spin {
     -webkit-animation: spin 700ms infinite linear;
     animation: spin 700ms infinite linear;
+}
+.color-inherit,.color-inherit:focus,.color-inherit:hover{
+    color: inherit;
+}
+a[aria-expanded=true] .to-expand-icon {
+    display: none;
+}
+a[aria-expanded=false] .to-collapse-icon {
+    display: none;
+}
+.no-transition, .no-transition-all *  {
+  -webkit-transition: none !important;
+  -moz-transition: none !important;
+  -ms-transition: none !important;
+  -o-transition: none !important;
+  transition: none !important;
 }
