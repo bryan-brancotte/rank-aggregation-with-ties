@@ -1,50 +1,84 @@
 from typing import List
 import numpy as np
+from typing import Dict
 
 
 class Dataset:
     def __init__(self,  r: List[List[List[int]]]):
-        self._rankings = r
-        self._is_complete = True
+        self.__set_nb_rankings(-1)
+        self.__set_nb_elements(-1)
+        self.__set_is_complete(True)
+
+        # updates previous values
+        self.__set_rankings(r)
+
+    def __get_rankings(self) -> List[List[List[int]]]:
+        return self.__rankings
+
+    def __get_nb_elements(self) -> int:
+        return self.__nb_elements
+
+    def __get_nb_rankings(self) -> int:
+        return self.__nb_rankings
+
+    def __get_is_complete(self) -> bool:
+        return self.__is_complete
+
+    def __set_rankings(self, rankings: List[List[List[int]]]):
+        self.__rankings = rankings
+        self.__set_is_complete(self.__check_if_rankings_complete())
+        self.__set_nb_rankings(len(rankings))
+
+    def __set_nb_elements(self, n: int):
+        self.__nb_elements = n
+
+    def __set_nb_rankings(self, m: int):
+        self.__nb_rankings = m
+
+    def __set_is_complete(self, complete: bool):
+        self.__is_complete = complete
+
+    n = property(__get_nb_elements, __set_nb_elements)
+    m = property(__get_nb_rankings, __set_nb_rankings)
+    rankings = property(__get_rankings, __set_rankings)
+    is_complete = property(__get_is_complete, __set_is_complete)
+
+    def __check_if_rankings_complete(self):
+        r = self.rankings
         r1 = r[0]
         elements = {}
+        complete = True
         for bucket in r1:
             for element in bucket:
                 if element not in elements:
                     elements[element] = 0
-        n = len(elements)
+        self.n = len(elements)
         for ranking in r:
             k = 0
-            if not self._is_complete:
+            if not complete:
                 break
             for bucket in ranking:
-                if not self._is_complete:
+                if not complete:
                     break
                 k += len(bucket)
                 for element in bucket:
                     if element not in elements:
-                        self._is_complete = False
+                        complete = False
                         break
-            if k != n:
-                self._is_complete = False
+            if k != self.n:
+                complete = False
+        return complete
 
-    def _get_rankings(self):
-        return self._rankings
+    def get_all_informations(self) -> tuple:
+        mapping_elements_id = self.map_elements_id()
+        positions = self.get_positions(mapping_elements_id)
+        pairs_relative_positions = self.pairs_relative_positions(positions)
+        return mapping_elements_id, positions, pairs_relative_positions
 
-    def _set_rankings(self, r2: List[List[List[int]]]):
-        self._rankings = r2
-
-    rankings = property(_get_rankings, _set_rankings)
-
-    def _get_is_complete(self):
-        return self._is_complete
-
-    is_complete = property(_get_is_complete,)
-
-    def map_elements_id(self):
+    def map_elements_id(self) -> Dict[int, int]:
         h = {}
         id_elem = 0
-        for ranking in self._get_rankings():
+        for ranking in self.rankings:
             for bucket in ranking:
                 for elem in bucket:
                     if elem not in h:
@@ -52,12 +86,12 @@ class Dataset:
                         id_elem += 1
         return h
 
-    def get_positions(self, elements_id: dict):
-        n = len(elements_id)
-        m = len(self._get_rankings())
+    def get_positions(self, elements_id: dict) -> np.ndarray:
+        n = self.n
+        m = self.m
         positions = np.zeros((m, n))-1
         id_ranking = 0
-        for ranking in self._get_rankings():
+        for ranking in self.rankings:
             id_bucket = 0
             for bucket in ranking:
                 for elem in bucket:
@@ -66,9 +100,9 @@ class Dataset:
             id_ranking += 1
         return positions
 
-    def pairs_relative_positions(self, elements_id: dict, positions: np.ndarray):
-        n = len(elements_id)
-        m = len(self._get_rankings())
+    def pairs_relative_positions(self, positions: np.ndarray) -> np.ndarray:
+        n = self.n
+        m = self.m
         matrix = np.zeros((n*n, 6))
         r = 0
         while r < m:
@@ -106,14 +140,14 @@ class Dataset:
             r += 1
         return matrix
 
-    def get_unified_rankings(self):
+    def get_unified_rankings(self) -> List[List[List[int]]]:
         copy_rankings = []
-        for ranking in self._get_rankings():
+        for ranking in self.rankings:
             new_ranking = []
             copy_rankings.append(new_ranking)
             for bucket in ranking:
                 new_ranking.append(list(bucket))
-        if not self._get_is_complete():
+        if not self.is_complete:
             elements = {}
             dict_rankings = {}
             id_ranking = 0
@@ -138,19 +172,19 @@ class Dataset:
                 id_ranking += 1
         return copy_rankings
 
-    def get_projected_rankings(self):
-        rankings = self._get_rankings()
+    def get_projected_rankings(self) -> List[List[List[int]]]:
+        rankings = self.rankings
         copy_rankings = []
-        for ranking in self._get_rankings():
+        for ranking in self.rankings:
             new_ranking = []
             copy_rankings.append(new_ranking)
             for bucket in ranking:
                 new_ranking.append(list(bucket))
-        if self._get_is_complete():
+        if self.is_complete:
             projected_rankings = copy_rankings
 
         else:
-            m = len(rankings)
+            m = self.m
             elements = {}
             projected_rankings = []
 
@@ -173,16 +207,3 @@ class Dataset:
                     if len(projected_bucket) > 0:
                         ranking_projected.append(projected_bucket)
         return projected_rankings
-
-r1 = []
-dataset = []
-n = 20
-m = 1000000
-for i in range(n):
-    r1.append([i])
-for i in range(m):
-    dataset.append(r1)
-for i in range(10):
-    dataset[-1].pop()
-
-print(Dataset(dataset).get_projected_rankings())
