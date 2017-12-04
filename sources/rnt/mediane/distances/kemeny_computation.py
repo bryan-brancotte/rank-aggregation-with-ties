@@ -48,12 +48,11 @@ class KemenyComputingFactory:
                                              complete_rankings: False) -> float:
 
         coefficients = get_coeffs_dist(self.distance, self.p)
-
         cost_before = coefficients[0]
         cost_tied = coefficients[1]
 
         nb_elements = len(mapping_elem_id)
-        positions_consensus = np.zeros(nb_elements)
+        positions_consensus = np.zeros(nb_elements) - 1
 
         stop = 6
         if complete_rankings:
@@ -66,31 +65,34 @@ class KemenyComputingFactory:
             id_bucket += 1
 
         dst = 0.
-        e1 = 0
-        while e1 < nb_elements:
-            e2 = e1 + 1
-            while e2 < nb_elements:
-                i = 0
-                if positions_consensus[e1] < positions_consensus[e2]:
-                    while i < stop:
-                        dst += cost_before[i] * pairs_pos[nb_elements * e1 + e2][i]
-                        i += 1
-                elif positions_consensus[e1] == positions_consensus[e2]:
-                    while i < stop:
-                        dst += cost_tied[i] * pairs_pos[nb_elements * e1 + e2][i]
-                        i += 1
-                else:
-                    while i < stop:
-                        dst += cost_before[i] * pairs_pos[e1 + nb_elements * e2][i]
-                        i += 1
-
+        for e1 in range(nb_elements):
+            pos_cons_e1 = positions_consensus[e1]
+            if pos_cons_e1 >= 0:
+                e2 = e1 + 1
+                while e2 < nb_elements:
+                    pos_cons_e2 = positions_consensus[e2]
+                    if pos_cons_e2 >= 0:
+                        i = 0
+                        if positions_consensus[e1] < positions_consensus[e2]:
+                            while i < stop:
+                                dst += cost_before[i] * pairs_pos[nb_elements * e1 + e2][i]
+                                i += 1
+                        elif positions_consensus[e1] == positions_consensus[e2]:
+                            while i < stop:
+                                dst += cost_tied[i] * pairs_pos[nb_elements * e1 + e2][i]
+                                i += 1
+                        else:
+                            while i < stop:
+                                dst += cost_before[i] * pairs_pos[e1 + nb_elements * e2][i]
+                                i += 1
+                    e2 += 1
         return dst
 
 
-classements = [[[1], [2]], [[1], [2]], [[2], [1]]]
+classements = [[[1], [2], [3]], [[3], [1], [2]], [[1]]]
 
 d = Dataset(classements)
 
 dist = KemenyComputingFactory(GENERALIZED_KENDALL_TAU_DISTANCE, 0.5)
 
-print(dist.get_kemeny_score_with_dataset([[1], [2]], d))
+print(dist.get_kemeny_score_with_dataset([[1], [2], [3]], d))
