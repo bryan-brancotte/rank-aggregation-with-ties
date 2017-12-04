@@ -1,5 +1,5 @@
 import unittest
-from mediane.datasets.datasets import Dataset
+from mediane.datasets.dataset import Dataset
 
 
 class NormalizationsTestCase(unittest.TestCase):
