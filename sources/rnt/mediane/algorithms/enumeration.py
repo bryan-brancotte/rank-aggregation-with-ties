@@ -17,8 +17,8 @@ def as_tuple_list():
     return ret
 
 
-def get_from(id):
+def get_from(id_alg):
     for Algo in get_median_ranking_algorithms():
-        if Algo().get_full_name() == id:
+        if Algo().get_full_name() == id_alg:
             return Algo
     return None
