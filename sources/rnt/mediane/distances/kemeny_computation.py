@@ -1,8 +1,8 @@
 from typing import Dict, List
 import numpy as np
-
 from mediane.datasets.dataset import Dataset
 from mediane.distances.enumeration import *
+from mediane.distances.KendallTauGeneralizedNSquare import KendallTauGeneralizedNSquare
 
 
 class KemenyComputingFactory:
@@ -39,13 +39,13 @@ class KemenyComputingFactory:
     ) -> float:
         informations = dataset.get_all_informations()
         return self.get_kemeny_score_with_pairsposmatrix(
-            informations[0], consensus, informations[-1], dataset.is_complete)
+            informations[0], consensus, informations[-1])
 
     def get_kemeny_score_with_pairsposmatrix(self,
                                              mapping_elem_id: Dict[int, int],
                                              cons: List[List[int]],
                                              pairs_pos: np.ndarray,
-                                             complete_rankings: False) -> float:
+                                             ) -> float:
 
         coefficients = get_coeffs_dist(self.distance, self.p)
         cost_before = coefficients[0]
@@ -53,10 +53,6 @@ class KemenyComputingFactory:
 
         nb_elements = len(mapping_elem_id)
         positions_consensus = np.zeros(nb_elements) - 1
-
-        stop = 6
-        if complete_rankings:
-            stop = 3
 
         id_bucket = 0
         for bucket in cons:
@@ -66,33 +62,35 @@ class KemenyComputingFactory:
 
         dst = 0.
         for e1 in range(nb_elements):
-            pos_cons_e1 = positions_consensus[e1]
-            if pos_cons_e1 >= 0:
-                e2 = e1 + 1
-                while e2 < nb_elements:
-                    pos_cons_e2 = positions_consensus[e2]
-                    if pos_cons_e2 >= 0:
-                        i = 0
-                        if positions_consensus[e1] < positions_consensus[e2]:
-                            while i < stop:
-                                dst += cost_before[i] * pairs_pos[nb_elements * e1 + e2][i]
-                                i += 1
-                        elif positions_consensus[e1] == positions_consensus[e2]:
-                            while i < stop:
-                                dst += cost_tied[i] * pairs_pos[nb_elements * e1 + e2][i]
-                                i += 1
-                        else:
-                            while i < stop:
-                                dst += cost_before[i] * pairs_pos[e1 + nb_elements * e2][i]
-                                i += 1
-                    e2 += 1
+            mult = e1 * nb_elements
+            e2 = e1 + 1
+            while e2 < nb_elements:
+                if positions_consensus[e1] < positions_consensus[e2]:
+                    dst += np.vdot(cost_before, pairs_pos[mult + e2])
+                elif positions_consensus[e1] == positions_consensus[e2]:
+                    dst += np.vdot(cost_tied, pairs_pos[mult + e2])
+                else:
+                    dst += np.vdot(cost_tied, pairs_pos[e1 + nb_elements*e2])
+                e2 += 1
         return dst
 
 
-classements = [[[1], [2], [3]], [[3], [1], [2]], [[1]]]
+n = 3560
+r1 = []
+r2 = []
+rankings = [r1, r2, r1, r2, r1, r2, r1, r2]
 
-d = Dataset(classements)
+for j in range(n):
+    r1.append([j])
+    r2.append([n-1-j])
 
-dist = KemenyComputingFactory(GENERALIZED_KENDALL_TAU_DISTANCE, 0.5)
+# print(rankings)
+d = Dataset(rankings)
 
-print(dist.get_kemeny_score_with_dataset([[1], [2], [3]], d))
+inf = d.get_all_informations()
+# print("COMPUTATION")
+# dist = KemenyComputingFactory(GENERALIZED_KENDALL_TAU_DISTANCE, 0.5)
+
+# print(dist.get_kemeny_score_with_pairsposmatrix(inf[0], r1, inf[-1], True))
+k = KendallTauGeneralizedNSquare()
+print(k.get_distance_to_a_set_of_rankings(r2, rankings))

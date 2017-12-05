@@ -1,6 +1,5 @@
-from typing import List
+from typing import List, Dict
 import numpy as np
-from typing import Dict
 
 
 class Dataset:
@@ -9,8 +8,8 @@ class Dataset:
         self.__set_nb_elements(-1)
         self.__set_is_complete(True)
 
-        # updates previous values
-        self.__set_rankings(r)
+        # updates previous values with right values for n, m and complete
+        self.__set_rankings_and_update_properties(r)
 
     def __get_rankings(self) -> List[List[List[int]]]:
         return self.__rankings
@@ -24,10 +23,10 @@ class Dataset:
     def __get_is_complete(self) -> bool:
         return self.__is_complete
 
-    def __set_rankings(self, rankings: List[List[List[int]]]):
+    def __set_rankings_and_update_properties(self, rankings: List[List[List[int]]]):
         self.__rankings = rankings
-        self.__set_is_complete(self.__check_if_rankings_complete())
         self.__set_nb_rankings(len(rankings))
+        self.__set_is_complete(self.__check_if_rankings_complete_and_update_n())
 
     def __set_nb_elements(self, n: int):
         self.__nb_elements = n
@@ -40,10 +39,10 @@ class Dataset:
 
     n = property(__get_nb_elements, __set_nb_elements)
     m = property(__get_nb_rankings, __set_nb_rankings)
-    rankings = property(__get_rankings, __set_rankings)
+    rankings = property(__get_rankings, __set_rankings_and_update_properties)
     is_complete = property(__get_is_complete, __set_is_complete)
 
-    def __check_if_rankings_complete(self):
+    def __check_if_rankings_complete_and_update_n(self):
         r = self.rankings
         r1 = r[0]
         elements = {}
@@ -89,13 +88,13 @@ class Dataset:
     def get_positions(self, elements_id: dict) -> np.ndarray:
         n = self.n
         m = self.m
-        positions = np.zeros((m, n))-1
+        positions = np.zeros((n, m)) - 1
         id_ranking = 0
         for ranking in self.rankings:
             id_bucket = 0
             for bucket in ranking:
                 for elem in bucket:
-                    positions[id_ranking][elements_id.get(elem)] = id_bucket
+                    positions[elements_id.get(elem)][id_ranking] = id_bucket
                 id_bucket += 1
             id_ranking += 1
         return positions
@@ -103,41 +102,48 @@ class Dataset:
     def pairs_relative_positions(self, positions: np.ndarray) -> np.ndarray:
         n = self.n
         m = self.m
-        matrix = np.zeros((n*n, 6))
-        r = 0
-        while r < m:
-            elem1 = 0
-            while elem1 < n:
-                elem2 = elem1 + 1
-                while elem2 < n:
-                    pos1 = positions[r][elem1]
-                    pos2 = positions[r][elem2]
-                    if pos1 >= 0:
-                        if pos2 >= 0:
-                            if pos1 < pos2:
-                                matrix[n * elem1 + elem2][0] += 1
-                                matrix[n * elem2 + elem1][2] += 1
-
-                            else:
-                                if pos1 > pos2:
-                                    matrix[n * elem1 + elem2][2] += 1
-                                    matrix[n * elem2 + elem1][0] += 1
-                                else:
-                                    matrix[n * elem1 + elem2][1] += 1
-                                    matrix[n * elem2 + elem1][1] += 1
-                        else:
-                            matrix[n * elem1 + elem2][3] += 1
-                            matrix[n * elem2 + elem1][4] += 1
-                    else:
-                        if positions[r][elem2] >= 0:
-                            matrix[n * elem1 + elem2][4] += 1
-                            matrix[n * elem2 + elem1][3] += 1
-                        else:
-                            matrix[n * elem1 + elem2][5] += 1
-                            matrix[n * elem2 + elem1][5] += 1
-                    elem2 += 1
-                elem1 += 1
-            r += 1
+        matrix = np.zeros((n * n, 6))
+        for e1 in range(n-1, -1, -1):
+            ind1 = n * e1 + e1
+            ind2 = ind1
+            for e2 in range(e1-1, -1, -1):
+                ind1 -= 1
+                ind2 -= n
+                a = np.count_nonzero(positions[e1] + positions[e2] == -2)
+                b = np.count_nonzero(positions[e1] == positions[e2])
+                c = np.count_nonzero(positions[e2] == -1)
+                d = np.count_nonzero(positions[e1] == -1)
+                e = np.count_nonzero(positions[e1] < positions[e2])
+                matrix[ind1] = [e-d+a, b-a, m-(a+b+c+d+e), c-a, d-a, a]
+                matrix[ind2] = [e - d + a, b - a, m - (a + b + c + d + e), c - a, d - a, a]
+        # r = 0
+        # for r in range(m):
+        #     positions_r = positions[r]
+        #     for elem1 in range(n-1, -1, -1):
+        #         for elem2 in range(elem1-1, -1, -1):
+        #             if positions_r[elem1] >= 0:
+        #                 if positions_r[elem2] >= 0:
+        #                     if positions_r[elem1] < positions_r[elem2]:
+        #                         matrix[n * elem1 + elem2][0] += 1
+        #                         matrix[n * elem2 + elem1][2] += 1
+        #
+        #                     else:
+        #                         if positions_r[elem1] > positions_r[elem2]:
+        #                             matrix[n * elem1 + elem2][2] += 1
+        #                             matrix[n * elem2 + elem1][0] += 1
+        #                         else:
+        #                             matrix[n * elem1 + elem2][1] += 1
+        #                             matrix[n * elem2 + elem1][1] += 1
+        #                 else:
+        #                     matrix[n * elem1 + elem2][3] += 1
+        #                     matrix[n * elem2 + elem1][4] += 1
+        #             else:
+        #                 if positions_r[elem2] >= 0:
+        #                     matrix[n * elem1 + elem2][4] += 1
+        #                     matrix[n * elem2 + elem1][3] += 1
+        #                 else:
+        #                     matrix[n * elem1 + elem2][5] += 1
+        #                     matrix[n * elem2 + elem1][5] += 1
         return matrix
 
     def get_unified_rankings(self) -> List[List[List[int]]]:
