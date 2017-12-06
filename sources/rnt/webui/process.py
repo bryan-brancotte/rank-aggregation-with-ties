@@ -42,5 +42,5 @@ def compute_consensus_settings_based_on_datasets(n, m, complete, rankings):
         consensus_settings["algo"] = BordaCount().get_full_name()
         consensus_settings["dist"] = GENERALIZED_KENDALL_TAU_DISTANCE
         consensus_settings["norm"] = NONE if complete else UNIFICATION
-    consensus_settings["auto-compute"] = False
+    consensus_settings["auto-compute"] = n < 50
     return consensus_settings
