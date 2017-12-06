@@ -22,9 +22,9 @@ def parse_ranking_with_ties(ranking: str, converter: Callable[[str], T]) -> List
         en = ranking.find(']', max(en + 1, st + 1), ranking_end)
     if st != en:
         if st == -1:
-            raise ValueError("missing open braket")
+            raise ValueError("missing open bucket")
         if en == -1:
-            raise ValueError("missing closing braket")
+            raise ValueError("missing closing bucket")
     if ranking[old_en + 1:ranking_end] != "":
         raise ValueError("misplaced chars: '%s'" % ranking[old_en + 1:ranking_end])
     return ret

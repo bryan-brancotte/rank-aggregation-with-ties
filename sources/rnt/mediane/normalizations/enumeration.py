@@ -11,8 +11,8 @@ def as_tuple_list():
     return __tuple_list
 
 
-def get_from(id):
+def get_from(id_enum):
     for k, v in __tuple_list:
-        if str(k) == str(id):
+        if str(k) == str(id_enum):
             return v
     return None
