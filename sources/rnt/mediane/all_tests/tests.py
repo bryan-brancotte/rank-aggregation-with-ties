@@ -60,10 +60,10 @@ class FullyImplementedAlgorithmTestCase(TestCase):
                 'Algo %s must implement is_using_random_value' % instance.get_full_name()
             )
             self.assertTrue(
-                instance.compute_median_rankings(rankings=()) is (),
-                'Algo %s must implement is_using_random_value' % instance.get_full_name()
+                instance.compute_median_rankings(rankings=()) == [[]],
+                'Algo %s must return a array containing an empty consensus' % instance.get_full_name()
             )
             self.assertTrue(
                 instance.compute_median_rankings(rankings=(('1', '2'), ('3', '4'))) is not None,
-                'Algo %s must implement is_using_random_value' % instance.get_full_name()
+                'Algo %s must return somthing and not crash' % instance.get_full_name()
             )
