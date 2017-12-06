@@ -21,11 +21,6 @@ r4 := [[B],[C],[A,D,E]]"""
     return render(request, 'webui/quick_compute.html', context=context)
 
 
-# def validate_inputs(request):
-#     if request.method == 'POST':
-#         form = ChangePassword(initial={'cloudweb_login': request.user.username}, data=request.POST)
-
-
 def dataset_evaluate(request):
     if request.method != 'POST':
         return HttpResponseBadRequest()
