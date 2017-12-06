@@ -13,8 +13,6 @@ def compute_median_rankings(
 ):
     instance = algorithm()
     iteration = 1
-    c = None
-    duration = 0
     start_timezone = timezone.now()
     c = instance.compute_median_rankings(rankings=rankings)
     duration = (timezone.now() - start_timezone).total_seconds()
