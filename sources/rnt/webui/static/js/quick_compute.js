@@ -3,12 +3,13 @@ function refresh_settings_from_datasets(form, callback){
     $("#updating-stats-indicator").show();
     $("#future-update-indicator").hide();
     $("#btn-compute").attr("disabled",true);
+    $("#id_dataset").prop("readonly",true) ;
     $.ajax({
         type: form.attr('method'),
         url:form.attr('data-check-url'),
         data: form.serialize(),
         success: function (data, textStatus, xhr) {
-            //console.log(data);
+            console.log(data);
             $("#id_dataset+.help-block").html(data["dataset_html_errors"]);
             if(data["dataset_html_errors"]!=""){
                 $("#id_dataset+.help-block").parent().addClass("has-error");
@@ -21,6 +22,7 @@ function refresh_settings_from_datasets(form, callback){
             $("#stats-complet>.no").toggle(!data["complete"]);
             $("#stats-invalid").toggle(data["invalid"]);
             $("#btn-compute").attr("disabled",data["invalid"]);
+            $("#id_dataset").prop("readonly",false) ;
             if($("#id_norm_auto").prop("checked")){
                 $("#id_norm_auto").attr("data-default-value",data["norm"])
             }
@@ -33,6 +35,7 @@ function refresh_settings_from_datasets(form, callback){
             $(".param-auto").change();
             $("#auto-compute-host>.yes").toggle(data["auto-compute"]);
             $("#auto-compute-host>.no").toggle(!data["auto-compute"]);
+            $("#auto-compute-host").attr("data-value", data["auto-compute"]);
             if (typeof callback != "undefined")
                 callback(data);
             $("#updating-stats-indicator").fadeOut();
@@ -64,14 +67,14 @@ function delayed_onkeyup(action, instant_action){
         instant_action(eventtrigger);
         delayAction(action, 1200);
     }
-};
-
+}
 
 function on_change_param_auto_checkbox(auto_checkbox){
     var name = $(auto_checkbox).attr("name");
     name=name.substring(0,name.lastIndexOf('_'));
     if($(auto_checkbox).prop("checked")){
-        $("[name='"+name+"'][value='"+$(auto_checkbox).attr("data-default-value")+"']").prop("checked",true)
+        $("[name='"+name+"']").prop("checked",false);
+        $("[name='"+name+"'][value='"+$(auto_checkbox).attr("data-default-value")+"']").prop("checked",true);
     }
 }
 
@@ -84,6 +87,7 @@ function compute_consensus_from_dataset(form, callback){
     form=$(form);
     $("#computing-indicator").show();
     $("#btn-compute").attr("disabled",true);
+    $("#id_dataset").prop("readonly",true) ;
     $.ajax({
         type: form.attr('method'),
         url:form.attr('data-submit-url'),
@@ -120,18 +124,20 @@ function compute_consensus_from_dataset(form, callback){
                 ]
             } );
 
-
-
             if (typeof callback != "undefined")
                 callback(data);
             $("#computing-indicator").fadeOut();
             $("#btn-compute").attr("disabled",false);
+            $("#id_dataset").prop("readonly",false) ;
+            //fade_border_to_and_back($("#results-host").parent(),"#0D0");
+            fade_background_to_and_back($("#results-host").parent(),"#f5fff5");
         },
         error: function (textStatus, xhr) {
             console.error(textStatus);
             console.error(xhr);
             $("#computing-indicator").fadeOut();
             $("#btn-compute").attr("disabled",false);
+            $("#id_dataset").prop("readonly",false) ;
         }
     });
 }
@@ -143,9 +149,10 @@ stack_onload(function () {
     refresh_settings_from_datasets($('form'));
     $(".param-host").each(function() {
         var v = $(this).parent();
-        $(v).collapse(getCookie($(v).attr("id"),"show"));
+        $(v).collapse(getCookie($(v).attr("id"),"hide"));
     });
 
+    //save in cookie the state of each panel
     $(".param-host").parent()
     .on('shown.bs.collapse', function () {
         setCookie($(this).attr("id"),"show");
@@ -153,10 +160,22 @@ stack_onload(function () {
     .on('hidden.bs.collapse', function () {
         setCookie($(this).attr("id"),"hide");
     });
+
+    //once typed in the text area, refresh the stats of the datasets
     $("#id_dataset").keyup(
         delayed_onkeyup(
             function(){
-                refresh_settings_from_datasets($('form'));
+                var callback;
+                if ($("#auto-compute-host").attr("data-value")){
+                    refresh_settings_from_datasets(
+                        $('form'),
+                        function (){
+                            compute_consensus_from_dataset($('form'))
+                        }
+                    );
+                }else{
+                    refresh_settings_from_datasets($('form'));
+                }
             },
             function (){
                 $("#btn-compute").attr("disabled",true);

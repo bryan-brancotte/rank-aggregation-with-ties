@@ -47,3 +47,17 @@ function checkCookie() {
         }
     }
 }
+
+function fade_border_to_and_back(target,color){
+    var color_org = $(target).css("border-color");
+    $(target)
+    .animate({borderColor: color}, 200 )
+    .animate({borderColor: color_org}, 900 );
+}
+
+function fade_background_to_and_back(target,color){
+    var color_org = $(target).css("background-color");
+    $(target)
+    .animate({backgroundColor: color}, 200 )
+    .animate({backgroundColor: color_org}, 900 );
+}
