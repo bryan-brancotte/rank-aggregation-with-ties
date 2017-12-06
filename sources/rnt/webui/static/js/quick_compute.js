@@ -88,6 +88,7 @@ function compute_consensus_from_dataset(form, callback){
     $("#computing-indicator").show();
     $("#btn-compute").attr("disabled",true);
     $("#id_dataset").prop("readonly",true) ;
+    fade_border_to_and_back($("#results-host").parent(),"#337ab7");
     $.ajax({
         type: form.attr('method'),
         url:form.attr('data-submit-url'),
@@ -129,7 +130,6 @@ function compute_consensus_from_dataset(form, callback){
             $("#computing-indicator").fadeOut();
             $("#btn-compute").attr("disabled",false);
             $("#id_dataset").prop("readonly",false) ;
-            //fade_border_to_and_back($("#results-host").parent(),"#0D0");
             fade_background_to_and_back($("#results-host").parent(),"#f5fff5");
         },
         error: function (textStatus, xhr) {
