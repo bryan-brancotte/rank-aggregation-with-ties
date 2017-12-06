@@ -56,15 +56,18 @@ r4 := [[B],[C],[A,D,E]]""",
     )
     norm_auto = forms.BooleanField(
         initial=True,
+        required=False,
     )
     dist_auto = forms.BooleanField(
         initial=True,
+        required=False,
     )
     algo_auto = forms.BooleanField(
         initial=True,
+        required=False,
     )
     bench = forms.BooleanField(
-        initial=True,
+        initial=False,
         label=_('precise time measurement'),
         required=False,
     )
