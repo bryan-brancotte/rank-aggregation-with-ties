@@ -24,7 +24,7 @@ def compute_median_rankings(
         print(iteration, duration)
         if not precise_time_measurement or duration > 2:
             break
-        iteration *= 2
+        iteration = int(iteration / duration * 2.2)
 
     return dict(
         consensus=c,
