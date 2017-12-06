@@ -15,16 +15,17 @@ def compute_median_rankings(
     iteration = 1
     c = None
     duration = 0
-    while True:
+    start_timezone = timezone.now()
+    c = instance.compute_median_rankings(rankings=rankings)
+    duration = (timezone.now() - start_timezone).total_seconds()
+    while precise_time_measurement and duration < 2:
+        # print(iteration, duration)
+        iteration = int(iteration / duration * 2.2)
+        rang_iter = range(2, iteration)
         start_timezone = timezone.now()
-        c = instance.compute_median_rankings(rankings=rankings)
-        for k in range(2, iteration):
+        for k in rang_iter:
             instance.compute_median_rankings(rankings=rankings)
         duration = (timezone.now() - start_timezone).total_seconds()
-        print(iteration, duration)
-        if not precise_time_measurement or duration > 2:
-            break
-        iteration = int(iteration / duration * 2.2)
 
     return dict(
         consensus=c,
