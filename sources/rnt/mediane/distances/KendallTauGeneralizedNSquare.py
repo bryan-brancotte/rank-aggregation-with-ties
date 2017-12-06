@@ -38,14 +38,14 @@ class KendallTauGeneralizedNSquare(DistanceCalculator):
         # List<Entry<T, int[]>> elements = new Vector<Entry<T, int[]>>(rankElt.entrySet());
         # rankElt.entrySet();
         items = [(k, v) for k, v in rank_elt.items()]
-        for a in range(len(items) - 1, 0, -1):
+        for a in range(len(items) - 1, -1, -1):
             # for (int a = elements.size() - 1; a > 0; a--) {
             #     // int[] posA = elements.get(a);
             eltA, lvlA = items[a]
             # Entry<T, int[]> posA = elements.get(a);
             if lvlA[0] != -1 and lvlA[1] != -1:
                 # if (posA.getValue()[0] != -1 && posA.getValue()[1] != -1) {
-                for b in range(a - 1, 0, -1):
+                for b in range(a - 1, -1, -1):
                     # for (int b = a - 1; b >= 0; b--) {
                     #     // int[] posB = elements.get(a);
                     #     Entry<T, int[]> posB = elements.get(b);
