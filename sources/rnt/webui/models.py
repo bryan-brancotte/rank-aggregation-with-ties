@@ -38,10 +38,12 @@ class Distance(models.Model):
 class Job(models.Model):
     owner = models.ForeignKey(
         get_user_model(),
+        on_delete=models.CASCADE,
         help_text=_('User who created this job'),
     )
     distance_used = models.ForeignKey(
         Distance,
+        on_delete=models.CASCADE,
         help_text=_('The distance used for this job'),
     )
     creation = models.DateTimeField(
@@ -52,9 +54,11 @@ class Job(models.Model):
 class Result(models.Model):
     dataset = models.ForeignKey(
         DataSet,
+        on_delete=models.CASCADE,
     )
     job = models.ForeignKey(
         Job,
+        on_delete=models.CASCADE,
     )
     distance_value = models.FloatField(
         blank=True,
