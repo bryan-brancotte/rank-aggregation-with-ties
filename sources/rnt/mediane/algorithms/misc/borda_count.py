@@ -1,4 +1,4 @@
-from mediane.distances.enumeration import GENERALIZED_KENDALL_TAU_DISTANCE
+from mediane.distances.enumeration import *
 from mediane.algorithms.median_ranking import MedianRanking
 from typing import List
 

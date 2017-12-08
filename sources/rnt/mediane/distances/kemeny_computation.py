@@ -2,7 +2,6 @@ from typing import Dict, List
 import numpy as np
 from mediane.datasets.dataset import Dataset
 from mediane.distances.enumeration import *
-from mediane.distances.KendallTauGeneralizedNSquare import KendallTauGeneralizedNSquare
 
 
 class KemenyComputingFactory:
@@ -73,24 +72,3 @@ class KemenyComputingFactory:
                     dst += np.vdot(cost_tied, pairs_pos[e1 + nb_elements*e2])
                 e2 += 1
         return dst
-
-
-n = 3560
-r1 = []
-r2 = []
-rankings = [r1, r2, r1, r2, r1, r2, r1, r2]
-
-for j in range(n):
-    r1.append([j])
-    r2.append([n-1-j])
-
-# print(rankings)
-d = Dataset(rankings)
-
-inf = d.get_all_informations()
-# print("COMPUTATION")
-# dist = KemenyComputingFactory(GENERALIZED_KENDALL_TAU_DISTANCE, 0.5)
-
-# print(dist.get_kemeny_score_with_pairsposmatrix(inf[0], r1, inf[-1], True))
-k = KendallTauGeneralizedNSquare()
-print(k.get_distance_to_a_set_of_rankings(r2, rankings))
