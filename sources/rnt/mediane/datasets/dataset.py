@@ -116,100 +116,14 @@ class Dataset:
                 e = np.count_nonzero(positions[e1] < positions[e2])
                 matrix[ind1] = [e-d+a, b-a, m-(a+b+c+d+e), c-a, d-a, a]
                 matrix[ind2] = [e - d + a, b - a, m - (a + b + c + d + e), c - a, d - a, a]
-        # r = 0
-        # for r in range(m):
-        #     positions_r = positions[r]
-        #     for elem1 in range(n-1, -1, -1):
-        #         for elem2 in range(elem1-1, -1, -1):
-        #             if positions_r[elem1] >= 0:
-        #                 if positions_r[elem2] >= 0:
-        #                     if positions_r[elem1] < positions_r[elem2]:
-        #                         matrix[n * elem1 + elem2][0] += 1
-        #                         matrix[n * elem2 + elem1][2] += 1
-        #
-        #                     else:
-        #                         if positions_r[elem1] > positions_r[elem2]:
-        #                             matrix[n * elem1 + elem2][2] += 1
-        #                             matrix[n * elem2 + elem1][0] += 1
-        #                         else:
-        #                             matrix[n * elem1 + elem2][1] += 1
-        #                             matrix[n * elem2 + elem1][1] += 1
-        #                 else:
-        #                     matrix[n * elem1 + elem2][3] += 1
-        #                     matrix[n * elem2 + elem1][4] += 1
-        #             else:
-        #                 if positions_r[elem2] >= 0:
-        #                     matrix[n * elem1 + elem2][4] += 1
-        #                     matrix[n * elem2 + elem1][3] += 1
-        #                 else:
-        #                     matrix[n * elem1 + elem2][5] += 1
-        #                     matrix[n * elem2 + elem1][5] += 1
+
         return matrix
 
-    def get_unified_rankings(self) -> List[List[List[int]]]:
-        copy_rankings = []
+    def copy_rankings(self) -> List[List[List[int]]]:
+        copy = []
         for ranking in self.rankings:
             new_ranking = []
-            copy_rankings.append(new_ranking)
+            copy.append(new_ranking)
             for bucket in ranking:
                 new_ranking.append(list(bucket))
-        if not self.is_complete:
-            elements = {}
-            dict_rankings = {}
-            id_ranking = 0
-            for ranking in copy_rankings:
-                dict_rankings[id_ranking] = {}
-                dict_of_elements = dict_rankings[id_ranking]
-                for bucket in ranking:
-                    for element in bucket:
-                        dict_of_elements[element] = 0
-                        if element not in elements:
-                            elements[element] = 0
-                id_ranking += 1
-            id_ranking = 0
-            for ranking in copy_rankings:
-                dict_of_elements = dict_rankings[id_ranking]
-                if len(dict_of_elements) != len(elements):
-                    bucket_unif = []
-                    for element in elements.keys():
-                        if element not in dict_of_elements:
-                            bucket_unif.append(element)
-                    ranking.append(bucket_unif)
-                id_ranking += 1
-        return copy_rankings
-
-    def get_projected_rankings(self) -> List[List[List[int]]]:
-        rankings = self.rankings
-        copy_rankings = []
-        for ranking in self.rankings:
-            new_ranking = []
-            copy_rankings.append(new_ranking)
-            for bucket in ranking:
-                new_ranking.append(list(bucket))
-        if self.is_complete:
-            projected_rankings = copy_rankings
-
-        else:
-            m = self.m
-            elements = {}
-            projected_rankings = []
-
-            for ranking in rankings:
-                for bucket in ranking:
-                    for element in bucket:
-                        if element not in elements:
-                            elements[element] = 1
-                        else:
-                            elements[element] += 1
-
-            for ranking in rankings:
-                ranking_projected = []
-                projected_rankings.append(ranking_projected)
-                for bucket in ranking:
-                    projected_bucket = []
-                    for element in bucket:
-                        if elements[element] == m:
-                            projected_bucket.append(element)
-                    if len(projected_bucket) > 0:
-                        ranking_projected.append(projected_bucket)
-        return projected_rankings
+        return copy
