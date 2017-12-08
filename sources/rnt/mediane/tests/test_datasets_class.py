@@ -20,6 +20,8 @@ class Tests(TestCase):
 
     dataset6 = Dataset([[[1], [2], [3]], [[2], [3], [1]], [[3], [1], [2]]])
 
+    dataset7 = Dataset([])
+
     def test_unification(self):
 
         self.assertEqual(Unification.dataset_to_rankings(self.dataset0), [[], [], []])
@@ -84,3 +86,59 @@ class Tests(TestCase):
         self.assertFalse(self.dataset3.is_complete)
         self.assertFalse(self.dataset4.is_complete)
         self.assertFalse(self.dataset5.is_complete)
+
+    def test_m(self):
+        self.assertEqual(self.dataset0.m, 3)
+        self.assertEqual(self.dataset1.m, 2)
+        self.assertEqual(self.dataset2.m, 3)
+        self.assertEqual(self.dataset3.m, 3)
+        self.assertEqual(self.dataset4.m, 4)
+        self.assertEqual(self.dataset5.m, 4)
+        self.assertEqual(self.dataset6.m, 3)
+        self.assertEqual(self.dataset7.m, 0)
+
+        self.assertEqual(Unification.dataset_to_dataset(self.dataset0).m, 3)
+        self.assertEqual(Unification.dataset_to_dataset(self.dataset1).m, 2)
+        self.assertEqual(Unification.dataset_to_dataset(self.dataset2).m, 3)
+        self.assertEqual(Unification.dataset_to_dataset(self.dataset3).m, 3)
+        self.assertEqual(Unification.dataset_to_dataset(self.dataset4).m, 4)
+        self.assertEqual(Unification.dataset_to_dataset(self.dataset5).m, 4)
+        self.assertEqual(Unification.dataset_to_dataset(self.dataset6).m, 3)
+        self.assertEqual(Unification.dataset_to_dataset(self.dataset7).m, 0)
+
+        self.assertEqual(Projection.dataset_to_dataset(self.dataset0).m, 3)
+        self.assertEqual(Projection.dataset_to_dataset(self.dataset1).m, 2)
+        self.assertEqual(Projection.dataset_to_dataset(self.dataset2).m, 3)
+        self.assertEqual(Projection.dataset_to_dataset(self.dataset3).m, 3)
+        self.assertEqual(Projection.dataset_to_dataset(self.dataset4).m, 4)
+        self.assertEqual(Projection.dataset_to_dataset(self.dataset5).m, 4)
+        self.assertEqual(Projection.dataset_to_dataset(self.dataset6).m, 3)
+        self.assertEqual(Projection.dataset_to_dataset(self.dataset7).m, 0)
+
+    def test_n(self):
+        self.assertEqual(self.dataset0.n, 0)
+        self.assertEqual(self.dataset1.n, 6)
+        self.assertEqual(self.dataset2.n, 4)
+        self.assertEqual(self.dataset3.n, 8)
+        self.assertEqual(self.dataset4.n, 4)
+        self.assertEqual(self.dataset5.n, 4)
+        self.assertEqual(self.dataset6.n, 3)
+        self.assertEqual(self.dataset7.n, 0)
+
+        self.assertEqual(Unification.dataset_to_dataset(self.dataset0).n, 0)
+        self.assertEqual(Unification.dataset_to_dataset(self.dataset1).n, 6)
+        self.assertEqual(Unification.dataset_to_dataset(self.dataset2).n, 4)
+        self.assertEqual(Unification.dataset_to_dataset(self.dataset3).n, 8)
+        self.assertEqual(Unification.dataset_to_dataset(self.dataset4).n, 4)
+        self.assertEqual(Unification.dataset_to_dataset(self.dataset5).n, 4)
+        self.assertEqual(Unification.dataset_to_dataset(self.dataset6).n, 3)
+        self.assertEqual(Unification.dataset_to_dataset(self.dataset7).n, 0)
+
+        self.assertEqual(Projection.dataset_to_dataset(self.dataset0).n, 0)
+        self.assertEqual(Projection.dataset_to_dataset(self.dataset1).n, 6)
+        self.assertEqual(Projection.dataset_to_dataset(self.dataset2).n, 0)
+        self.assertEqual(Projection.dataset_to_dataset(self.dataset3).n, 2)
+        self.assertEqual(Projection.dataset_to_dataset(self.dataset4).n, 0)
+        self.assertEqual(Projection.dataset_to_dataset(self.dataset5).n, 0)
+        self.assertEqual(Projection.dataset_to_dataset(self.dataset6).n, 3)
+        self.assertEqual(Projection.dataset_to_dataset(self.dataset7).n, 0)

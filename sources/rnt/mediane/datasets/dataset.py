@@ -43,30 +43,27 @@ class Dataset:
     is_complete = property(__get_is_complete, __set_is_complete)
 
     def __check_if_rankings_complete_and_update_n(self):
-        r = self.rankings
-        r1 = r[0]
-        elements = {}
-        complete = True
-        for bucket in r1:
-            for element in bucket:
-                if element not in elements:
-                    elements[element] = 0
-        self.n = len(elements)
-        for ranking in r:
-            k = 0
-            if not complete:
-                break
-            for bucket in ranking:
-                if not complete:
-                    break
-                k += len(bucket)
-                for element in bucket:
-                    if element not in elements:
-                        complete = False
-                        break
-            if k != self.n:
-                complete = False
-        return complete
+        if len(self.rankings) == 0:
+            self.n = 0
+            self.m = 0
+        else:
+            elements = {}
+
+            for ranking in self.rankings:
+                nb_elements = 0
+                for bucket in ranking:
+                    nb_elements += len(bucket)
+                    for element in bucket:
+                        if element not in elements:
+                            elements[element] = 1
+                        else:
+                            elements[element] += 1
+            self.n = len(elements)
+            self.m = len(self.rankings)
+            for key in elements.keys():
+                if elements[key] != self.m:
+                    return False
+        return True
 
     def get_all_informations(self) -> tuple:
         mapping_elements_id = self.map_elements_id()
