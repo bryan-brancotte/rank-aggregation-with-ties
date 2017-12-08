@@ -5,7 +5,7 @@ from mediane.normalizations.projection import Projection
 from mediane.normalizations.unification import Unification
 
 
-class Test_general(TestCase):
+class Tests(TestCase):
     dataset0 = Dataset([[], [], []])
 
     dataset1 = Dataset([[[1], [2], [3, 4, 5], [6]], [[1], [2], [3, 4, 5], [6]]])
@@ -75,3 +75,12 @@ class Test_general(TestCase):
         self.assertTrue(Unification.dataset_to_dataset(self.dataset4).is_complete)
         self.assertTrue(Unification.dataset_to_dataset(self.dataset5).is_complete)
         self.assertTrue(Unification.dataset_to_dataset(self.dataset6).is_complete)
+
+    # Check integrity of original datasets
+        self.assertTrue(self.dataset0.is_complete)
+        self.assertTrue(self.dataset1.is_complete)
+        self.assertTrue(self.dataset6.is_complete)
+        self.assertFalse(self.dataset2.is_complete)
+        self.assertFalse(self.dataset3.is_complete)
+        self.assertFalse(self.dataset4.is_complete)
+        self.assertFalse(self.dataset5.is_complete)
