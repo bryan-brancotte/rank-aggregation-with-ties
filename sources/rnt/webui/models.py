@@ -4,6 +4,8 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from webui.process import evaluate_dataset_and_provide_stats
+
 
 class DataSet(models.Model):
     name = models.CharField(
@@ -19,8 +21,13 @@ class DataSet(models.Model):
     n = models.IntegerField(
         help_text=_('The number of elements'),
     )
+    complete = models.BooleanField(
+        help_text=_('Are every elements present in each rankings of the dataset'),
+    )
     step = models.IntegerField(
         help_text=_('The number of steps used to generate the dataset, if pertinent'),
+        blank=True,
+        null=True,
     )
     transient = models.BooleanField(
         help_text=_('Should be deleted when the associated job is removed'),
@@ -28,6 +35,16 @@ class DataSet(models.Model):
 
     def get_absolute_url(self):
         return reverse('rnt:dataset_view', args=[self.pk])
+
+    def clean(self):
+        evaluation = evaluate_dataset_and_provide_stats(self.content.split("\n"))
+        for line, msg in evaluation["invalid_rankings_id"].items():
+            self.add_error('content', _("At line %(line)d: %(msg)s") % dict(line=line, msg=msg))
+
+        self.n = evaluation["n"]
+        self.m = evaluation["m"]
+        self.complete = evaluation["complete"]
+        print(self.transient)
 
 
 class Distance(models.Model):

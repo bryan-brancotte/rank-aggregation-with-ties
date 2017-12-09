@@ -1,16 +1,19 @@
 from django.http.response import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import render
+from django.urls import reverse_lazy
 from django.utils.translation import ugettext
 from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 
 from mediane.algorithms.enumeration import get_from as get_algo_from
 from mediane.distances.enumeration import get_from as get_dist_from
 from mediane.normalizations.enumeration import get_from as get_norm_from
 from mediane.process import compute_median_rankings
-from webui.forms import ComputeConsensusForm
+from webui.forms import ComputeConsensusForm, DataSetModelForm
 from webui.models import DataSet
 from webui.process import evaluate_dataset_and_provide_stats, compute_consensus_settings_based_on_datasets
+from webui.views_generic import AjaxableResponseMixin
 
 
 def index(request):
@@ -29,7 +32,6 @@ def dataset_evaluate(request):
         return HttpResponseBadRequest()
     form = ComputeConsensusForm(data=request.POST)
     form.is_valid()
-    print(form["dataset"].errors)
     evaluation = evaluate_dataset_and_provide_stats(form.data["dataset"].split("\n"))
     evaluation_and_settings = {
         **evaluation,
@@ -78,6 +80,24 @@ def dataset_compute(request):
             name=get_norm_from(form.cleaned_data["norm"]),
         ),
     ))
+
+
+class DataSetCreate(AjaxableResponseMixin, CreateView):
+    model = DataSet
+    # fields = "__all__"
+    form_class = DataSetModelForm
+    template_name = "webui/form_host.html"
+
+
+class DataSetUpdate(UpdateView):
+    model = DataSet
+    form_class = DataSetModelForm
+    template_name = "webui/form_host.html"
+
+
+class DataSetDelete(DeleteView):
+    model = DataSet
+    success_url = reverse_lazy('dataset_list')
 
 
 class DataSetListView(ListView):

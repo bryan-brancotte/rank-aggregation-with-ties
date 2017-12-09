@@ -9,24 +9,23 @@ from webui.models import DataSet
 from webui.process import evaluate_dataset_and_provide_stats
 
 
-class TypeDatasetModelForm(forms.ModelForm):
+class DataSetModelForm(forms.ModelForm):
     class Meta:
         model = DataSet
-        exclude = [
-            'transient',
-        ]
         fields = [
+            'name',
             'content',
-            'm',
-            'n',
+            'step',
+            'transient',
         ]
         help_texts = {
             'content': _('dataset_format_help_text'),
             # 'requirements':' '
         }
         labels = {
-            "content": _("Dataset"),
+            "content": _("DataSet"),
         }
+
 
 
 class ComputeConsensusForm(forms.Form):

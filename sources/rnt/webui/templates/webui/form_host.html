@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load bootstrap %}
+{% load static %}
+{% load i18n %}
+{% block title %}Create or update a dataset{% endblock %}
+{% block page_title %}Create or update a dataset{% endblock %}
+{% block container-class %}container{% endblock %}
+{% block content%}
+<div class="col-xs-12">
+    <form action="" method="post">{% csrf_token %}
+        {% for field in form %}
+            {% if field.is_hidden %}
+                {{ field }}
+            {% else %}
+                {{ field|bootstrap }}
+            {% endif %}
+        {% endfor %}
+        <input type="submit" class="btn btn-primary pull-right" value="{%trans 'Save'%}" />
+    </form>
+</div>
+{% endblock%}
