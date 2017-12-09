@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Datasets{% endblock %}
+{% block page_title %}Datasets{% endblock %}
+{% block container-class %}container{% endblock %}
+{% block content%}
+<div class="col-xs-12">
+    <ul>
+    {% for d in object_list %}
+        <li><a href="{%url 'rnt:dataset_view' pk=d.pk %}">{{ d.name }}</a></li>
+    {% empty %}
+        <li>No dataset yet.</li>
+    {% endfor %}
+    </ul>
+</div>
+{% endblock%}

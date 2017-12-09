@@ -1,10 +1,16 @@
 # Create your models here.
 from django.contrib.auth import get_user_model
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 
 class DataSet(models.Model):
+    name = models.CharField(
+        max_length=64,
+        unique=True,
+        default="",
+    )
     content = models.TextField(
     )
     m = models.IntegerField(
@@ -19,6 +25,9 @@ class DataSet(models.Model):
     transient = models.BooleanField(
         help_text=_('Should be deleted when the associated job is removed'),
     )
+
+    def get_absolute_url(self):
+        return reverse('rnt:dataset_view', args=[self.pk])
 
 
 class Distance(models.Model):
@@ -50,6 +59,9 @@ class Job(models.Model):
         help_text=_('Creation time'),
     )
 
+    # def get_absolute_url(self):
+    #     return reverse('rnt:job_view', args=[self.pk])
+
 
 class Result(models.Model):
     dataset = models.ForeignKey(
@@ -69,3 +81,6 @@ class Result(models.Model):
         blank=True,
         null=True,
     )
+
+    # def get_absolute_url(self):
+    #     return reverse('rnt:result_view', args=[self.pk])

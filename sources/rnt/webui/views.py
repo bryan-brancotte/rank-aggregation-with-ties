@@ -1,12 +1,15 @@
 from django.http.response import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import render
 from django.utils.translation import ugettext
+from django.views.generic.detail import DetailView
+from django.views.generic.list import ListView
 
 from mediane.algorithms.enumeration import get_from as get_algo_from
 from mediane.distances.enumeration import get_from as get_dist_from
 from mediane.normalizations.enumeration import get_from as get_norm_from
 from mediane.process import compute_median_rankings
 from webui.forms import ComputeConsensusForm
+from webui.models import DataSet
 from webui.process import evaluate_dataset_and_provide_stats, compute_consensus_settings_based_on_datasets
 
 
@@ -75,3 +78,18 @@ def dataset_compute(request):
             name=get_norm_from(form.cleaned_data["norm"]),
         ),
     ))
+
+
+class DataSetListView(ListView):
+    model = DataSet
+    # def get_context_data(self, **kwargs):
+    #     context = super(DataSetListView, self).get_context_data(**kwargs)
+    #     return context
+
+
+class DataSetDetailView(DetailView):
+    model = DataSet
+
+    # def get_context_data(self, **kwargs):
+    #     context = super(DataSetDetailView, self).get_context_data(**kwargs)
+    #     return context

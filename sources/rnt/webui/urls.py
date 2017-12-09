@@ -16,4 +16,7 @@ urlpatterns = [
         ),
     }, name='javascript-catalog'),
     url(r'^i18n/', include('django.conf.urls.i18n')),
+
+    url(r'^datasets/$', views.DataSetListView.as_view(), name='dataset_list'),
+    url(r'^dataset/(?P<pk>\d+)$', views.DataSetDetailView.as_view(), name='dataset_view'),
 ]

@@ -1,3 +1,14 @@
+function refresh_settings_from_datasets_and_compute_when_possible(form){
+    refresh_settings_from_datasets(
+        $('form'),
+        function (){
+            if ($("#auto-compute-host").attr("data-value")){
+                    compute_consensus_from_dataset($('form'))
+                }
+            }
+    );
+}
+
 function refresh_settings_from_datasets(form, callback){
     form=$(form);
     $("#updating-stats-indicator").show();
@@ -146,7 +157,7 @@ var results_table;
 stack_onload(function () {
     $(".param-auto").change(function(event) {on_change_param_auto_checkbox(this);});
     $(".param-host input").change(function(event) {on_change_param_radio(this);});
-    refresh_settings_from_datasets($('form'));
+    refresh_settings_from_datasets_and_compute_when_possible($('form'));
     $(".param-host").each(function() {
         var v = $(this).parent();
         $(v).collapse(getCookie($(v).attr("id"),"hide"));
@@ -164,19 +175,7 @@ stack_onload(function () {
     //once typed in the text area, refresh the stats of the datasets
     $("#id_dataset").keyup(
         delayed_onkeyup(
-            function(){
-                var callback;
-                if ($("#auto-compute-host").attr("data-value")){
-                    refresh_settings_from_datasets(
-                        $('form'),
-                        function (){
-                            compute_consensus_from_dataset($('form'))
-                        }
-                    );
-                }else{
-                    refresh_settings_from_datasets($('form'));
-                }
-            },
+            refresh_settings_from_datasets_and_compute_when_possible,
             function (){
                 $("#btn-compute").attr("disabled",true);
                 $("#future-update-indicator").fadeIn();

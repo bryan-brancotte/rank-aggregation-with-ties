@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load bootstrap %}
+{% load static %}
+{% load i18n %}
+{% block title %}Dataset '{{ object.name }}'{% endblock %}
+{% block page_title %}Dataset '{{ object.name }}'{% endblock %}
+{% block container-class %}container{% endblock %}
+{% block content%}
+<div class="col-xs-12">
+    <table class="table table-condensed">
+        <thead>
+        <tr>
+            <th colspan="2">{%trans 'Stats'%}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <th title="{%trans 'The number of elements in the dataset'%}">n</th>
+            <td id="stats-n">{{ object.n }}</td>
+        </tr>
+        <tr>
+            <th title="{%trans 'The number of rankings in the dataset'%}">m</th>
+            <td id="stats-m">{{ object.m }}</td>
+        </tr>
+        <tr>
+            <th title="{%trans 'The number of steps used'%}">m</th>
+            <td id="stats-step">{{ object.step }}</td>
+        </tr>
+        <tr>
+            <th title="{%trans 'Are every elements present in each rankings of the dataset'%}">{%trans 'Complete'%}</th>
+            <td id="stats-complet">
+                <i class="fa fa-check yes" style="display:none"></i>
+                <i class="fa fa-times no" style="display:none"></i>
+            </td>
+        </tr>
+        <tr>
+            <th id="stats-invalid" colspan="2" class="text-danger" style="display:none">{%trans 'Invalid'%}</th>
+        </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock%}
+
+
+<h1>{{ object.name }}</h1>
+<p>{{ object.content }}</p>
+<p>n: {{ object.n }}</p>
+<p>m: {{ object.m }}</p>
+<p>step: {{ object.step }}</p>
+<p>transient: {{ object.transient }}</p>
