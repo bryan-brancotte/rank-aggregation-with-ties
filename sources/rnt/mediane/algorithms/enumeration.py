@@ -1,11 +1,13 @@
 from django.utils.translation import ugettext_lazy as _
 
 from mediane.algorithms.misc.borda_count import BordaCount
+from mediane.algorithms.ailon.pick_a_perm import PickAPerm
+from mediane.algorithms.fagin.med_rank import MedRank
 
 
 def get_median_ranking_algorithms():
     return [
-        BordaCount,
+        BordaCount, PickAPerm, MedRank,
     ]
 
 
