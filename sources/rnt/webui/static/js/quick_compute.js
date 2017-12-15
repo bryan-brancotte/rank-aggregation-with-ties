@@ -182,4 +182,6 @@ stack_onload(function () {
             }
         )
     );
+
+    $("#id_dbdatasets").dataTable();
 });

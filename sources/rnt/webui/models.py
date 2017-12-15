@@ -36,15 +36,16 @@ class DataSet(models.Model):
     def get_absolute_url(self):
         return reverse('rnt:dataset_view', args=[self.pk])
 
-    def clean(self):
-        evaluation = evaluate_dataset_and_provide_stats(self.content.split("\n"))
-        for line, msg in evaluation["invalid_rankings_id"].items():
-            self.add_error('content', _("At line %(line)d: %(msg)s") % dict(line=line, msg=msg))
-
-        self.n = evaluation["n"]
-        self.m = evaluation["m"]
-        self.complete = evaluation["complete"]
-        print(self.transient)
+    def __str__(self):
+        spec = []
+        spec.append("n=%i" % self.n)
+        spec.append("m=%i" % self.m)
+        if self.step is not None:
+            spec.append("%s=%i" % (_('step'), self.m))
+        spec = ', '.join(spec)
+        if self.name != "":
+            return "%s (%s)" % (self.name, spec)
+        return spec
 
 
 class Distance(models.Model):

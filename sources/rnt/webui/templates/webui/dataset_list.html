@@ -2,14 +2,41 @@
 {% block title %}Datasets{% endblock %}
 {% block page_title %}Datasets{% endblock %}
 {% block container-class %}container{% endblock %}
+{% block extra_js %}
+<script>
+stack_onload(function () {
+    $("table").dataTable();
+});
+</script>
+{% endblock %}
 {% block content%}
 <div class="col-xs-12">
-    <ul>
-    {% for d in object_list %}
-        <li><a href="{%url 'rnt:dataset_view' pk=d.pk %}">{{ d.name }}</a></li>
-    {% empty %}
-        <li>No dataset yet.</li>
-    {% endfor %}
-    </ul>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>n</th>
+            <th>m</th>
+            <th>step</th>
+            <th>complete</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for d in object_list %}
+        <tr>
+            <td>
+                <a href="{%url 'rnt:dataset_view' pk=d.pk %}">{{ d.name }}</a>
+            </td>
+            <td>{{d.n}}</td>
+            <td>{{d.m}}</td>
+            <td>{{d.step}}</td>
+            <td>{{d.complete}}</td>
+        </tr>
+        {% empty %}
+        <tr><td>No dataset yet.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <a role="button" href="{%url 'rnt:dataset_add'%}" class="btn btn-primary pull-right">Add</a>
 </div>
 {% endblock%}

@@ -18,9 +18,18 @@
 <form method="post" data-check-url="{%url 'rnt:dataset_evaluate'%}" data-submit-url="{%url 'rnt:dataset_compute'%}">
     {% csrf_token %}
     <div class="col-xs-12 col-lg-8">
-        <div class="panel panel-default">
-            <div class="panel-heading">{%trans 'Dataset'%}</div>
-            <div class="panel-body" id="data-host">
+        <ul class="nav nav-tabs">
+            <li class="active">
+                <a data-toggle="tab" href="#home"><h4 class="panel-title">{%trans 'Type your dataset'%}</h4></a>
+            </li>
+            <li>
+                <a data-toggle="tab" href="#menu1"><h4 class="panel-title">{%trans 'Select from database'%}</h4></a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div id="home" class="tab-pane fade in active">
+            <div class="" id="data-host">
                 <div class="row">
                     <div class="col-xs-12 col-sm-8 col-md-9 col-lg-10 col-xl-11">
                         <div class="form-group">
@@ -67,7 +76,16 @@
                     </div>
                 </div>
             </div>
+            </div>
+            <div id="menu1" class="tab-pane fade">
+                {% for field in full_form %}
+                    {% if field.name == 'dbdatasets' %}
+                        {{ field|bootstrap }}
+                    {% endif %}
+                {% endfor %}
+            </div>
         </div>
+        <div class="panel-group"></div>
     </div>
     <div class="col-xs-12 col-lg-4">
         <div class="row">

@@ -32,14 +32,13 @@ def dataset_evaluate(request):
         return HttpResponseBadRequest()
     form = ComputeConsensusForm(data=request.POST)
     form.is_valid()
-    evaluation = evaluate_dataset_and_provide_stats(form.data["dataset"].split("\n"))
     evaluation_and_settings = {
-        **evaluation,
+        **form.evaluation,
         **compute_consensus_settings_based_on_datasets(
-            n=evaluation['n'],
-            m=evaluation['m'],
-            complete=evaluation['complete'],
-            rankings=evaluation['rankings'],
+            n=form.evaluation['n'],
+            m=form.evaluation['m'],
+            complete=form.evaluation['complete'],
+            rankings=form.evaluation['rankings'],
         ),
         'dataset_html_errors': str(form['dataset'].errors),
     }
@@ -54,6 +53,7 @@ def dataset_compute(request):
     if not form.is_valid():
         print(form.errors)
         return HttpResponseBadRequest()
+    print(form.cleaned_data['dbdatasets'])
     computation_report = compute_median_rankings(
         rankings=form.cleaned_data["rankings"],
         algorithm=get_algo_from(form.cleaned_data["algo"]),
@@ -97,7 +97,8 @@ class DataSetUpdate(UpdateView):
 
 class DataSetDelete(DeleteView):
     model = DataSet
-    success_url = reverse_lazy('dataset_list')
+    success_url = reverse_lazy('rnt:dataset_list')
+    template_name = "webui/generic_confirm_delete.html"
 
 
 class DataSetListView(ListView):
