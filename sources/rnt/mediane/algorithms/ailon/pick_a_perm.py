@@ -6,8 +6,8 @@ from mediane.distances.kemeny_computation import KemenyComputingFactory
 from mediane.distances.enumeration import GENERALIZED_KENDALL_TAU_DISTANCE
 
 
-class PickARanking(MedianRanking):
-    def __init__(self,  p: float):
+class PickAPerm(MedianRanking):
+    def __init__(self,  p=1):
         self.p = p
 
     def compute_median_rankings(self, rankings: List[List[List[int]]], return_at_most_one_ranking: bool = False):
@@ -20,7 +20,7 @@ class PickARanking(MedianRanking):
         If the algorithm is not able to provide multiple consensus, or if return_at_most_one_ranking is True then, it
         should return a list made of the only / the first consensus found
         """
-        k = KemenyComputingFactory(GENERALIZED_KENDALL_TAU_DISTANCE, 0.5)
+        k = KemenyComputingFactory(GENERALIZED_KENDALL_TAU_DISTANCE, self.p)
         d = Dataset(rankings)
         informations = d.get_all_informations()
         dst_min = float('inf')
@@ -44,7 +44,7 @@ class PickARanking(MedianRanking):
         return False
 
     def get_full_name(self):
-        return "Pick a ranking"
+        return "Pick a Perm"
 
     def get_handled_distances(self):
         """
