@@ -1,4 +1,5 @@
 from django import forms
+from django.forms.widgets import HiddenInput
 from django.utils.html import format_html
 from django.utils.translation import ugettext as _
 
@@ -110,6 +111,10 @@ r4 := [[B],[C],[A,D,E]]""",
         initial=False,
         label=_('precise time measurement'),
         required=False,
+    )
+    ranking_source = forms.CharField(
+        required=True,
+        widget=HiddenInput
     )
 
     def __init__(self, *args, **kwargs):

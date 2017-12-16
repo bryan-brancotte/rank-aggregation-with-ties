@@ -95,15 +95,24 @@ function on_change_param_radio(input){
 }
 
 function compute_consensus_from_dataset(form, callback){
-    form=$(form);
+    var form=$(form);
+    if($(".active #id_dataset").length>0){
+        $("#id_ranking_source").val("type");
+    }else if($(".active #id_dbdatasets").length>0){
+        $("#id_ranking_source").val("pick");
+    }else if($(".active #id_range_n").length>0){
+        $("#id_ranking_source").val("range");
+    }
+    var data = form.serialize();
     $("#computing-indicator").show();
     $("#btn-compute").attr("disabled",true);
     $("#id_dataset").prop("readonly",true) ;
+    form.find('input').prop("disabled",true);
     fade_border_to_and_back($("#results-host").parent(),"#337ab7");
     $.ajax({
         type: form.attr('method'),
         url:form.attr('data-submit-url'),
-        data: form.serialize(),
+        data: data,
         success: function (data, textStatus, xhr) {
             console.log(data);
             if (typeof results_table != "undefined"){
@@ -119,6 +128,10 @@ function compute_consensus_from_dataset(form, callback){
                         title: "Algo",
                     },
                     {
+                        data: "dataset.name",
+                        title: "Dataset",
+                    },
+                    {
                         data: "duration",
                         title: "Duration (ms)",
                     },
@@ -130,7 +143,11 @@ function compute_consensus_from_dataset(form, callback){
                         data: "consensus",
                         title: "Consensus",
                         render: function ( data, type, row ) {
-                            return ranking_with_ties_to_str(data[0]);
+                            s=ranking_with_ties_to_str(data[0])
+                            for(var i=1;i<data.length;i++){
+                                s+="<br/>"+ranking_with_ties_to_str(data[i]);
+                            }
+                            return s;
                         },
                     },
                 ]
@@ -142,6 +159,7 @@ function compute_consensus_from_dataset(form, callback){
             $("#btn-compute").attr("disabled",false);
             $("#id_dataset").prop("readonly",false) ;
             fade_background_to_and_back($("#results-host").parent(),"#f5fff5");
+            form.find('input').prop("disabled",false);
         },
         error: function (textStatus, xhr) {
             console.error(textStatus);
@@ -149,6 +167,7 @@ function compute_consensus_from_dataset(form, callback){
             $("#computing-indicator").fadeOut();
             $("#btn-compute").attr("disabled",false);
             $("#id_dataset").prop("readonly",false) ;
+            form.find('input').prop("disabled",false);
         }
     });
 }
@@ -183,5 +202,5 @@ stack_onload(function () {
         )
     );
 
-    $("#id_dbdatasets").dataTable();
+    $("#id_dbdatasets").addClass("compact").dataTable();
 });

@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from webui.process import evaluate_dataset_and_provide_stats
+from mediane.median_ranking_tools import parse_ranking_with_ties_of_str
 
 
 class DataSet(models.Model):
@@ -35,6 +35,13 @@ class DataSet(models.Model):
 
     def get_absolute_url(self):
         return reverse('rnt:dataset_view', args=[self.pk])
+
+    @property
+    def rankings(self):
+        rankings = []
+        for ranking_str in self.content.split('\n'):
+            rankings.append(parse_ranking_with_ties_of_str(ranking_str))
+        return rankings
 
     def __str__(self):
         spec = []

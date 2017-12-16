@@ -1,7 +1,6 @@
 from django.http.response import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
-from django.utils.translation import ugettext
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
@@ -9,10 +8,11 @@ from django.views.generic.list import ListView
 from mediane.algorithms.enumeration import get_from as get_algo_from
 from mediane.distances.enumeration import get_from as get_dist_from
 from mediane.normalizations.enumeration import get_from as get_norm_from
-from mediane.process import compute_median_rankings
+from mediane.process import execute_median_rankings_computation_from_rankings, \
+    execute_median_rankings_computation_from_datasets
 from webui.forms import ComputeConsensusForm, DataSetModelForm
 from webui.models import DataSet
-from webui.process import evaluate_dataset_and_provide_stats, compute_consensus_settings_based_on_datasets
+from webui.process import compute_consensus_settings_based_on_datasets
 from webui.views_generic import AjaxableResponseMixin
 
 
@@ -53,22 +53,28 @@ def dataset_compute(request):
     if not form.is_valid():
         print(form.errors)
         return HttpResponseBadRequest()
-    print(form.cleaned_data['dbdatasets'])
-    computation_report = compute_median_rankings(
-        rankings=form.cleaned_data["rankings"],
-        algorithm=get_algo_from(form.cleaned_data["algo"]),
-        distance=form.cleaned_data["dist"],
-        normalization=form.cleaned_data["norm"],
-        precise_time_measurement=form.cleaned_data["bench"],
-    )
-    submission_results = []
-    submission_results.append(dict(
-        computation_report,
-        algo=dict(
-            id=form.cleaned_data["algo"],
-            name=ugettext(form.cleaned_data["algo"]),
+    if form.cleaned_data["ranking_source"] == "type":
+        submission_results = [execute_median_rankings_computation_from_rankings(
+            rankings=form.cleaned_data["rankings"],
+            algorithm=get_algo_from(form.cleaned_data["algo"])(),
+            distance=form.cleaned_data["dist"],
+            normalization=form.cleaned_data["norm"],
+            precise_time_measurement=form.cleaned_data["bench"],
         ),
-    ))
+        ]
+    elif form.cleaned_data["ranking_source"] == "pick":
+        submission_results = execute_median_rankings_computation_from_datasets(
+            datasets=form.cleaned_data["dbdatasets"],
+            algorithm=get_algo_from(form.cleaned_data["algo"])(),
+            distance=form.cleaned_data["dist"],
+            normalization=form.cleaned_data["norm"],
+            precise_time_measurement=form.cleaned_data["bench"],
+        )
+    elif form.cleaned_data["ranking_source"] == "range":
+        submission_results = []
+    else:
+        submission_results = []
+
     return JsonResponse(dict(
         results=submission_results,
         dist=dict(
