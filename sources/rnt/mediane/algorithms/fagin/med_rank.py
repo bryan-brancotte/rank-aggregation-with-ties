@@ -60,7 +60,7 @@ class MedRank(MedianRanking):
         return False
 
     def get_full_name(self):
-        return "Med Rank"
+        return "MEDRank"
 
     def get_handled_distances(self):
         """
