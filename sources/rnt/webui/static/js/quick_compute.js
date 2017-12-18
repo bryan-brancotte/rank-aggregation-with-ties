@@ -1,11 +1,11 @@
 function refresh_settings_from_datasets_and_compute_when_possible(form){
     refresh_settings_from_datasets(
-        $('form'),
+        $(form),
         function (){
             if ($("#auto-compute-host").attr("data-value")){
-                    compute_consensus_from_dataset($('form'))
-                }
+                compute_consensus_from_dataset($(form));
             }
+        }
     );
 }
 
@@ -20,7 +20,6 @@ function refresh_settings_from_datasets(form, callback){
         url:form.attr('data-check-url'),
         data: form.serialize(),
         success: function (data, textStatus, xhr) {
-            console.log(data);
             $("#id_dataset+.help-block").html(data["dataset_html_errors"]);
             if(data["dataset_html_errors"]!=""){
                 $("#id_dataset+.help-block").parent().addClass("has-error");
@@ -96,11 +95,9 @@ function on_change_param_radio(input){
 
 function compute_consensus_from_dataset(form, callback){
     var form=$(form);
-    if($(".active #id_dataset").length>0){
+    if($(".in #id_dataset").length>0){
         $("#id_ranking_source").val("type");
-    }else if($(".active #id_dbdatasets").length>0){
-        $("#id_ranking_source").val("pick");
-    }else if($(".active #id_range_n").length>0){
+    }else if($(".in #datasets_range_table").length>0){
         $("#id_ranking_source").val("range");
     }
     var data = form.serialize();
@@ -108,13 +105,12 @@ function compute_consensus_from_dataset(form, callback){
     $("#btn-compute").attr("disabled",true);
     $("#id_dataset").prop("readonly",true) ;
     form.find('input').prop("disabled",true);
-    fade_border_to_and_back($("#results-host").parent(),"#337ab7");
+    fade_border_to_and_back($("#results-host").parent(),"#337ab7", "rgb(221, 221, 221)");
     $.ajax({
         type: form.attr('method'),
         url:form.attr('data-submit-url'),
         data: data,
         success: function (data, textStatus, xhr) {
-            console.log(data);
             if (typeof results_table != "undefined"){
                 results_table.destroy();
             }
@@ -158,7 +154,7 @@ function compute_consensus_from_dataset(form, callback){
             $("#computing-indicator").fadeOut();
             $("#btn-compute").attr("disabled",false);
             $("#id_dataset").prop("readonly",false) ;
-            fade_background_to_and_back($("#results-host").parent(),"#f5fff5");
+            fade_background_to_and_back($("#results-host").parent(),"#f5fff5", "white");
             form.find('input').prop("disabled",false);
         },
         error: function (textStatus, xhr) {
@@ -172,18 +168,55 @@ function compute_consensus_from_dataset(form, callback){
     });
 }
 var results_table;
+var datasets_range_table;
+
+function row_in_range(min,val,max){
+    min = parseInt( min, 10 );
+    max = parseInt( max, 10 );
+    val = parseInt( val, 10);
+
+    if ( ( isNaN( min ) && isNaN( max ) ) ||
+         ( isNaN( min ) && val <= max ) ||
+         ( min <= val   && isNaN( max ) ) ||
+         ( min <= val   && val <= max ) )
+    {
+        return true;
+    }
+    return false;
+}
+
+$.fn.dataTable.ext.search.push(
+    function( settings, data, dataIndex ) {
+        if(settings['sTableId'] != "datasets_range_table")
+            return true;
+        return row_in_range($("#nb-elt .min").val(),data[2],$("#nb-elt .max").val())
+        && row_in_range($("#nb-ranking .min").val(),data[3],$("#nb-ranking .max").val())
+        //&& row_in_range($("#nb-step .min").val(),data['step'],$("#nb-step .max").val())
+        ;
+    }
+);
 
 stack_onload(function () {
     $(".param-auto").change(function(event) {on_change_param_auto_checkbox(this);});
     $(".param-host input").change(function(event) {on_change_param_radio(this);});
-    refresh_settings_from_datasets_and_compute_when_possible($('form'));
-    $(".param-host").each(function() {
-        var v = $(this).parent();
-        $(v).collapse(getCookie($(v).attr("id"),"hide"));
+    $(".param-host").parent()
+    .each(function() {
+        var v = $(this);
+        $(v).collapse(getCookie($(v).attr("id"),"hide"),);
+    });
+    $('#accordion .panel-collapse')
+    .each(function() {
+        var v = $(this);
+        if("show"!=getCookie($(v).attr("id"),($(v).attr("id")=="collapse-type"?"show":"hide")))
+            return;
+        $(v).collapse({
+            "toggle": true,
+            'parent': '#accordion'
+        });
     });
 
     //save in cookie the state of each panel
-    $(".param-host").parent()
+    $(".param-host").parent().add('#accordion .panel-collapse')
     .on('shown.bs.collapse', function () {
         setCookie($(this).attr("id"),"show");
     })
@@ -202,5 +235,123 @@ stack_onload(function () {
         )
     );
 
+    $('#accordion').on('shown.bs.collapse',function(e){
+        $("#is-complete").slider("refresh");
+    });
+
     $("#id_dbdatasets").addClass("compact").dataTable();
+
+    $.ajax({
+        type: 'GET',
+        url:webapi_dataset_list,
+        data: '',
+        success: function (data, textStatus, xhr) {
+            if (typeof datasets_range_table != "undefined"){
+                datasets_range_table.destroy();
+            }
+            $('#datasets_range_table').empty(); // empty in case the columns change
+
+            datasets_range_table = $('#datasets_range_table').DataTable( {
+                data: data,
+                columns: [
+                    {
+                        data: "pk",
+                        title: "Use it",
+                        render: function ( data, type, row ) {
+                            return '<input type="checkbox" name="dbdatasets" value="'+data+'">';
+                        },
+                    },
+                    {
+                        data: "name",
+                        title: "Name",
+                    },
+                    {
+                        data: "n",
+                        title: "n",
+                    },
+                    {
+                        data: "m",
+                        title: "m",
+                    },
+                    {
+                        data: "complete",
+                        title: "Complete",
+                    },
+                ]
+            } );
+            var min_m, max_m, min_n, max_n, min_st, max_st;
+            datasets_range_table.data().toArray().forEach(function(row, i) {
+                if(i==0){
+                    min_m  = row['m'];
+                    max_m  = row['m'];
+                    min_n  = row['n'];
+                    max_n  = row['n'];
+                    min_st = row['step'];
+                    max_st = row['step'];
+                }
+                min_m  = Math.min(min_m , row['m']);
+                max_m  = Math.max(max_m , row['m']);
+                min_n  = Math.min(min_n , row['n']);
+                max_n  = Math.max(max_n , row['n']);
+                min_st = Math.min(min_st, row['st']);
+                max_st = Math.max(max_st, row['st']);
+            });
+            if(Number.isNaN(min_st))
+                min_st=0;
+            if(Number.isNaN(max_st))
+                max_st=0;
+            $("#nb-elt .slider").attr("data-slider-min",min_n);
+            $("#nb-elt .slider").attr("data-slider-max",max_n);
+            $("#nb-ranking .slider").attr("data-slider-min",min_m);
+            $("#nb-ranking .slider").attr("data-slider-max",max_m);
+            $("#nb-step .slider").attr("data-slider-min",min_st);
+            $("#nb-step .slider").attr("data-slider-max",max_st);
+            $("#nb-elt .slider").attr("data-slider-value",'['+min_n+','+max_n+']');
+            $("#nb-ranking .slider").attr("data-slider-value",'['+min_m+','+max_m+']');
+            $("#nb-step .slider").attr("data-slider-value",'['+min_st+','+max_st+']');
+
+            $(".slider")
+                .slider({});
+
+            $(".slider")
+                .change(function(e){
+                    var val = $(this).val();
+                    if ($(e.target).closest(".range-slider").length==0 || val == "")
+                        return;
+                    var val = val.split(',');
+                    var tr = $(this).closest(".slider-host");
+                    tr.find('.min').val(val[0]);
+                    tr.find('.max').val(val[1]);
+                    datasets_range_table.draw();
+                })
+                .change();
+        },
+        error: function (textStatus, xhr) {
+            console.error(textStatus);
+            console.error(xhr);
+        }
+    });
+
+    $("#range-host .uncheck").click(function(){
+        datasets_range_table.rows( { filter : 'applied'} ).data().each(
+            function(row){
+                $('[name="dbdatasets"][value="'+row['pk']+'"]').prop("checked",false);
+            }
+        );
+    });
+    $("#range-host .toggle-check").click(function(){
+        datasets_range_table.rows( { filter : 'applied'} ).data().each(
+            function(row){
+                $('[name="dbdatasets"][value="'+row['pk']+'"]').prop("checked",!$('[name="dbdatasets"][value="'+row['pk']+'"]').prop("checked"));
+            }
+        );
+    });
+    $("#range-host .check").click(function(){
+        datasets_range_table.rows( { filter : 'applied'} ).data().each(
+            function(row){
+                $('[name="dbdatasets"][value="'+row['pk']+'"]').prop("checked",true);
+            }
+        );
+    });
+    refresh_settings_from_datasets($('form'));
 });

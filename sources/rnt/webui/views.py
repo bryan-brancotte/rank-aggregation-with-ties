@@ -62,7 +62,7 @@ def dataset_compute(request):
             precise_time_measurement=form.cleaned_data["bench"],
         ),
         ]
-    elif form.cleaned_data["ranking_source"] == "pick":
+    elif form.cleaned_data["ranking_source"] == "range":
         submission_results = execute_median_rankings_computation_from_datasets(
             datasets=form.cleaned_data["dbdatasets"],
             algorithm=get_algo_from(form.cleaned_data["algo"])(),
@@ -70,8 +70,6 @@ def dataset_compute(request):
             normalization=form.cleaned_data["norm"],
             precise_time_measurement=form.cleaned_data["bench"],
         )
-    elif form.cleaned_data["ranking_source"] == "range":
-        submission_results = []
     else:
         submission_results = []
 

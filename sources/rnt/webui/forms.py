@@ -8,7 +8,6 @@ from mediane.distances import enumeration as enum_dist
 from mediane.normalizations import enumeration as enum_norm
 from webui.models import DataSet
 from webui.process import evaluate_dataset_and_provide_stats
-from webui.widgets import CheckboxSelectMultipleAsTable
 
 
 class DataSetModelForm(forms.ModelForm):
@@ -78,7 +77,6 @@ r4 := [[B],[C],[A,D,E]]""",
     dbdatasets = forms.ModelMultipleChoiceField(
         queryset=DataSet.objects.all(),
         required=False,
-        widget=CheckboxSelectMultipleAsTable,
     )
     norm = forms.ChoiceField(
         choices=enum_norm.as_tuple_list(),

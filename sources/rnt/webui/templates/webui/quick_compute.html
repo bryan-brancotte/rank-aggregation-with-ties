@@ -7,88 +7,153 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static '/css/quick_compute.css' %}"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.0.0/css/bootstrap-slider.min.css" />
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.0.0/bootstrap-slider.min.js"></script>
 <script src="{% static '/js/quick_compute.js' %}"></script>
 <script src="{% static '/js/median_ranking_tools.js' %}"></script>
+<script type="text/javascript">
+webapi_dataset_list='{% url 'webapi:dataset-list' %}';
+</script>
 {% endblock %}
 
 {% block content %}
 <form method="post" data-check-url="{%url 'rnt:dataset_evaluate'%}" data-submit-url="{%url 'rnt:dataset_compute'%}">
     {% csrf_token %}
     <div class="col-xs-12 col-lg-8">
-        <ul class="nav nav-tabs" role="tablist">
-            <li class="active">
-                <a data-toggle="tab" href="#type_dataset"><h4 class="panel-title">{%trans 'Type your dataset'%}</h4></a>
-            </li>
-            <li>
-                <a data-toggle="tab" href="#pick_dataset"><h4 class="panel-title">{%trans 'Pick from database'%}</h4></a>
-            </li>
-            <li class="disabled">
-                <a data-toggle="tab" hhhref="#select_dataset"><h4 class="panel-title">{%trans 'Select from database'%}</h4></a>
-            </li>
-        </ul>
-
-        <div class="tab-content">
-            <div id="type_dataset" class="tab-pane fade in active">
-            <div class="" id="data-host">
-                <div class="row">
-                    <div class="col-xs-12 col-sm-8 col-md-9 col-lg-10 col-xl-11">
-                        <div class="form-group">
-                        <textarea spellcheck="false" id="id_dataset" class="form-control text-area" rows="8"
-                                  name="dataset">{% for field in full_form %}{% if field.name == "dataset" %}{{ field.initial }}{% endif %}{% endfor %}</textarea>
-                        <span class="help-block"></span>
-                        </div>
-                        {% for field in full_form %}{% if field.name == "dataset" %}{{ field.help_text }}{% endif %}{% endfor %}
-                    </div>
-                    <div class="col-xs-8 col-xs-offset-2 col-sm-offset-0 col-sm-4 col-md-3 col-lg-2 col-xl-1">
-                        <div class="form-group">
-                            <table class="table table-condensed">
-                                <thead>
-                                <tr>
-                                    <th>{%trans 'Stats'%}</th>
-                                    <th>
-                                        <i id="future-update-indicator" class="fa fa-pencil" style="display:none"></i>
-                                        <i id="updating-stats-indicator" class="fa fa-refresh spin" style="display:none"></i>
-                                    </th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr>
-                                    <th title="{%trans 'The number of elements in the dataset'%}">n</th>
-                                    <td id="stats-n">-</td>
-                                </tr>
-                                <tr>
-                                    <th title="{%trans 'The number of rankings in the dataset'%}">m</th>
-                                    <td id="stats-m">-</td>
-                                </tr>
-                                <tr>
-                                    <th title="{%trans 'Are every elements present in each rankings of the dataset'%}">{%trans 'Complete'%}</th>
-                                    <td id="stats-complet">
-                                        <i class="fa fa-check yes" style="display:none"></i>
-                                        <i class="fa fa-times no" style="display:none"></i>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th id="stats-invalid" colspan="2" class="text-danger" style="display:none">{%trans 'Invalid'%}</th>
-                                </tr>
-                                </tbody>
-                            </table>
+        <div class="panel-group" id="accordion">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse-type">
+                            {%trans 'Type your dataset'%}
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapse-type" class="panel-collapse collapse">
+                    <div class="panel-body" id="data-host">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-8 col-md-9 col-lg-10 col-xxxl-11">
+                                <div class="form-group">
+                                    <textarea spellcheck="false" id="id_dataset" class="form-control text-area" rows="8"
+                                              name="dataset">{% for field in full_form %}{% if field.name == "dataset" %}{{ field.initial }}{% endif %}{% endfor %}</textarea>
+                                    <span class="help-block"></span>
+                                </div>
+                                {% for field in full_form %}{% if field.name == "dataset" %}{{ field.help_text }}{% endif %}{% endfor %}
+                            </div>
+                            <div class="col-xs-8 col-xs-offset-2 col-sm-offset-0 col-sm-4 col-md-3 col-lg-2 col-xxxl-1">
+                                <div class="form-group">
+                                    <table class="table table-condensed">
+                                        <thead>
+                                        <tr>
+                                            <th>{%trans 'Stats'%}</th>
+                                            <th>
+                                                <i id="future-update-indicator" class="fa fa-pencil" style="display:none"></i>
+                                                <i id="updating-stats-indicator" class="fa fa-refresh spin" style="display:none"></i>
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <th title="{%trans 'The number of elements in the dataset'%}">n</th>
+                                            <td id="stats-n">-</td>
+                                        </tr>
+                                        <tr>
+                                            <th title="{%trans 'The number of rankings in the dataset'%}">m</th>
+                                            <td id="stats-m">-</td>
+                                        </tr>
+                                        <tr>
+                                            <th title="{%trans 'Are every elements present in each rankings of the dataset'%}">{%trans 'Complete'%}</th>
+                                            <td id="stats-complet">
+                                                <i class="fa fa-check yes" style="display:none"></i>
+                                                <i class="fa fa-times no" style="display:none"></i>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th id="stats-invalid" colspan="2" class="text-danger" style="display:none">{%trans 'Invalid'%}</th>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            </div>
-            <div id="pick_dataset" class="tab-pane fade">
-                {% for field in full_form %}
-                    {% if field.name == 'dbdatasets' %}
-                        {{ field|bootstrap }}
-                    {% endif %}
-                {% endfor %}
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse-range">
+                            {%trans 'Select from database'%}
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapse-range" class="panel-collapse collapse">
+                    <div class="panel-body text-center" id="range-host">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6 col-xl-7 col-xxl-8">
+                                <table class="compact table" id="datasets_range_table" width="100%"></table>
+                            </div>
+                            <div class="col-xs-12 col-sm-6 col-xl-5 col-xxl-4">
+                                <div class="row slider-host range-slider" id="nb-elt">
+                                    <div class="col-xs-2">#Elements</div>
+                                    <div class="col-xs-2">
+                                        <input class="min form-control input-sm" type="text" value=""/>
+                                    </div>
+                                    <div class="col-xs-6">
+                                        <input type="text" class="slider" value="" data-slider-min="10"
+                                               data-slider-tooltip="hide"
+                                               data-slider-max="1000"
+                                               data-slider-value="[250,450]"/>
+                                    </div>
+                                    <div class="col-xs-2">
+                                        <input class="max form-control input-sm" type="text" value=""/>
+                                    </div>
+                                </div>
+                                <br/>
+                                <div class="row slider-host range-slider" id="nb-ranking">
+                                    <div class="col-xs-2">#Rankings</div>
+                                    <div class="col-xs-2">
+                                        <input class="min form-control input-sm" type="text" value=""/>
+                                    </div>
+                                    <div class="col-xs-6">
+                                        <input type="text" class="slider" value="" data-slider-min="10"
+                                               data-slider-tooltip="hide"
+                                               data-slider-max="1000"
+                                               data-slider-value="[250,450]"/>
+                                    </div>
+                                    <div class="col-xs-2">
+                                        <input class="max form-control input-sm" type="text" value=""/>
+                                    </div>
+                                </div>
+                                <br/>
+                                <div class="row slider-host pick-slider" id="">
+                                    <div class="col-xs-4">Complete (not wired yet)</div>
+                                    <div class="col-xs-6">
+                                        <input id="is-complete"
+                                               class="slider"
+                                               type="text"
+                                               data-slider-value="1"
+                                               data-slider-ticks="[0, 1, 2]"
+                                               data-slider-tooltip="hide"
+                                               data-slider-ticks-labels='["No", "both", "yes"]'/>
+                                    </div>
+                                </div>
+                                <br/>
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-default btn-group-addon" disabled="disabled">On selection:</button>
+                                    <button type="button" class="btn btn-default uncheck">Uncheck all</button>
+                                    <button type="button" class="btn btn-default toggle-check">Toggle check</button>
+                                    <button type="button" class="btn btn-default check">Check all</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="panel-group"></div>
     </div>
     <div class="col-xs-12 col-lg-4">
         <div class="row">
@@ -108,7 +173,7 @@
                                         <div class="col-xs-6">
                                             <i class="fa fa-plus to-expand-icon"></i>
                                             <i class="fa fa-minus to-collapse-icon"></i>
-                                            {%trans 'Computation'%}
+                                            {%trans 'Computation settings'%}
                                         </div>
                                     </a>
                                     <div class="col-xs-6 text-right">

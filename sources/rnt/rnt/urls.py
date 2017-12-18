@@ -15,9 +15,16 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from rest_framework.documentation import include_docs_urls
+
+import webapi
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^captcha/', include('captcha.urls')),
     url(r'^', include('webui.urls')),
+
+    url(r'^api/', include('webapi.urls')),
+    url(r'^api-doc/', include_docs_urls(title="Rank-n-ties API")),
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]

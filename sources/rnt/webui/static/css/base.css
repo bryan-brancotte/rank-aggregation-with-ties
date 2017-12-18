@@ -73,3 +73,12 @@ a[aria-expanded=false] .to-collapse-icon {
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff5f5f5', endColorstr='#ffe8e8e8', GradientType=0);
     background-repeat: repeat-x;
 }
+
+.btn-group-addon[disabled], .btn-group-addon[disabled]:hover, .btn-group-addon[disabled]:focus {
+    cursor: initial;
+    text-align: center;
+    background-color: #eee;
+    border: 1px solid #ccc;
+    background-image: none;
+    opacity:1;
+}

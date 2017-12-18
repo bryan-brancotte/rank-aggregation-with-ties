@@ -18,9 +18,9 @@ urlpatterns = [
     }, name='javascript-catalog'),
     url(r'^i18n/', include('django.conf.urls.i18n')),
 
-    url(r'dataset/$', views.DataSetListView.as_view(), name='dataset_list'),
-    url(r'dataset/(?P<pk>\d+)/$', views.DataSetDetailView.as_view(), name='dataset_view'),
-    url(r'dataset/add/$', DataSetCreate.as_view(), name='dataset_add'),
-    url(r'dataset/(?P<pk>\d+)/edit/$', DataSetUpdate.as_view(), name='dataset_edit'),
-    url(r'dataset/(?P<pk>\d+)/delete/$', DataSetDelete.as_view(), name='dataset_delete'),
+    url(r'^datasets/$', views.DataSetListView.as_view(), name='dataset_list'),
+    url(r'^datasets/(?P<pk>\d+)/$', views.DataSetDetailView.as_view(), name='dataset_view'),
+    url(r'^datasets/add/$', DataSetCreate.as_view(), name='dataset_add'),
+    url(r'^datasets/(?P<pk>\d+)/edit/$', DataSetUpdate.as_view(), name='dataset_edit'),
+    url(r'^datasets/(?P<pk>\d+)/delete/$', DataSetDelete.as_view(), name='dataset_delete'),
 ]

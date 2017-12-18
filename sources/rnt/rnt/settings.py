@@ -37,10 +37,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'bootstrapform',
     'captcha',
     'mediane',
     'webui',
+    'webapi',
 ]
 
 MIDDLEWARE = [
@@ -130,6 +132,14 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 
 SESSION_COOKIE_AGE = 14 * 24 * 60 * 60 if DEBUG else 12 * 60 * 60
 SESSION_COOKIE_SECURE = False if DEBUG else True
+
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
 
 try:
     from .local_settings import *
