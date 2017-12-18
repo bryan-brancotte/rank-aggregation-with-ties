@@ -5,6 +5,8 @@ from mediane.algorithms.enumeration import get_name_from
 from mediane.distances.KendallTauGeneralizedNSquare import KendallTauGeneralizedNSquare
 from mediane.distances.enumeration import GENERALIZED_KENDALL_TAU_DISTANCE
 
+MIN_MEASURE_DURATION = 3
+
 
 def execute_median_rankings_computation_from_rankings(
         rankings,
@@ -18,9 +20,9 @@ def execute_median_rankings_computation_from_rankings(
     start_timezone = timezone.now()
     c = algorithm.compute_median_rankings(rankings=rankings)
     duration = (timezone.now() - start_timezone).total_seconds()
-    while precise_time_measurement and duration < 2:
+    while precise_time_measurement and duration < MIN_MEASURE_DURATION:
         # print(iteration, duration)
-        iteration = int(iteration / duration * 2.2)
+        iteration = int((iteration / duration) * MIN_MEASURE_DURATION * 1.1)
         rang_iter = range(2, iteration)
         start_timezone = timezone.now()
         for k in rang_iter:
