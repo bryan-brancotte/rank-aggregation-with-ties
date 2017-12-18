@@ -1,16 +1,16 @@
-function refresh_settings_from_datasets_and_compute_when_possible(form){
+function refresh_settings_from_datasets_and_compute_when_possible(){
     refresh_settings_from_datasets(
-        $(form),
+        $('form'),
         function (){
             if ($("#auto-compute-host").attr("data-value")){
-                compute_consensus_from_dataset($(form));
+                compute_consensus_from_dataset($('form'));
             }
         }
     );
 }
 
-function refresh_settings_from_datasets(form, callback){
-    form=$(form);
+function refresh_settings_from_datasets(form_param, callback){
+    var form=$(form_param);
     $("#updating-stats-indicator").show();
     $("#future-update-indicator").hide();
     $("#btn-compute").attr("disabled",true);
@@ -353,5 +353,5 @@ stack_onload(function () {
             }
         );
     });
-    refresh_settings_from_datasets($('form'));
+    refresh_settings_from_datasets('form');
 });
