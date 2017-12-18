@@ -101,7 +101,7 @@ class DataSetUpdate(UpdateView):
 
 class DataSetDelete(DeleteView):
     model = DataSet
-    success_url = reverse_lazy('rnt:dataset_list')
+    success_url = reverse_lazy('webui:dataset-list')
     template_name = "webui/generic_confirm_delete.html"
 
 

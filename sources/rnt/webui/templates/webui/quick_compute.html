@@ -7,11 +7,9 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static '/css/quick_compute.css' %}"/>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.0.0/css/bootstrap-slider.min.css" />
 {% endblock %}
 
 {% block extra_js %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.0.0/bootstrap-slider.min.js"></script>
 <script src="{% static '/js/quick_compute.js' %}"></script>
 <script src="{% static '/js/median_ranking_tools.js' %}"></script>
 <script type="text/javascript">
@@ -20,7 +18,7 @@ webapi_dataset_list='{% url 'webapi:dataset-list' %}';
 {% endblock %}
 
 {% block content %}
-<form method="post" data-check-url="{%url 'rnt:dataset_evaluate'%}" data-submit-url="{%url 'rnt:dataset_compute'%}">
+<form method="post" data-check-url="{%url 'webui:dataset_evaluate'%}" data-submit-url="{%url 'webui:dataset_compute'%}">
     {% csrf_token %}
     <div class="col-xs-12 col-lg-8">
         <div class="panel-group" id="accordion">

@@ -34,7 +34,7 @@ class DataSet(models.Model):
     )
 
     def get_absolute_url(self):
-        return reverse('rnt:dataset_view', args=[self.pk])
+        return reverse('webui:dataset_view', args=[self.pk])
 
     @property
     def rankings(self):
@@ -85,7 +85,7 @@ class Job(models.Model):
     )
 
     # def get_absolute_url(self):
-    #     return reverse('rnt:job_view', args=[self.pk])
+    #     return reverse('webui:job_view', args=[self.pk])
 
 
 class Result(models.Model):
@@ -108,4 +108,4 @@ class Result(models.Model):
     )
 
     # def get_absolute_url(self):
-    #     return reverse('rnt:result_view', args=[self.pk])
+    #     return reverse('webui:result_view', args=[self.pk])

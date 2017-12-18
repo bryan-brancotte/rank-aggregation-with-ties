@@ -1,4 +1,5 @@
 from django import template
+from django.urls.base import reverse
 from django.utils.safestring import mark_safe
 
 register = template.Library()
@@ -26,3 +27,19 @@ def count_line(val):
 @register.filter
 def max(i, cap):
     return i if i < cap else cap
+
+
+@register.filter
+def is_active_or_desc(request, pattern):
+    if str(request.path).startswith(str(reverse(pattern))) \
+            or str(request.path).startswith(str(pattern)):
+        return 'active '
+    return ''
+
+
+@register.filter
+def is_active(request, pattern):
+    if str(reverse(pattern)) == str(request.path) \
+            or str(pattern) == str(request.path):
+        return 'active '
+    return ''
