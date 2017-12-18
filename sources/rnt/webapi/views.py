@@ -6,7 +6,7 @@ from rest_framework.response import Response
 
 # ViewSets define the view behavior.
 from webapi.serializer import DataSetSerializer, DataSetSerializerNoContent
-from webui.models import DataSet
+from mediane.models import DataSet
 
 
 class DataSetViewSet(viewsets.ReadOnlyModelViewSet):

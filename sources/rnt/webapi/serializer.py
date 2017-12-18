@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 # Serializers define the API representation.
-from webui.models import DataSet
+from mediane.models import DataSet
 
 
 class DataSetSerializer(serializers.HyperlinkedModelSerializer):

@@ -11,7 +11,7 @@ from mediane.normalizations.enumeration import get_from as get_norm_from
 from mediane.process import execute_median_rankings_computation_from_rankings, \
     execute_median_rankings_computation_from_datasets
 from webui.forms import ComputeConsensusForm, DataSetModelForm
-from webui.models import DataSet
+from mediane.models import DataSet
 from webui.process import compute_consensus_settings_based_on_datasets
 from webui.views_generic import AjaxableResponseMixin
 
@@ -107,6 +107,7 @@ class DataSetDelete(DeleteView):
 
 class DataSetListView(ListView):
     model = DataSet
+    template_name = "webui/dataset_list.html"
     # def get_context_data(self, **kwargs):
     #     context = super(DataSetListView, self).get_context_data(**kwargs)
     #     return context
@@ -114,7 +115,7 @@ class DataSetListView(ListView):
 
 class DataSetDetailView(DetailView):
     model = DataSet
-
+    template_name = "webui/dataset_detail.html"
     # def get_context_data(self, **kwargs):
     #     context = super(DataSetDetailView, self).get_context_data(**kwargs)
     #     return context

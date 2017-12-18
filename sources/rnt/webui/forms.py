@@ -6,7 +6,7 @@ from django.utils.translation import ugettext as _
 from mediane.algorithms import enumeration as enum_algo
 from mediane.distances import enumeration as enum_dist
 from mediane.normalizations import enumeration as enum_norm
-from webui.models import DataSet
+from mediane.models import DataSet
 from webui.process import evaluate_dataset_and_provide_stats
 
 
