@@ -10,7 +10,8 @@
     </div>
     <div class="col-xs-3 text-right">
         <h1>
-            <a href="{% url 'webui:dataset_edit' pk=object.pk %}" role="button" class="btn btn-default"><i class="fa fa-pencil"></i></a>
+            <a href="{% url 'webui:dataset_edit' pk=object.pk %}" role="button" class="btn btn-primary"><i class="fa fa-pencil"></i></a>
+            <a href="{% url 'webui:dataset_delete' pk=object.pk %}" role="button" class="btn btn-danger"><i class="fa fa-trash"></i></a>
         </h1>
     </div>
     {% endblock %}
@@ -61,5 +62,8 @@
         </tr>
         </tbody>
     </table>
+</div>
+<div class="col-xs-12">
+    <a href="{% url 'webui:dataset-list' %}" role="button" class="btn btn-primary"><i class="fa fa-arrow-left"></i> Back</a>
 </div>
 {% endblock%}
