@@ -48,7 +48,7 @@
 </head>
 <body>
 <nav class="navbar navbar-default navbar-fixed-top">
-    <div class="container">
+    <div class="container-fluid">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
                     aria-expanded="false" aria-controls="navbar">
@@ -84,6 +84,7 @@
 </nav>
 
 <div class="{% block container-class %}container{% endblock %}">
+    <div class="row">
     <div class="page-header">
         {% block content_page_title %}
         <div class="col-xs-12">
@@ -95,6 +96,7 @@
         </div>
     </div>
     {% block content %}{% endblock %}
+    </div>
 </div>
 </body>
 </html>
