@@ -91,3 +91,7 @@ a[aria-expanded=false] .to-collapse-icon {
     background-image: linear-gradient(to bottom,#b9d9f9 0,#b5d5f5 100%);
     background-repeat: repeat-x;
 }
+.navbar-header a,
+.nav a{
+    font-size: 1.2em !important;
+}

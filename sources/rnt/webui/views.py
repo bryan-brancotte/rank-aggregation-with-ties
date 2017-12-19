@@ -1,17 +1,20 @@
-from django.http.response import HttpResponseBadRequest, JsonResponse
-from django.shortcuts import render
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models.query_utils import Q
+from django.http.response import HttpResponseBadRequest, JsonResponse, HttpResponseRedirect
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
+from django.urls.base import reverse
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 
 from mediane.algorithms.enumeration import get_from as get_algo_from
 from mediane.distances.enumeration import get_from as get_dist_from
+from mediane.models import DataSet
 from mediane.normalizations.enumeration import get_from as get_norm_from
 from mediane.process import execute_median_rankings_computation_from_rankings, \
     execute_median_rankings_computation_from_datasets
 from webui.forms import ComputeConsensusForm, DataSetModelForm
-from mediane.models import DataSet
 from webui.process import compute_consensus_settings_based_on_datasets
 from webui.views_generic import AjaxableResponseMixin
 
@@ -86,20 +89,25 @@ def dataset_compute(request):
     ))
 
 
-class DataSetCreate(AjaxableResponseMixin, CreateView):
-    model = DataSet
-    # fields = "__all__"
-    form_class = DataSetModelForm
-    template_name = "webui/form_host.html"
-
-
-class DataSetUpdate(UpdateView):
+class DataSetCreate(LoginRequiredMixin, AjaxableResponseMixin, CreateView):
     model = DataSet
     form_class = DataSetModelForm
     template_name = "webui/form_host.html"
 
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.owner = self.request.user
+        self.object.save()
+        return HttpResponseRedirect(self.get_success_url())
 
-class DataSetDelete(DeleteView):
+
+class DataSetUpdate(LoginRequiredMixin, UpdateView):
+    model = DataSet
+    form_class = DataSetModelForm
+    template_name = "webui/form_host.html"
+
+
+class DataSetDelete(LoginRequiredMixin, DeleteView):
     model = DataSet
     success_url = reverse_lazy('webui:dataset-list')
     template_name = "webui/generic_confirm_delete.html"
@@ -108,14 +116,21 @@ class DataSetDelete(DeleteView):
 class DataSetListView(ListView):
     model = DataSet
     template_name = "webui/dataset_list.html"
-    # def get_context_data(self, **kwargs):
-    #     context = super(DataSetListView, self).get_context_data(**kwargs)
-    #     return context
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated():
+            ownership = Q(owner=self.request.user)
+        else:
+            ownership = Q(pk=None)
+        return DataSet.objects.filter(ownership | Q(public=True))
 
 
 class DataSetDetailView(DetailView):
     model = DataSet
     template_name = "webui/dataset_detail.html"
-    # def get_context_data(self, **kwargs):
-    #     context = super(DataSetDetailView, self).get_context_data(**kwargs)
-    #     return context
+
+    def dispatch(self, *args, **kwargs):
+        obj = self.get_object()
+        if obj.public or self.request.user.id == obj.owner.id:
+            return super(DataSetDetailView, self).dispatch(*args, **kwargs)
+        return redirect('%s?next=%s' % (reverse('webui:login'), self.request.path))

@@ -1,5 +1,5 @@
 # Create your views here.
-
+from django.db.models.query_utils import Q
 from rest_framework import viewsets
 from rest_framework.decorators import list_route
 from rest_framework.response import Response
@@ -14,9 +14,16 @@ class DataSetViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = DataSetSerializer
 
     def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        serializer = DataSetSerializerNoContent(queryset, many=True)
+        print(request.user)
+        serializer = DataSetSerializerNoContent(self.get_queryset(), many=True)
         return Response(serializer.data)
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated():
+            ownership = Q(owner=self.request.user)
+        else:
+            ownership = Q(pk=None)
+        return DataSet.objects.filter(ownership | Q(public=True))
 
     @list_route(methods=['get', ], url_path='detailed')
     def list_detailed(self, request):

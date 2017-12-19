@@ -13,9 +13,9 @@
             integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
             crossorigin="anonymous"></script>
     <script
-      src="http://code.jquery.com/color/jquery.color.plus-names-2.1.2.min.js"
-      integrity="sha256-Wp3wC/dKYQ/dCOUD7VUXXp4neLI5t0uUEF1pg0dFnAE="
-      crossorigin="anonymous"></script>
+            src="http://code.jquery.com/color/jquery.color.plus-names-2.1.2.min.js"
+            integrity="sha256-Wp3wC/dKYQ/dCOUD7VUXXp4neLI5t0uUEF1pg0dFnAE="
+            crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.0.0/bootstrap-slider.min.js"></script>
 
     <!-- Bootstrap CSS -->
@@ -30,10 +30,11 @@
     <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.0.0/css/bootstrap-slider.min.css" />
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.0.0/css/bootstrap-slider.min.css"/>
     <link rel="stylesheet" href="{% static '/css/bootstrap-xlgrid.css' %}"/>
     <link rel="stylesheet" href="{% static '/css/base.css' %}"/>
-    <link rel="stylesheet" href="{% static '/css/theme.css' %}"/>
+    <link rel="stylesheet" href="{% static '/css/theme.cssa' %}"/>
     {% block extra_css %}{% endblock %}
 
     <!-- Latest compiled and minified JavaScript -->
@@ -47,36 +48,49 @@
 
 </head>
 <body>
-
-
-
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container">
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
         <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="{% url 'webui:home'%}">Rank'n'ties</a>
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{% url 'webui:home'%}">Rank'n'ties</a>
         </div>
         <div id="navbar" class="collapse navbar-collapse">
-          <ul class="nav navbar-nav">
-            <li class="{{ request|is_active:'webui:home' }}"><a href="{% url 'webui:home'%}">Home</a></li>
-            <li class="{{ request|is_active_or_desc:'webui:dataset-list' }}"><a href="{% url 'webui:dataset-list'%}">Datasets</a></li>
-          </ul>
+            <ul class="nav navbar-nav">
+                <li class="{{ request|is_active:'webui:home' }}"><a href="{% url 'webui:home'%}">Home</a></li>
+                <li class="{{ request|is_active_or_desc:'webui:dataset-list' }}"><a
+                        href="{% url 'webui:dataset-list'%}">Datasets</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                {%if not request.user.is_authenticated %}
+                <li class=""><a href="{% url 'webui:login'%}"><i class="fa fa-sign-in"></i></a></li>
+                {%else%}
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false"><i class="fa fa-user-circle-o"></i> <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/admin/"><i class="fa fa-cogs"></i> Admin</a></li>
+                        <li><a href="{% url 'webui:logout'%}"><i class="fa fa-sign-out"></i> Logout</a></li>
+                    </ul>
+                </li>
+                {%endif%}
+            </ul>
         </div><!--/.nav-collapse -->
-      </div>
-    </nav>
+    </div>
+</nav>
 
-<div class="{% block container-class %} container-full{% endblock %}">
+<div class="{% block container-class %}container{% endblock %}">
     <div class="page-header">
-    {% block content_page_title %}
+        {% block content_page_title %}
         <div class="col-xs-12">
             <h1>{% block page_title %}{% endblock %}</h1>
         </div>
-    {% endblock %}
+        {% endblock %}
         <div class="col-xs-12">
             <hr/>
         </div>

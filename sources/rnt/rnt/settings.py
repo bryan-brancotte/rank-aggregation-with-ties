@@ -141,6 +141,8 @@ REST_FRAMEWORK = {
     ]
 }
 
+LOGIN_REDIRECT_URL = 'webui:home'
+
 try:
     from .local_settings import *
 except ImportError as e:

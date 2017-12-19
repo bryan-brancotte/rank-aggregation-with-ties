@@ -105,7 +105,6 @@ function compute_consensus_from_dataset(form, callback){
     $("#btn-compute").attr("disabled",true);
     $("#id_dataset").prop("readonly",true) ;
     form.find('input').prop("disabled",true);
-    fade_border_to_and_back($("#results-host").parent(),"#337ab7", "rgb(221, 221, 221)");
     $.ajax({
         type: form.attr('method'),
         url:form.attr('data-submit-url'),

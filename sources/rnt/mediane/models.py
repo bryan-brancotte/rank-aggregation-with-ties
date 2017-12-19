@@ -29,7 +29,15 @@ class DataSet(models.Model):
         null=True,
     )
     transient = models.BooleanField(
-        help_text=_('Should be deleted when the associated job is removed'),
+        help_text=_('Should the dataset be deleted when the associated job is removed?'),
+        default=False,
+    )
+    owner = models.ForeignKey(
+        get_user_model(),
+    )
+    public = models.BooleanField(
+        help_text=_('Can the dataset be seen by everyone?'),
+        default=False,
     )
 
     def get_absolute_url(self):

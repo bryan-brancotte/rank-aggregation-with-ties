@@ -17,6 +17,7 @@ webapi_dataset_list='{% url 'webapi:dataset-list' %}';
 </script>
 {% endblock %}
 
+{% block container-class %} container-fluid{% endblock %}
 {% block content %}
 <form method="post" data-check-url="{%url 'webui:dataset_evaluate'%}" data-submit-url="{%url 'webui:dataset_compute'%}">
     {% csrf_token %}
@@ -141,10 +142,10 @@ webapi_dataset_list='{% url 'webapi:dataset-list' %}';
                                 </div>
                                 <br/>
                                 <div class="btn-group" role="group">
-                                    <button type="button" class="btn btn-default btn-group-addon" disabled="disabled">On selection:</button>
-                                    <button type="button" class="btn btn-default uncheck">Uncheck all</button>
-                                    <button type="button" class="btn btn-default toggle-check">Toggle check</button>
-                                    <button type="button" class="btn btn-default check">Check all</button>
+                                    <button type="button" class="btn btn-default btn-group-addon" disabled="disabled">On selection, check:</button>
+                                    <button type="button" class="btn btn-default uncheck">None</button>
+                                    <button type="button" class="btn btn-default toggle-check">Inverse</button>
+                                    <button type="button" class="btn btn-default check">All</button>
                                 </div>
                             </div>
                         </div>
