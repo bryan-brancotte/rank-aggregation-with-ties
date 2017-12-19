@@ -82,8 +82,8 @@ a[aria-expanded=false] .to-collapse-icon {
     background-image: none;
     opacity:1;
 }
-body {
-  padding-top: 50px;
+.col-xs-12>hr {
+  margin-top: 0px;
 }
 .slider-host.range-slider .slider-selection {
     background-image: -webkit-linear-gradient(top,#b9d9f9 0,#b5d5f5 100%);
