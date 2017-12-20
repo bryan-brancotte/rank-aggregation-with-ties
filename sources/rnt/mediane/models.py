@@ -51,11 +51,9 @@ class DataSet(models.Model):
         return rankings
 
     def __str__(self):
-        spec = []
-        spec.append("n=%i" % self.n)
-        spec.append("m=%i" % self.m)
+        spec = ["n=%i" % self.n, "m=%i" % self.m]
         if self.step is not None:
-            spec.append("%s=%i" % (_('step'), self.m))
+            spec.append("%s=%i" % (_('step')))
         spec = ', '.join(spec)
         if self.name != "":
             return "%s (%s)" % (self.name, spec)
