@@ -25,7 +25,7 @@ def evaluate_dataset_and_provide_stats(rankings_str):
             for element in bucket:
                 ranking_elements.add(element)
                 elements.add(element)
-                tailles.add(len(ranking_elements))
+        tailles.add(len(ranking_elements))
         if ranking_elements != elements or len(tailles) > 1:
             complet = False
     evaluation["complete"] = complet
