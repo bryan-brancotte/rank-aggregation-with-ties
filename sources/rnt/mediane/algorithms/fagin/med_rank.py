@@ -1,6 +1,6 @@
-from typing import List
 from itertools import zip_longest
 from math import ceil
+from typing import List
 
 from mediane.algorithms.median_ranking import MedianRanking
 from mediane.distances.enumeration import GENERALIZED_KENDALL_TAU_DISTANCE
@@ -51,7 +51,7 @@ class MedRank(MedianRanking):
                 ranking_res.append(bucket_res)
                 bucket_res = []
 
-        return ranking_res
+        return ranking_res if len(ranking_res) > 0 else [[]]
 
     def is_breaking_ties_arbitrarily(self):
         return True

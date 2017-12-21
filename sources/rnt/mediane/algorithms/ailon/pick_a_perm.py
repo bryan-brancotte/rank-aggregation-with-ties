@@ -24,7 +24,7 @@ class PickAPerm(MedianRanking):
         d = Dataset(rankings)
         informations = d.get_all_informations()
         dst_min = float('inf')
-        consensus = []
+        consensus = [[]]
 
         for ranking in rankings:
             dist = k.get_kemeny_score_with_pairsposmatrix(informations[0], ranking, informations[-1])
