@@ -53,7 +53,7 @@ class DataSet(models.Model):
     def __str__(self):
         spec = ["n=%i" % self.n, "m=%i" % self.m]
         if self.step is not None:
-            spec.append("%s=%i" % (_('step')))
+            spec.append("%s=%i" % (_('step'), self.step))
         spec = ', '.join(spec)
         if self.name != "":
             return "%s (%s)" % (self.name, spec)
