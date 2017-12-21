@@ -84,13 +84,17 @@ function on_change_param_auto_checkbox(auto_checkbox){
     name=name.substring(0,name.lastIndexOf('_'));
     if($(auto_checkbox).prop("checked")){
         $("[name='"+name+"']").prop("checked",false);
-        $("[name='"+name+"'][value='"+$(auto_checkbox).attr("data-default-value")+"']").prop("checked",true);
+        $("[name='"+name+"'][value='"+$(auto_checkbox).attr("data-default-value")+"']").prop("checked",true).change()/**/;
     }
 }
 
 function on_change_param_radio(input){
+    $(input).closest(".panel-group").find(".param-indicator").text($(input).parent().text());
     var name = $(input).attr("name");
-    $("[name='"+name+"_auto']").prop("checked",false).change()
+    var auto_checkbox=$("[name='"+name+"_auto']");
+    if ($(auto_checkbox).attr("data-default-value") != $(input).attr("value")){
+        auto_checkbox.prop("checked",false).change()
+    }
 }
 
 function compute_consensus_from_dataset(form, callback){
