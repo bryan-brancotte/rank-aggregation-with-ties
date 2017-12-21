@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-12-04 07:43+0000\n"
+"POT-Creation-Date: 2017-12-21 04:35+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,6 +16,60 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+msgid "KTG"
+msgstr "Generalized kendall tau distance"
+
+msgid "KTGI"
+msgstr "Generalized induced kendall tau distance"
+
+msgid "PSEUDO_METRIC_KTGI"
+msgstr "Pseudo metric based on generalized induced kendall tau distance"
+
+msgid "KTG_desc"
+msgstr ""
+
+msgid "KTGI_desc"
+msgstr ""
+
+msgid "PSEUDO_METRIC_KTGI_desc"
+msgstr ""
+
+msgid "The number of rankings"
+msgstr ""
+
+msgid "The number of elements"
+msgstr ""
+
+msgid "Are every elements present in each rankings of the dataset"
+msgstr ""
+
+msgid "The number of steps used to generate the dataset, if pertinent"
+msgstr ""
+
+msgid "Should the dataset be deleted when the associated job is removed?"
+msgstr ""
+
+msgid "Can the dataset be seen by everyone?"
+msgstr ""
+
+msgid "step"
+msgstr ""
+
+msgid "_desc"
+msgstr ""
+
+msgid "User who created this job"
+msgstr ""
+
+msgid "The distance used for this job"
+msgstr ""
+
+msgid "Creation time"
+msgstr ""
+
+msgid "the consensus(es) computed for the givent dataset and job's distance"
+msgstr ""
+
 msgid "Unification"
 msgstr ""
 
@@ -23,6 +77,9 @@ msgid "Projection"
 msgstr ""
 
 msgid "None"
+msgstr ""
+
+msgid "typed"
 msgstr ""
 
 msgid "English"
@@ -41,34 +98,14 @@ msgstr ""
 "BUCKET must have the structure [element, ..., element] (the elements of the "
 "bucket should not contain [, ] and ,)"
 
-msgid "Dataset"
+msgid "DataSet"
+msgstr ""
+
+#, python-format
+msgid "At line %(line)d: %(msg)s"
 msgstr ""
 
 msgid "precise time measurement"
-msgstr ""
-
-msgid "The number of rankings"
-msgstr ""
-
-msgid "The number of elements"
-msgstr ""
-
-msgid "The number of steps used to generate the dataset, if pertinent"
-msgstr ""
-
-msgid "Should be deleted when the associated job is removed"
-msgstr ""
-
-msgid "User who created this job"
-msgstr ""
-
-msgid "The distance used for this job"
-msgstr ""
-
-msgid "Creation time"
-msgstr ""
-
-msgid "the consensus(es) computed for the givent dataset and job's distance"
 msgstr ""
 
 msgid "Stats"
@@ -80,13 +117,28 @@ msgstr ""
 msgid "The number of rankings in the dataset"
 msgstr ""
 
-msgid "Are every elements present in each rankings of the dataset"
+msgid "The number of steps used"
+msgstr ""
+
+msgid "complete"
+msgstr ""
+
+msgid "transient"
+msgstr ""
+
+msgid "Save"
+msgstr ""
+
+msgid "Type your dataset"
 msgstr ""
 
 msgid "Complete"
 msgstr ""
 
 msgid "Invalid"
+msgstr ""
+
+msgid "Select from database"
 msgstr ""
 
 msgid "Normalisation"
@@ -98,7 +150,7 @@ msgstr ""
 msgid "Algorithms"
 msgstr ""
 
-msgid "Auto compute"
+msgid "Computation settings"
 msgstr ""
 
 msgid "Auto compute allowed explanation"
@@ -117,4 +169,7 @@ msgid "Compute"
 msgstr ""
 
 msgid "Results"
+msgstr ""
+
+msgid "Press Compute"
 msgstr ""

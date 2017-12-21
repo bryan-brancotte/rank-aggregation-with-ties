@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _, ugettext
 
 from mediane.median_ranking_tools import parse_ranking_with_ties_of_str
 
@@ -62,23 +62,32 @@ class DataSet(models.Model):
 
 class Distance(models.Model):
     key_name = models.CharField(
-        max_length=16,
+        max_length=32,
         unique=True,
     )
     key_name_is_read_only = models.BooleanField(
         default=False,
     )
-    name = models.CharField(
-        max_length=112,
-        unique=True,
-    )
-    desc = models.TextField(
-        blank=True,
-        null=True,
-    )
+
+    # name = models.CharField(
+    #     max_length=224,
+    #     unique=True,
+    # )
+    # desc = models.TextField(
+    #     blank=True,
+    #     null=True,
+    # )
 
     def __str__(self):
-        return self.name
+        return self.key_name
+
+    @property
+    def name(self):
+        return ugettext(self.key_name)
+
+    @property
+    def desc(self):
+        return ugettext(self.key_name + "_desc")
 
 
 class Job(models.Model):

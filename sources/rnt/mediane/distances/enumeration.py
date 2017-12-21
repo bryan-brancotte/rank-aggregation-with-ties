@@ -1,21 +1,22 @@
+from django.utils.translation import ugettext_lazy as _
 from numpy import ndarray, array
 
-GENERALIZED_KENDALL_TAU_DISTANCE = 1
-GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE = 2
-PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE = 3
-SIMILARITY_MEASURE = 4
+GENERALIZED_KENDALL_TAU_DISTANCE = 'KTG'
+GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE = 'KTGI'
+PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE = 'PSEUDO_METRIC_KTGI'
+SIMILARITY_MEASURE = 'SIM_MEASURE_BRYAN'
 __tuple_list = (
     (
         GENERALIZED_KENDALL_TAU_DISTANCE,
-        "Generalized Kendall-tau distance",
+        _(GENERALIZED_KENDALL_TAU_DISTANCE),
     ),
     (
         GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE,
-        "Generalized induced Kendall-tau distance"
+        _(GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE),
     ),
     (
         PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE,
-        "Pseudo-metric based on generalized induced kendall tau distance"
+        _(PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE),
     ),
 )
 
@@ -29,6 +30,15 @@ def get_from(id_dist):
         if str(k) == str(id_dist):
             return v
     return None
+
+
+def __dummy_method_to_have_translation_of_distance():
+    _('KTG')
+    _('KTGI')
+    _('PSEUDO_METRIC_KTGI')
+    _('KTG_desc')
+    _('KTGI_desc')
+    _('PSEUDO_METRIC_KTGI_desc')
 
 
 # return a matrix (2,6)
