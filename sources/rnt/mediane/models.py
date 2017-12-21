@@ -61,8 +61,15 @@ class DataSet(models.Model):
 
 
 class Distance(models.Model):
+    key_name = models.CharField(
+        max_length=16,
+        unique=True,
+    )
+    key_name_is_read_only = models.BooleanField(
+        default=False,
+    )
     name = models.CharField(
-        max_length=64,
+        max_length=112,
         unique=True,
     )
     desc = models.TextField(
