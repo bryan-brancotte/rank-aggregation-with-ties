@@ -15,7 +15,10 @@ def parse_ranking_with_ties(ranking: str, converter: Callable[[str], T]) -> List
     while st != -1 and en != -1:
         bucket = []
         for s in ranking[st + 1:  en].split(","):
-            bucket.append(converter(s.strip()))
+            elt_str = s.strip()
+            if elt_str == "":
+                raise ValueError("Empty element in `%s` between chars %i and %i" % (ranking[st + 1:  en], st + 1, en))
+            bucket.append(converter(elt_str))
         ret.append(bucket)
         st = ranking.find('[', en + 1, ranking_end)
         old_en = en
