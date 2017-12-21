@@ -23,6 +23,8 @@ def evaluate_dataset_and_provide_stats(rankings_str):
         ranking_elements = set()
         for bucket in ranking:
             for element in bucket:
+                if element in ranking_elements:
+                    invalid_rankings[cpt] = "Duplicated element '%s'" % element
                 ranking_elements.add(element)
                 elements.add(element)
         tailles.add(len(ranking_elements))
