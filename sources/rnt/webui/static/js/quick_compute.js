@@ -89,7 +89,7 @@ function on_change_param_auto_checkbox(auto_checkbox){
 }
 
 function on_change_param_radio(input){
-    $(input).closest(".panel-group").find(".param-indicator").text($(input).parent().text());
+    $(input).closest(".panel-group").find(".param-indicator").text("("+$(input).parent().text().trim()+")");
     var name = $(input).attr("name");
     var auto_checkbox=$("[name='"+name+"_auto']");
     if ($(auto_checkbox).attr("data-default-value") != $(input).attr("value")){
