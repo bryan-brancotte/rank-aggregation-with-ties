@@ -7,7 +7,7 @@ from mediane.algorithms import enumeration as enum_algo
 from mediane.distances import enumeration as enum_dist
 from mediane.models import DataSet
 from mediane.normalizations import enumeration as enum_norm
-from webui.process import evaluate_dataset_and_provide_stats
+from mediane.process import evaluate_dataset_and_provide_stats
 
 
 class DataSetModelForm(forms.ModelForm):

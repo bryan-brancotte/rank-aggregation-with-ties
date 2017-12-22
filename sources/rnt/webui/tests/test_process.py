@@ -1,6 +1,6 @@
 from django.test.testcases import TestCase
 
-from webui.process import evaluate_dataset_and_provide_stats
+from mediane.process import evaluate_dataset_and_provide_stats
 
 
 class ElementUnicityTestCase(TestCase):
