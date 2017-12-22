@@ -9,6 +9,7 @@ import os
 import sys
 
 import django
+from django.contrib.auth import get_user_model
 from django.utils import timezone
 
 sys.path.append(".")  # here store is root folder(means parent).
@@ -30,13 +31,14 @@ d = DataSet.objects.filter(name="Wrong one").first()
 if d is None:
     print("Wrong one does not exists, creating it")
     d = DataSet.objects.create(
-        name="Wrong one",
-        n=0,
-        m=0,
+        name="Wrong one (created on %s)" % str(timezone.now()),
+        n=100,
+        m=10,
         complete=False,
         transient=True,
+        owner=get_user_model().objects.all().first(),
     )
-    d.content = "We should have put rankings here ! (created on %s)" % str(timezone.now())
+    d.content = "[[a]]"
     d.save()
     print(d)
     print(d.content)
@@ -45,3 +47,13 @@ else:
     print(d.content)
     print("Wrong one exists, deleting it")
     d.delete()
+
+print("Datasets wth m >= 3")
+for d in DataSet.objects.filter(m__gt=3):
+    print(d)
+print("Done")
+
+print("Datasets with m = 4")
+for d in DataSet.objects.filter(m=4):
+    print(d)
+print("Done")

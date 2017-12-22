@@ -4,6 +4,8 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _, ugettext
 
 from mediane.median_ranking_tools import parse_ranking_with_ties_of_str
+from mediane.process import evaluate_dataset_and_provide_stats
+from mediane.validators import sound_dataset_validator
 
 
 class DataSet(models.Model):
@@ -13,6 +15,7 @@ class DataSet(models.Model):
         default="",
     )
     content = models.TextField(
+        validators=[sound_dataset_validator, ],
     )
     m = models.IntegerField(
         help_text=_('The number of rankings'),
@@ -58,6 +61,20 @@ class DataSet(models.Model):
         if self.name != "":
             return "%s (%s)" % (self.name, spec)
         return spec
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        evaluation = sound_dataset_validator(self.content)
+        self.n = evaluation['n']
+        self.m = evaluation['m']
+        self.complete = evaluation['complete']
+        super(DataSet, self).save(
+            force_insert=force_insert,
+            force_update=force_update,
+            using=using,
+            update_fields=update_fields,
+
+        )
 
 
 class Distance(models.Model):
