@@ -31,15 +31,21 @@ def max(i, cap):
 
 @register.filter
 def is_active_or_desc(request, pattern):
-    if str(request.path).startswith(str(reverse(pattern))) \
-            or str(request.path).startswith(str(pattern)):
-        return 'active '
+    try:
+        if str(request.path).startswith(str(reverse(pattern))) \
+                or str(request.path).startswith(str(pattern)):
+            return 'active '
+    except Exception:
+        pass
     return ''
 
 
 @register.filter
 def is_active(request, pattern):
-    if str(reverse(pattern)) == str(request.path) \
-            or str(pattern) == str(request.path):
-        return 'active '
+    try:
+        if str(reverse(pattern)) == str(request.path) \
+                or str(pattern) == str(request.path):
+            return 'active '
+    except Exception:
+        pass
     return ''
