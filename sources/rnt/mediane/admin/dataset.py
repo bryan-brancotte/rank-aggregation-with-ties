@@ -3,8 +3,8 @@ from django.utils.translation import ugettext
 
 
 class DataSetAdmin(admin.ModelAdmin):
-    list_display = ('name', 'n', 'm', 'complete',)
-    list_filter = ('n', 'm', 'complete',)
+    list_display = ('name', 'n', 'm', 'complete', 'step', 'transient', 'owner', 'public',)
+    list_filter = ('n', 'm', 'complete', 'step', 'transient', 'public', 'owner',)
 
     def name(self, obj):
         return str(obj.name)
