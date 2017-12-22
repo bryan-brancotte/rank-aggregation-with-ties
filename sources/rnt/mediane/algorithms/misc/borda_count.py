@@ -1,4 +1,4 @@
-from mediane.distances.enumeration import *
+from mediane.distances.enumeration import GENERALIZED_KENDALL_TAU_DISTANCE, GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE
 from mediane.algorithms.median_ranking import MedianRanking
 from typing import List
 
@@ -63,5 +63,5 @@ class BordaCount(MedianRanking):
         :return: a list of distances from distance_enumeration
         """
         return (
-            GENERALIZED_KENDALL_TAU_DISTANCE,
+            GENERALIZED_KENDALL_TAU_DISTANCE, GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE
         )
