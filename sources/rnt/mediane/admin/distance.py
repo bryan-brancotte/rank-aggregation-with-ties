@@ -1,7 +1,4 @@
-# Register your models here.
 from django.contrib import admin
-
-from mediane.models import DataSet, Distance, Job, Result
 
 
 class DistanceAdmin(admin.ModelAdmin):
@@ -19,9 +16,3 @@ class DistanceAdmin(admin.ModelAdmin):
         if obj and obj.key_name_is_read_only:
             form.base_fields['key_name'].disabled = True
         return form
-
-
-admin.site.register(DataSet)
-admin.site.register(Distance, DistanceAdmin)
-admin.site.register(Job)
-admin.site.register(Result)
