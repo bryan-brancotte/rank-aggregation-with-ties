@@ -1,9 +1,11 @@
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models.query_utils import Q
 from django.http.response import HttpResponseBadRequest, JsonResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.urls.base import reverse
+from django.utils.decorators import method_decorator
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
@@ -14,6 +16,7 @@ from mediane.models import DataSet
 from mediane.normalizations.enumeration import get_from as get_norm_from
 from mediane.process import execute_median_rankings_computation_from_rankings, \
     execute_median_rankings_computation_from_datasets, compute_consensus_settings_based_on_datasets
+from webui.decorators import ownership_required
 from webui.forms import ComputeConsensusForm, DataSetModelForm
 from webui.views_generic import AjaxableResponseMixin
 
@@ -88,6 +91,7 @@ def dataset_compute(request):
     ))
 
 
+@method_decorator(login_required, name='dispatch')
 class DataSetCreate(LoginRequiredMixin, AjaxableResponseMixin, CreateView):
     model = DataSet
     form_class = DataSetModelForm
@@ -100,12 +104,16 @@ class DataSetCreate(LoginRequiredMixin, AjaxableResponseMixin, CreateView):
         return HttpResponseRedirect(self.get_success_url())
 
 
+@method_decorator(login_required, name='dispatch')
+@method_decorator(ownership_required(class_object=DataSet), name='dispatch')
 class DataSetUpdate(LoginRequiredMixin, UpdateView):
     model = DataSet
     form_class = DataSetModelForm
     template_name = "webui/form_host.html"
 
 
+@method_decorator(login_required, name='dispatch')
+@method_decorator(ownership_required(class_object=DataSet), name='dispatch')
 class DataSetDelete(LoginRequiredMixin, DeleteView):
     model = DataSet
     success_url = reverse_lazy('webui:dataset-list')

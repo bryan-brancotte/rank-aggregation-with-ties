@@ -36,6 +36,7 @@ class DataSet(models.Model):
     )
     owner = models.ForeignKey(
         get_user_model(),
+        help_text=_('The user who can see, edit and delete it'),
     )
     public = models.BooleanField(
         help_text=_('Can the dataset be seen by everyone?'),
