@@ -64,11 +64,14 @@ webapi_dataset_list='{% url 'webapi:dataset-list' %}';
                                             <td id="stats-m">-</td>
                                         </tr>
                                         <tr>
-                                            <th title="{%trans 'Are every elements present in each rankings of the dataset'%}">{%trans 'Complete'%}</th>
-                                            <td id="stats-complet">
-                                                <i class="fa fa-check yes" style="display:none"></i>
-                                                <i class="fa fa-times no" style="display:none"></i>
-                                            </td>
+                                            <th
+                                                title="{%trans 'Are every elements present in each rankings of the dataset'%}"
+                                                id="stats-complet"
+                                                colspan="2"
+                                            >
+                                                <span class="yes">{%trans 'Complete'%}</span>
+                                                <span class="no">{%trans 'Not complete'%}</span>
+                                            </th>
                                         </tr>
                                         <tr>
                                             <th id="stats-invalid" colspan="2" class="text-danger" style="display:none">{%trans 'Invalid'%}</th>
