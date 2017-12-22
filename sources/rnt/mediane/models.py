@@ -4,7 +4,6 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _, ugettext
 
 from mediane.median_ranking_tools import parse_ranking_with_ties_of_str
-from mediane.process import evaluate_dataset_and_provide_stats
 from mediane.validators import sound_dataset_validator
 
 
