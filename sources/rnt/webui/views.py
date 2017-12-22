@@ -15,7 +15,6 @@ from mediane.normalizations.enumeration import get_from as get_norm_from
 from mediane.process import execute_median_rankings_computation_from_rankings, \
     execute_median_rankings_computation_from_datasets, compute_consensus_settings_based_on_datasets
 from webui.forms import ComputeConsensusForm, DataSetModelForm
-from webui.process import compute_consensus_settings_based_on_datasets
 from webui.views_generic import AjaxableResponseMixin
 
 
