@@ -162,13 +162,22 @@ class Job(models.Model):
         on_delete=models.CASCADE,
         help_text=_('User who created this job'),
     )
-    distance_used = models.ForeignKey(
+    dist = models.ForeignKey(
         Distance,
+        on_delete=models.CASCADE,
+        help_text=_('The distance used for this job'),
+    )
+    norm = models.ForeignKey(
+        Normalization,
         on_delete=models.CASCADE,
         help_text=_('The distance used for this job'),
     )
     creation = models.DateTimeField(
         help_text=_('Creation time'),
+    )
+    bench = models.BooleanField(
+        default=False,
+        verbose_name=_('bench'),
     )
 
     # def get_absolute_url(self):
@@ -176,6 +185,11 @@ class Job(models.Model):
 
 
 class Result(models.Model):
+    algo = models.ForeignKey(
+        Algorithm,
+        on_delete=models.CASCADE,
+        help_text=_('The distance used for this job'),
+    )
     dataset = models.ForeignKey(
         DataSet,
         on_delete=models.CASCADE,

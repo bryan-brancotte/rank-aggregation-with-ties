@@ -108,7 +108,7 @@ r4 := [[B],[C],[A,D,E]]""",
     )
     bench = forms.BooleanField(
         initial=False,
-        label=_('precise time measurement'),
+        label=_('bench'),
         required=False,
     )
     ranking_source = forms.CharField(
