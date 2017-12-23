@@ -67,14 +67,15 @@
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 {%if not request.user.is_authenticated %}
-                <li class=""><a href="{% url 'webui:login'%}"><i class="fa fa-sign-in"></i></a></li>
+                <li class=""><a href="{% url 'webui:login'%}?next={{ request.path|urlencode }}"><i class="fa fa-sign-in"></i></a></li>
                 {%else%}
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                        aria-expanded="false"><i class="fa fa-user-circle-o"></i> <span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><a href="/admin/"><i class="fa fa-cogs"></i> Admin</a></li>
-                        <li><a href="{% url 'webui:logout'%}"><i class="fa fa-sign-out"></i> Logout</a></li>
+                        <li><a href="{% url 'webui:account'%}"><i class="fa fa-user-circle-o"></i> Account</a></li>
+                        {%if request.user.is_staff %}<li><a href="/admin/"><i class="fa fa-cogs"></i> Admin</a></li>{%endif%}
+                        <li><a href="{% url 'webui:logout'%}?next={{ request.path|urlencode }}"><i class="fa fa-sign-out"></i> Logout</a></li>
                     </ul>
                 </li>
                 {%endif%}
@@ -85,17 +86,30 @@
 
 <div class="{% block container-class %}container{% endblock %}">
     <div class="row">
-    <div class="page-header">
-        {% block content_page_title %}
-        <div class="col-xs-12">
-            <h1>{% block page_title %}{% endblock %}</h1>
+        <div class="page-header">
+            {% block content_page_title %}
+            <div class="col-xs-12">
+                <h1>{% block page_title %}{% endblock %}</h1>
+            </div>
+            {% endblock %}
+            <div class="col-xs-12">
+                <hr>
+            </div>
         </div>
-        {% endblock %}
+        {% if messages %}
+        <div class="col-xs-12 ">
+            {% for message in messages %}
+            <p class="alert alert-{{ message.tags|tags_to_bootstrap }}">
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}Important: {% endif %}
+                {{ message }}
+            </p>
+            {% endfor %}
+        </div>
         <div class="col-xs-12">
             <hr>
         </div>
-    </div>
-    {% block content %}{% endblock %}
+        {% endif %}
+        {% block content %}{% endblock %}
     </div>
 </div>
 </body>

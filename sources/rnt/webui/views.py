@@ -2,10 +2,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models.query_utils import Q
 from django.http.response import HttpResponseBadRequest, JsonResponse, HttpResponseRedirect
-from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.urls.base import reverse
 from django.utils.decorators import method_decorator
+from django.utils.translation import ugettext
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
@@ -141,3 +141,29 @@ class DataSetDetailView(DetailView):
         if obj.public or self.request.user.id == obj.owner.id:
             return super(DataSetDetailView, self).dispatch(*args, **kwargs)
         return redirect('%s?next=%s' % (reverse('webui:login'), self.request.path))
+
+
+from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
+from django.shortcuts import render, redirect
+
+
+@login_required
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # Important!
+            messages.success(request, 'Your password was successfully updated!')
+            return redirect('webui:change_password')
+        else:
+            messages.error(request, 'Please correct the error below.')
+    else:
+        form = PasswordChangeForm(request.user)
+    return render(request, 'registration/small_form_host.html', {
+        'title': ugettext('Change password'),
+        'submit_text': ugettext('Save changes'),
+        'form': form
+    })

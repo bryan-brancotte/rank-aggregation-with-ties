@@ -49,3 +49,12 @@ def is_active(request, pattern):
     except Exception:
         pass
     return ''
+
+
+@register.filter
+def tags_to_bootstrap(tag):
+    if tag == "error":
+        return "danger"
+    if tag == "":
+        return "info"
+    return tag

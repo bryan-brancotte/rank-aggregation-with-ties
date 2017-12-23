@@ -1,6 +1,7 @@
 from django.conf.urls import include
 from django.conf.urls import url
 from django.contrib.auth import views as auth_views
+from django.views.generic import TemplateView
 from django.views.i18n import javascript_catalog
 
 from webui.views import DataSetCreate, DataSetUpdate, DataSetDelete
@@ -8,8 +9,10 @@ from . import views
 
 app_name = 'webui'
 urlpatterns = [
+    url(r'^accounts/$', TemplateView.as_view(template_name='registration/account.html'), name='account'),
     url(r'^accounts/login/$', auth_views.login, name='login'),
-    url(r'^accounts/logout/$', auth_views.logout, {'next_page': '/'}, name='logout'),
+    url(r'^accounts/logout/$', auth_views.logout, name='logout'),
+    url(r'^accounts/password/$', views.change_password, name='change_password'),
     url(r'^$', views.index, name='home'),
     url(r'^dataset/evaluate/$', views.dataset_evaluate, name='dataset_evaluate'),
     url(r'^dataset/compute/$', views.dataset_compute, name='dataset_compute'),
