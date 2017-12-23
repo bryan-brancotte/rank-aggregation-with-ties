@@ -1,11 +1,11 @@
 from django import forms
+from django.db.models.query_utils import Q
 from django.forms.widgets import HiddenInput
 from django.utils.html import format_html
 from django.utils.translation import ugettext as _
 
-from mediane.algorithms import enumeration as enum_algo
 from mediane.distances import enumeration as enum_dist
-from mediane.models import DataSet
+from mediane.models import DataSet, Algorithm, Distance, Normalization
 from mediane.normalizations import enumeration as enum_norm
 from mediane.process import evaluate_dataset_and_provide_stats
 
@@ -90,7 +90,7 @@ r4 := [[B],[C],[A,D,E]]""",
         label='',
     )
     algo = forms.ChoiceField(
-        choices=enum_algo.as_tuple_list(),
+        choices=[],
         widget=forms.RadioSelect,
         label='',
     )
@@ -116,9 +116,25 @@ r4 := [[B],[C],[A,D,E]]""",
         widget=HiddenInput
     )
 
-    def __init__(self, *args, **kwargs):
-        cleaned_data = super(ComputeConsensusForm, self).__init__(*args, **kwargs)
+    def __init__(self, user, *args, **kwargs):
+        super(ComputeConsensusForm, self).__init__(*args, **kwargs)
         # self.fields['dbdatasets'].queryset = DataSet.objects.filter(Q(owner=request.user) | Q(public=True))
+        if user.is_superuser:
+            q = ~Q(pk=None)
+        else:
+            q = Q(public=True)
+        self.fields['algo'].choices = [
+            (k, _(k)) for k in
+            Algorithm.objects.filter(q).values_list('key_name', flat=True)
+            ]
+        self.fields['dist'].choices = [
+            (k, _(k)) for k in
+            Distance.objects.filter(q).values_list('key_name', flat=True)
+            ]
+        self.fields['norm'].choices = [
+            (k, _(k)) for k in
+            Normalization.objects.filter(q).values_list('key_name', flat=True)
+            ]
 
     def clean(self):
         cleaned_data = super(ComputeConsensusForm, self).clean()

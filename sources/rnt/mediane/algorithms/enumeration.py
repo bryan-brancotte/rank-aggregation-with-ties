@@ -40,7 +40,9 @@ algorithmEnumeration = AlgorithmEnumeration()
 
 
 def get_median_ranking_algorithms():
-    return algorithmEnumeration.get_median_ranking_algorithms()
+    return [
+        BordaCount, PickAPerm, MedRank,
+    ]
 
 
 def as_tuple_list():

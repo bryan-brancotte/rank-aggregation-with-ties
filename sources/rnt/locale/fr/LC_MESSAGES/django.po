@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-12-21 04:35+0000\n"
+"POT-Creation-Date: 2017-12-23 16:07+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,6 +16,9 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "Will be automatically set"
+msgstr ""
 
 msgid "KTG"
 msgstr ""
@@ -50,7 +53,10 @@ msgstr ""
 msgid "Should the dataset be deleted when the associated job is removed?"
 msgstr ""
 
-msgid "Can the dataset be seen by everyone?"
+msgid "The user who can see, edit and delete it"
+msgstr ""
+
+msgid "Can it be seen by everyone?"
 msgstr ""
 
 msgid "step"
@@ -71,13 +77,22 @@ msgstr ""
 msgid "the consensus(es) computed for the givent dataset and job's distance"
 msgstr ""
 
-msgid "Unification"
-msgstr ""
-
-msgid "Projection"
-msgstr ""
-
 msgid "None"
+msgstr ""
+
+msgid "UNIF"
+msgstr ""
+
+msgid "PROJ"
+msgstr ""
+
+msgid "None_desc"
+msgstr ""
+
+msgid "UNIF_desc"
+msgstr ""
+
+msgid "PROJ_desc"
 msgstr ""
 
 msgid "typed"
@@ -109,6 +124,26 @@ msgstr ""
 msgid "precise time measurement"
 msgstr ""
 
+msgid "Forbidden (403)"
+msgstr ""
+
+msgid "You are not authorized to view this page."
+msgstr ""
+
+msgid "Page not found (404)"
+msgstr ""
+
+msgid "We're sorry, but the requested page could not be found."
+msgstr ""
+
+msgid "Server error (500)"
+msgstr ""
+
+msgid ""
+"There's been an error. It's been reported to the site administrators via "
+"email and should be fixed shortly. Thanks for your patience."
+msgstr ""
+
 msgid "Stats"
 msgstr ""
 
@@ -134,6 +169,9 @@ msgid "Type your dataset"
 msgstr ""
 
 msgid "Complete"
+msgstr ""
+
+msgid "Not complete"
 msgstr ""
 
 msgid "Invalid"
@@ -174,3 +212,9 @@ msgstr ""
 #| msgid "Compute"
 msgid "Press Compute"
 msgstr "Calculer"
+
+msgid "Change password"
+msgstr ""
+
+msgid "Save changes"
+msgstr ""

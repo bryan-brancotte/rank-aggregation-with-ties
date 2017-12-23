@@ -113,7 +113,17 @@ def evaluate_dataset_and_provide_stats(rankings_str):
     return evaluation
 
 
-def compute_consensus_settings_based_on_datasets(n, m, complete, rankings):
+def compute_consensus_settings_based_on_datasets(n, m, complete, rankings, user):
+    """
+
+    :param n:
+    :param m:
+    :param complete:
+    :param rankings:
+    :param user: the user for which we are find the best settings, should be used to
+    not select an algorithm/distance/norm that is not visible by the user
+    :return:
+    """
     consensus_settings = {}
     if n > 200 or True:
         consensus_settings["algo"] = BordaCount().get_full_name()

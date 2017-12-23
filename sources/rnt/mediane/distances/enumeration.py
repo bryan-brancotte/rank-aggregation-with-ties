@@ -32,7 +32,7 @@ def get_from(id_dist):
     return None
 
 
-def __dummy_method_to_have_translation_of_distance():
+def __dummy_method_to_have_translations():
     _('KTG')
     _('KTGI')
     _('PSEUDO_METRIC_KTGI')

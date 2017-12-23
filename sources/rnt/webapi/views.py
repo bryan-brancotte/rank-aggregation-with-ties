@@ -14,7 +14,6 @@ class DataSetViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = DataSetSerializer
 
     def list(self, request, *args, **kwargs):
-        print(request.user)
         serializer = DataSetSerializerNoContent(self.get_queryset(), many=True)
         return Response(serializer.data)
 

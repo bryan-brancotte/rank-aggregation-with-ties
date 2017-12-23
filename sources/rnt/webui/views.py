@@ -27,7 +27,7 @@ def index(request):
 r2 := [[A],[D],[B,E],[C]]
 r3 := [[B,D],[C],[A],[E]]
 r4 := [[B],[C],[A,D,E]]"""
-    context['full_form'] = ComputeConsensusForm()
+    context['full_form'] = ComputeConsensusForm(user=request.user)
     # context['full_form_bis'] = context['full_form']
     return render(request, 'webui/quick_compute.html', context=context)
 
@@ -35,7 +35,7 @@ r4 := [[B],[C],[A,D,E]]"""
 def dataset_evaluate(request):
     if request.method != 'POST':
         return HttpResponseBadRequest()
-    form = ComputeConsensusForm(data=request.POST)
+    form = ComputeConsensusForm(data=request.POST, user=request.user)
     form.is_valid()
     evaluation_and_settings = {
         **form.evaluation,
@@ -44,6 +44,7 @@ def dataset_evaluate(request):
             m=form.evaluation['m'],
             complete=form.evaluation['complete'],
             rankings=form.evaluation['rankings'],
+            user=request.user,
         ),
         'dataset_html_errors': str(form['dataset'].errors),
     }
@@ -54,7 +55,7 @@ def dataset_evaluate(request):
 def dataset_compute(request):
     if request.method != 'POST':
         return HttpResponseBadRequest()
-    form = ComputeConsensusForm(data=request.POST)
+    form = ComputeConsensusForm(data=request.POST, user=request.user)
     if not form.is_valid():
         print(form.errors)
         return HttpResponseBadRequest()

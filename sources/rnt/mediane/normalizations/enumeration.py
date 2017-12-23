@@ -1,10 +1,10 @@
 from django.utils.translation import ugettext_lazy as _
 
-NONE = 0
-UNIFICATION = 1
-PROJECTION = 2
+NONE = 'None'
+UNIFICATION = 'UNIF'
+PROJECTION = 'PROJ'
 
-__tuple_list = ((UNIFICATION, _("Unification")), (PROJECTION, _("Projection")), (NONE, _("None")),)
+__tuple_list = ((UNIFICATION, _(UNIFICATION)), (PROJECTION, _(PROJECTION)), (NONE, _(NONE)),)
 
 
 def as_tuple_list():
@@ -16,3 +16,11 @@ def get_from(id_enum):
         if str(k) == str(id_enum):
             return v
     return None
+
+def __dummy_method_to_have_translations():
+    _('None')
+    _('UNIF')
+    _('PROJ')
+    _('None_desc')
+    _('UNIF_desc')
+    _('PROJ_desc')
