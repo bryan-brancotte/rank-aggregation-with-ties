@@ -73,7 +73,10 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                        aria-expanded="false"><i class="fa fa-user-circle-o"></i> <span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        {%if request.user.is_staff %}<li><a href="/admin/"><i class="fa fa-cogs"></i> Admin</a></li>{%endif%}
+                        {%if request.user.is_staff %}
+                            <li><a href="/admin/"><i class="fa fa-cogs"></i> Admin</a></li>
+                            <li class="divider"></li>
+                        {%endif%}
                         <li><a href="{% url 'webui:account'%}"><i class="fa fa-user-circle-o"></i> Account</a></li>
                         <li><a href="{% url 'webui:logout'%}?next={{ request.path|urlencode }}"><i class="fa fa-sign-out"></i> Logout</a></li>
                     </ul>
