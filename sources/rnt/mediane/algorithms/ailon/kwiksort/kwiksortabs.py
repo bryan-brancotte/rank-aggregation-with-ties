@@ -7,6 +7,7 @@ class KwikSortAbs(MedianRanking):
 
     def compute_median_rankings(self, rankings: List[List[List[int]]], return_at_most_one_ranking: bool = False)-> \
             List[List[List[int]]]:
+
         """
         :param rankings: A set of rankings
         :type rankings: list
@@ -16,7 +17,6 @@ class KwikSortAbs(MedianRanking):
         If the algorithm is not able to provide multiple consensus, or if return_at_most_one_ranking is True then, it
         should return a list made of the only / the first consensus found
         """
-
         consensus = []
         elements_translated_target = []
         var = self.prepare_internal_vars(elements_translated_target, rankings)
@@ -53,14 +53,14 @@ class KwikSortAbs(MedianRanking):
 
         if len(before) == 1:
             consensus.append(before)
-        else:
+        elif len(before) > 0:
             self.kwik_sort(consensus, before, var)
 
         consensus.append(same)
 
         if len(after) == 1:
             consensus.append(after)
-        else:
+        elif len(after) > 0:
             self.kwik_sort(consensus, after, var)
 
     def is_breaking_ties_arbitrarily(self):
