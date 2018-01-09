@@ -1,6 +1,5 @@
 from typing import List
 
-from mediane.datasets.dataset import Dataset
 from mediane.algorithms.median_ranking import MedianRanking
 from mediane.distances.kemeny_computation import KemenyComputingFactory
 from mediane.distances.enumeration import GENERALIZED_KENDALL_TAU_DISTANCE
