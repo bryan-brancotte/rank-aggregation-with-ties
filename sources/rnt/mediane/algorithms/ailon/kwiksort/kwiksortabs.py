@@ -21,7 +21,7 @@ class KwikSortAbs(MedianRanking):
         elements_translated_target = []
         var = self.prepare_internal_vars(elements_translated_target, rankings)
         self.kwik_sort(consensus, elements_translated_target, var)
-        return [consensus]
+        return consensus
 
     def prepare_internal_vars(self, elements_translated_target: List, rankings: List[List[List[int]]]):
         raise NotImplementedError("The method not implemented")
@@ -37,10 +37,13 @@ class KwikSortAbs(MedianRanking):
     # public abstract int whereShouldItBe(V element, V pivot, List < V > elements, U var);
 
     def kwik_sort(self, consensus: List[List[int]], elements: List[int], var):
-        pivot = self.get_pivot(elements, var)
         after = []
         before = []
-        same = [pivot]
+        same = []
+        pivot = -1
+        if len(elements) > 0:
+            pivot = self.get_pivot(elements, var)
+            same.append(pivot)
         for element in elements:
             if element != pivot:
                 pos = self.where_should_it_be(element, pivot, elements, var)
@@ -57,6 +60,7 @@ class KwikSortAbs(MedianRanking):
             self.kwik_sort(consensus, before, var)
 
         consensus.append(same)
+        print("consensus = ", consensus)
 
         if len(after) == 1:
             consensus.append(after)

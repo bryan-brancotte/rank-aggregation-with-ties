@@ -3,6 +3,7 @@ from typing import List
 from mediane.algorithms.median_ranking import MedianRanking
 from mediane.distances.kemeny_computation import KemenyComputingFactory
 from mediane.distances.enumeration import GENERALIZED_KENDALL_TAU_DISTANCE
+from mediane.datasets.dataset import Dataset
 
 
 class PickAPerm(MedianRanking):
@@ -23,8 +24,7 @@ class PickAPerm(MedianRanking):
         d = Dataset(rankings)
         informations = d.get_all_informations()
         dst_min = float('inf')
-        consensus = [[]]
-
+        consensus = []
         for ranking in rankings:
             dist = k.get_kemeny_score_with_pairsposmatrix(informations[0], ranking, informations[-1])
             if dist < dst_min:
@@ -33,8 +33,7 @@ class PickAPerm(MedianRanking):
                 consensus.append(ranking)
             elif dist == dst_min and not return_at_most_one_ranking:
                 consensus.append(ranking)
-
-        return consensus
+        return [consensus]
 
     def is_breaking_ties_arbitrarily(self):
         return False
