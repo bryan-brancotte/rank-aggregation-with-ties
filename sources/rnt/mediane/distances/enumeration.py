@@ -1,5 +1,6 @@
 from django.utils.translation import ugettext_lazy as _
 from numpy import ndarray, array
+from mediane.distances.ScoringScheme import ScoringScheme
 
 GENERALIZED_KENDALL_TAU_DISTANCE = 'KTG'
 GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE = 'KTGI'
@@ -51,12 +52,17 @@ def __dummy_method_to_have_translations():
 # column 5 represents nb_rankings with elem2 and not elem1
 # column 6 represents nb_rankings with neither elem1 nor elem2
 
-def get_coeffs_dist(id_dist: int, p: float) -> ndarray:
-    if id_dist == GENERALIZED_KENDALL_TAU_DISTANCE:
-        return array([[0., p, 1., 0., 1., p], [p, 0., p, p, p, 0.]])
-    elif id_dist == GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE:
-        return array([[0., p, 1., 0., 0., 0.], [p, 0., p, 0., 0., 0.]])
-    elif id_dist == PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE:
-        return array([[0., p, 1., 0., 1., 0.], [p, 0., p, p, p, 0.]])
+def get_coeffs_dist(id_dist: str, p: float) -> ndarray:
+    upper = id_dist.upper()
+    if upper == GENERALIZED_KENDALL_TAU_DISTANCE:
+        return array([[0., 1.0, p, 0., 1., p], [p, p, 0., p, p, 0.]])
+    elif upper == GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE:
+        return array([[0., 1., p, 0., 0., 0.], [p, p, 0, 0., 0., 0.]])
+    elif upper == PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE:
+        return array([[0., 1., p, 0., 1., 0.], [p, p, 0, p, p, 0.]])
     else:
         return array([[0., 0., 0., 0., 0., 0.], [0., 0., 0., 0., 0., 0.]])
+
+
+def get_scoring_scheme(id_dist: str, p: float) -> ScoringScheme:
+    return ScoringScheme(get_coeffs_dist(id_dist=id_dist, p=p))

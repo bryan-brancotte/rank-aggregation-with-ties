@@ -58,10 +58,7 @@ class KwikSortAbs(MedianRanking):
             consensus.append(before)
         elif len(before) > 0:
             self.kwik_sort(consensus, before, var)
-
         consensus.append(same)
-        print("consensus = ", consensus)
-
         if len(after) == 1:
             consensus.append(after)
         elif len(after) > 0:

@@ -17,7 +17,6 @@ class KendallTauGeneralizedNlogN(DistanceCalculator):
             ranking1: List[List[int]],
             ranking2: List[List[int]],
     ) -> Dict[int, float]:
-
         elements_r1 = {}
         id_bucket = 1
         for bucket in ranking1:
@@ -132,7 +131,7 @@ class KendallTauGeneralizedNlogN(DistanceCalculator):
                 i += 1
             elif nb > nb2:
                 if nb2 < id_max:
-                    vect_before[2] += n-i-not_in_r1_left
+                    vect_before[1] += n-i-not_in_r1_left
                     vect_before[4] += not_in_r1_left
                 res[k] = nb2
                 k += 1
@@ -181,8 +180,8 @@ class KendallTauGeneralizedNlogN(DistanceCalculator):
         vect_tied[5] += not_in_r1 * (not_in_r1-1) / 2
         vect_tied[3] += not_in_r1 * len(h)
         for length_bucket_r1 in h.values():
-            vect_before[0] += length_bucket_r1 * (n - length_bucket_r1)
-            vect_tied[1] += length_bucket_r1 * (length_bucket_r1 - 1) / 2
+            vect_tied[0] += length_bucket_r1 * (n - length_bucket_r1)
+            vect_tied[2] += length_bucket_r1 * (length_bucket_r1 - 1) / 2
         return sort(asarray(bucket), kind='mergesort')
 
     def get_distance_to_a_set_of_rankings(
@@ -204,3 +203,8 @@ class KendallTauGeneralizedNlogN(DistanceCalculator):
             GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE: ktg_i,
             PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE: pktg_i,
         }
+
+
+r1 = [[1, 2], [3, 4]]
+kt = KendallTauGeneralizedNlogN(0.75)
+kt.get_distance_to_an_other_ranking(r1, r1)

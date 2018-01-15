@@ -51,10 +51,10 @@ class KwikSortRandom(KwikSortAbs):
         d = count_nonzero(element_var == -1)
         e = count_nonzero(element_var < pivot_var)
 
-        comp = [e-d+c, b-a, m-e-2*c-b+2*a, c-a, d-a, a]
+        comp = [e-d+c, m-e-2*c-b+2*a, b-a, c-a, d-a, a]
         cost_before = vdot(coeffs_distance[0], comp)
         cost_same = vdot(coeffs_distance[1], comp)
-        cost_after = vdot(coeffs_distance[0], [m-e-2*c-b+2*a, b-a, e-d+c, d-a, c-a, a])
+        cost_after = vdot(coeffs_distance[0], [m-e-2*c-b+2*a,  e-d+c, b-a, d-a, c-a, a])
 
         if cost_same <= cost_before:
             if cost_same <= cost_after:
@@ -80,6 +80,7 @@ class KwikSortRandom(KwikSortAbs):
         :return: a list of distances from distance_enumeration
         """
         return (
-            GENERALIZED_KENDALL_TAU_DISTANCE, GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE,
+            GENERALIZED_KENDALL_TAU_DISTANCE,
+            GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE,
             PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE
         )
