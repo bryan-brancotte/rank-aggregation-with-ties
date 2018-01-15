@@ -192,17 +192,15 @@ class KendallTauGeneralizedNlogN(DistanceCalculator):
     ) -> Dict[int, float]:
         ktg = 0
         ktg_i = 0
+        pktg_i = 0
         for r in rankings:
             distance_values = self.get_distance_to_an_other_ranking(c, r)
             ktg += distance_values[GENERALIZED_KENDALL_TAU_DISTANCE]
             ktg_i += distance_values[GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE]
+            pktg_i += distance_values[PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE]
 
         return {
             GENERALIZED_KENDALL_TAU_DISTANCE: ktg,
             GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE: ktg_i,
+            PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE: pktg_i,
         }
-
-
-kt = KendallTauGeneralizedNlogN(0.75)
-# kt.get_distance_to_an_other_ranking([[2], [1, 7], [3], [6]], [[8, 3, 11], [1, 7], [10], [6]])
-kt.get_distance_to_an_other_ranking([[1, 2], [3, 4]], [[1], [2], [3], [4]])
