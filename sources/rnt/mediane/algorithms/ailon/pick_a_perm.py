@@ -1,9 +1,8 @@
 from typing import List
 
 from mediane.algorithms.median_ranking import MedianRanking
-from mediane.distances.kemeny_computation import KemenyComputingFactory
 from mediane.distances.enumeration import GENERALIZED_KENDALL_TAU_DISTANCE
-from mediane.datasets.dataset import Dataset
+from mediane.distances.KendallTauGeneralizedNlogN import KendallTauGeneralizedNlogN
 
 
 class PickAPerm(MedianRanking):
@@ -20,13 +19,11 @@ class PickAPerm(MedianRanking):
         If the algorithm is not able to provide multiple consensus, or if return_at_most_one_ranking is True then, it
         should return a list made of the only / the first consensus found
         """
-        k = KemenyComputingFactory(GENERALIZED_KENDALL_TAU_DISTANCE, self.p)
-        d = Dataset(rankings)
-        informations = d.get_all_informations()
+        k = KendallTauGeneralizedNlogN(self.p)
         dst_min = float('inf')
         consensus = []
         for ranking in rankings:
-            dist = k.get_kemeny_score_with_pairsposmatrix(informations[0], ranking, informations[-1])
+            dist = k.get_distance_to_a_set_of_rankings(ranking, rankings).get(GENERALIZED_KENDALL_TAU_DISTANCE)
             if dist < dst_min:
                 dst_min = dist
                 consensus.clear()
