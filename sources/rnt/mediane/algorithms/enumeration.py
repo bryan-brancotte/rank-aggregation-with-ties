@@ -4,12 +4,13 @@ from mediane.algorithms.ailon.pick_a_perm import PickAPerm
 from mediane.algorithms.fagin.med_rank import MedRank
 from mediane.algorithms.misc.borda_count import BordaCount
 from mediane.algorithms.ailon.kwiksort.kwiksort_random import KwikSortRandom
+from mediane.algorithms.misc.CopelandMethod import CopelandMethod
 
 
 class AlgorithmEnumeration:
     __tuple_list = None
     __median_ranking_algorithms = [
-        BordaCount, PickAPerm, MedRank, KwikSortRandom
+        BordaCount, PickAPerm, MedRank, KwikSortRandom, CopelandMethod
     ]
 
     def __init__(self):
