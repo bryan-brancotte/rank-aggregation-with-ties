@@ -98,7 +98,7 @@ class KendallTauGeneralizedNlogN(DistanceCalculator):
 
     def compute_inversions(self, ranking: Dict, left: int, right: int, vect1: ndarray, vect2: ndarray, id_max: int):
         if right == left:
-            return self.manage_bucket(ranking.get(right), vect1, vect2, id_max)
+            return self.manage_bucket(ranking.get(right), vect2, id_max)
         else:
             middle = (right-left)//2
             return self.merge(self.compute_inversions(ranking, left, middle+left, vect1, vect2, id_max),
@@ -164,7 +164,7 @@ class KendallTauGeneralizedNlogN(DistanceCalculator):
         return res
 
     @staticmethod
-    def manage_bucket(bucket: List[int], vect_before: ndarray, vect_tied: ndarray, id_max: int) -> ndarray:
+    def manage_bucket(bucket: List[int], vect_tied: ndarray, id_max: int) -> ndarray:
         h = {}
         n = 0
         not_in_r1 = 0
