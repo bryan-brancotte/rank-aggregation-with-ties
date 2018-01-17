@@ -27,6 +27,7 @@ class KemenyComputingFactory:
                 elements_r1[element] = id_bucket
             id_bucket += 1
         relative_pos = KemenyComputingFactory.get_before_tied_counting(elements_r1, size_buckets, ranking2, id_bucket)
+        print(relative_pos)
         return abs(vdot(relative_pos[0], cost_matrix[0])) + abs(vdot(relative_pos[1], cost_matrix[1]))
 
     @staticmethod
@@ -135,7 +136,6 @@ class KemenyComputingFactory:
         not_in_r1_left = count_nonzero(left >= id_max)
         not_in_r1_right = count_nonzero(right >= id_max)
         vect_before[5] += not_in_r1_left * not_in_r1_right
-
         while i < n and j < m:
             nb = left[i]
             nb2 = right[j]
@@ -166,12 +166,12 @@ class KemenyComputingFactory:
                     k += 1
                     j += 1
                     cpt2 += 1
-
                 if nb < id_max:
                     vect_tied[0] += cpt1 * cpt2
-
                     vect_before[0] += m - j - not_in_r1_right
-                    vect_before[1] += n - i - not_in_r1_right
+                    vect_before[1] += n - i - not_in_r1_left
+                    vect_before[3] += cpt1 * not_in_r1_right
+                    vect_before[4] += cpt2 * not_in_r1_left
 
         while i < n:
             res[k] = left[i]
