@@ -1,6 +1,5 @@
 from django.utils.translation import ugettext_lazy as _
 from numpy import ndarray, array
-from mediane.distances.ScoringScheme import ScoringScheme
 
 GENERALIZED_KENDALL_TAU_DISTANCE = 'KTG'
 GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE = 'KTGI'
@@ -63,6 +62,3 @@ def get_coeffs_dist(id_dist: str, p: float) -> ndarray:
     else:
         return array([[0., 0., 0., 0., 0., 0.], [0., 0., 0., 0., 0., 0.]])
 
-
-def get_scoring_scheme(id_dist: str, p: float) -> ScoringScheme:
-    return ScoringScheme(get_coeffs_dist(id_dist=id_dist, p=p))

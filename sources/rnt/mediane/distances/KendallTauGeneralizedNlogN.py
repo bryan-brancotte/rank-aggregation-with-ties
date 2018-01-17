@@ -1,8 +1,10 @@
 from typing import Dict, List
 from collections import deque
-
 from mediane.distances.distance_calculator import DistanceCalculator
-from mediane.distances.enumeration import *
+from mediane.distances.enumeration import GENERALIZED_KENDALL_TAU_DISTANCE, GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE, \
+    PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE, get_coeffs_dist
+from numpy import ndarray
+
 
 from numpy import zeros, asarray, sort, count_nonzero, vdot
 
@@ -18,18 +20,21 @@ class KendallTauGeneralizedNlogN(DistanceCalculator):
             ranking2: List[List[int]],
     ) -> Dict[int, float]:
         elements_r1 = {}
+        size_buckets = {}
         id_bucket = 1
         for bucket in ranking1:
+            size_buckets[id_bucket] = len(bucket)
             for element in bucket:
                 elements_r1[element] = id_bucket
             id_bucket += 1
 
-        return self.get_distance_to_an_other_ranking_counting_inversions(elements_r1, ranking2, id_bucket)
+        return self.get_distance_to_an_other_ranking_counting_inversions(elements_r1, size_buckets, ranking2, id_bucket)
 
     def get_distance_to_an_other_ranking_counting_inversions(
-            self, elements_r1: Dict, ranking: List[List[int]], id_max: int) -> Dict[int, float]:
+            self, elements_r1: Dict, size_buckets: Dict, ranking: List[List[int]], id_max: int) -> Dict[int, float]:
         vect_before = zeros(6, dtype=int)
         vect_tied = zeros(6, dtype=int)
+
         not_in_r2 = {}
         in_r1_only = set(elements_r1.keys())
         n1 = len(elements_r1)
@@ -76,19 +81,21 @@ class KendallTauGeneralizedNlogN(DistanceCalculator):
                 not_in_r2[id_bucket] += 1
             vect_before[3] += cumulated_up[id_bucket-1]
             vect_before[4] += cumulated_down[id_bucket]
+        tot_missing_r2 = elem_r1_and_not_r2
 
-        for size_ties_r1_both_missing_in_r2 in not_in_r2.values():
+        for id_ties, size_ties_r1_both_missing_in_r2 in not_in_r2.items():
+            tot_missing_r2 -= size_ties_r1_both_missing_in_r2
             vect_tied[5] += size_ties_r1_both_missing_in_r2 * (size_ties_r1_both_missing_in_r2 - 1) / 2
+            vect_before[5] += size_ties_r1_both_missing_in_r2 * tot_missing_r2
+            vect_tied[3] += (size_buckets[id_ties] - size_ties_r1_both_missing_in_r2)*size_ties_r1_both_missing_in_r2
 
         # elem_r2_and_not_r1 = count_r2 - id_max
 
         # vect[3] = elem_r1_and_not_r2 * n2 + elem_r2_and_not_r1 * n1
         # vect[5] = (elem_r2_and_not_r1 * (elem_r2_and_not_r1-1) + elem_r1_and_not_r2*(elem_r1_and_not_r2-1))/2
 
-        self.compute_inversions(ranking2, 1, len(ranking2), vect_before, vect_tied, id_max)
+        KendallTauGeneralizedNlogN.compute_inversions(ranking2, 1, len(ranking2), vect_before, vect_tied, id_max)
         res = {}
-        # print("VECT1 = ", vect_before)
-        # print("VECT2 = ", vect_tied)
         for distance in (GENERALIZED_KENDALL_TAU_DISTANCE, GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE,
                          PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE):
             coeffs = get_coeffs_dist(id_dist=distance, p=self.p)
@@ -96,14 +103,17 @@ class KendallTauGeneralizedNlogN(DistanceCalculator):
             res[distance] = dst
         return res
 
-    def compute_inversions(self, ranking: Dict, left: int, right: int, vect1: ndarray, vect2: ndarray, id_max: int):
+    @staticmethod
+    def compute_inversions(ranking: Dict, left: int, right: int, vect1: ndarray, vect2: ndarray, id_max: int):
         if right == left:
-            return self.manage_bucket(ranking.get(right), vect2, id_max)
+            return KendallTauGeneralizedNlogN.manage_bucket(ranking.get(right), vect1, vect2, id_max)
         else:
             middle = (right-left)//2
-            return self.merge(self.compute_inversions(ranking, left, middle+left, vect1, vect2, id_max),
-                              self.compute_inversions(ranking, middle+left+1, right, vect1, vect2, id_max),
-                              vect1, vect2, id_max)
+            return KendallTauGeneralizedNlogN.merge(KendallTauGeneralizedNlogN.compute_inversions
+                                                    (ranking, left, middle+left, vect1, vect2, id_max),
+                                                    KendallTauGeneralizedNlogN.compute_inversions
+                                                    (ranking, middle+left+1, right, vect1, vect2, id_max),
+                                                    vect1, vect2, id_max)
 
     @staticmethod
     def merge(left: ndarray, right: ndarray, vect_before: ndarray, vect_tied: ndarray, id_max: int):
@@ -124,14 +134,14 @@ class KendallTauGeneralizedNlogN(DistanceCalculator):
             nb2 = right[j]
             if nb < nb2:
                 if nb < id_max:
-                    vect_before[0] += m-j-not_in_r1_right
+                    vect_before[0] += m - j - not_in_r1_right
                     vect_before[3] += not_in_r1_right
                 res[k] = nb
                 k += 1
                 i += 1
             elif nb > nb2:
                 if nb2 < id_max:
-                    vect_before[1] += n-i-not_in_r1_left
+                    vect_before[1] += n - i - not_in_r1_left
                     vect_before[4] += not_in_r1_left
                 res[k] = nb2
                 k += 1
@@ -153,6 +163,9 @@ class KendallTauGeneralizedNlogN(DistanceCalculator):
                 if nb < id_max:
                     vect_tied[0] += cpt1 * cpt2
 
+                    vect_before[0] += m - j - not_in_r1_right
+                    vect_before[1] += n-i-not_in_r1_right
+
         while i < n:
             res[k] = left[i]
             k += 1
@@ -164,7 +177,7 @@ class KendallTauGeneralizedNlogN(DistanceCalculator):
         return res
 
     @staticmethod
-    def manage_bucket(bucket: List[int], vect_tied: ndarray, id_max: int) -> ndarray:
+    def manage_bucket(bucket: List[int], vect_before: ndarray, vect_tied: ndarray, id_max: int) -> ndarray:
         h = {}
         n = 0
         not_in_r1 = 0
@@ -177,10 +190,12 @@ class KendallTauGeneralizedNlogN(DistanceCalculator):
                     h[elem] += 1
             else:
                 not_in_r1 += 1
-        vect_tied[5] += not_in_r1 * (not_in_r1-1) / 2
+        vect_tied[5] += not_in_r1 * (not_in_r1 - 1) / 2
         vect_tied[3] += not_in_r1 * len(h)
+        total = n
         for length_bucket_r1 in h.values():
-            vect_tied[0] += length_bucket_r1 * (n - length_bucket_r1)
+            total -= length_bucket_r1
+            vect_before[2] += length_bucket_r1 * total
             vect_tied[2] += length_bucket_r1 * (length_bucket_r1 - 1) / 2
         return sort(asarray(bucket), kind='mergesort')
 
@@ -203,8 +218,3 @@ class KendallTauGeneralizedNlogN(DistanceCalculator):
             GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE: ktg_i,
             PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE: pktg_i,
         }
-
-
-r1 = [[1, 2], [3, 4]]
-kt = KendallTauGeneralizedNlogN(0.75)
-kt.get_distance_to_an_other_ranking(r1, r1)

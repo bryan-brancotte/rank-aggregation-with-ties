@@ -1,8 +1,7 @@
 from typing import Dict, List
 from collections import deque
-from mediane.distances.enumeration import *
-
-from numpy import zeros, asarray, sort, count_nonzero, vdot
+from mediane.distances.ScoringScheme import ScoringScheme
+from numpy import zeros, vdot, ndarray, sort, count_nonzero, asarray
 
 
 class KemenyComputingFactory:
@@ -20,17 +19,18 @@ class KemenyComputingFactory:
     def get_distance_to_an_other_ranking(self, ranking1: List[List[int]], ranking2: List[List[int]],) -> float:
         cost_matrix = self.scoring_scheme.get_matrix()
         elements_r1 = {}
+        size_buckets = {}
         id_bucket = 1
         for bucket in ranking1:
+            size_buckets[id_bucket] = len(bucket)
             for element in bucket:
                 elements_r1[element] = id_bucket
             id_bucket += 1
-
-        relative_pos = self.get_before_same_counting(elements_r1, ranking2, id_bucket)
+        relative_pos = KemenyComputingFactory.get_before_tied_counting(elements_r1, size_buckets, ranking2, id_bucket)
         return abs(vdot(relative_pos[0], cost_matrix[0])) + abs(vdot(relative_pos[1], cost_matrix[1]))
 
     @staticmethod
-    def get_before_same_counting(r1: Dict, ranking: List[List[int]], id_max: int) -> tuple:
+    def get_before_tied_counting(r1: Dict, size_buckets: Dict, ranking: List[List[int]], id_max: int) -> tuple:
         vect_before = zeros(6, dtype=int)
         vect_tied = zeros(6, dtype=int)
         not_in_r2 = {}
@@ -80,24 +80,47 @@ class KemenyComputingFactory:
             vect_before[3] += cumulated_up[id_bucket - 1]
             vect_before[4] += cumulated_down[id_bucket]
 
-        for size_ties_r1_both_missing_in_r2 in not_in_r2.values():
+        tot_missing_r2 = elem_r1_and_not_r2
+        for id_ties, size_ties_r1_both_missing_in_r2 in not_in_r2.items():
+            tot_missing_r2 -= size_ties_r1_both_missing_in_r2
             vect_tied[5] += size_ties_r1_both_missing_in_r2 * (size_ties_r1_both_missing_in_r2 - 1) / 2
+            vect_before[5] += size_ties_r1_both_missing_in_r2 * tot_missing_r2
+            vect_tied[3] += (size_buckets[id_ties] - size_ties_r1_both_missing_in_r2)*size_ties_r1_both_missing_in_r2
 
-        # elem_r2_and_not_r1 = count_r2 - id_max
-
-        # vect[3] = elem_r1_and_not_r2 * n2 + elem_r2_and_not_r1 * n1
-        # vect[5] = (elem_r2_and_not_r1 * (elem_r2_and_not_r1-1) + elem_r1_and_not_r2*(elem_r1_and_not_r2-1))/2
+        KemenyComputingFactory.compute_inversions(ranking2, 1, len(ranking2), vect_before, vect_tied, id_max)
         res = (vect_before, vect_tied)
         return res
 
-    def compute_inversions(self, ranking: Dict, left: int, right: int, vect1: ndarray, vect2: ndarray, id_max: int):
+    def get_distance_to_a_set_of_rankings(self, c: List[List[int]], rankings: List[List[List[int]]]) -> float:
+        elements_r1 = {}
+        size_buckets = {}
+        id_bucket = 1
+        scoring_scheme = self.scoring_scheme.get_matrix()
+        for bucket in c:
+            size_buckets[id_bucket] = len(bucket)
+            for element in bucket:
+                elements_r1[element] = id_bucket
+            id_bucket += 1
+        before = zeros(6, dtype=int)
+        tied = zeros(6, dtype=int)
+        for ranking in rankings:
+            tple = self.get_before_tied_counting(elements_r1, size_buckets, ranking, id_bucket)
+            for i in range(6):
+                before[i] += tple[0][i]
+                tied[i] += tple[1][i]
+        return abs(vdot(before, scoring_scheme[0])) + abs(vdot(tied, scoring_scheme[1]))
+
+    @staticmethod
+    def compute_inversions(ranking: Dict, left: int, right: int, vect1: ndarray, vect2: ndarray, id_max: int):
         if right == left:
-            return self.manage_bucket(ranking.get(right), vect2, id_max)
+            return KemenyComputingFactory.manage_bucket(ranking.get(right), vect1, vect2, id_max)
         else:
             middle = (right - left) // 2
-            return self.merge(self.compute_inversions(ranking, left, middle + left, vect1, vect2, id_max),
-                              self.compute_inversions(ranking, middle + left + 1, right, vect1, vect2, id_max),
-                              vect1, vect2, id_max)
+            return KemenyComputingFactory.merge(KemenyComputingFactory.compute_inversions
+                                                (ranking, left, middle + left, vect1, vect2, id_max),
+                                                KemenyComputingFactory.compute_inversions
+                                                (ranking, middle + left + 1, right, vect1, vect2, id_max),
+                                                vect1, vect2, id_max)
 
     @staticmethod
     def merge(left: ndarray, right: ndarray, vect_before: ndarray, vect_tied: ndarray, id_max: int):
@@ -147,6 +170,9 @@ class KemenyComputingFactory:
                 if nb < id_max:
                     vect_tied[0] += cpt1 * cpt2
 
+                    vect_before[0] += m - j - not_in_r1_right
+                    vect_before[1] += n - i - not_in_r1_right
+
         while i < n:
             res[k] = left[i]
             k += 1
@@ -158,7 +184,7 @@ class KemenyComputingFactory:
         return res
 
     @staticmethod
-    def manage_bucket(bucket: List[int], vect_tied: ndarray, id_max: int) -> ndarray:
+    def manage_bucket(bucket: List[int], vect_before: ndarray, vect_tied: ndarray, id_max: int) -> ndarray:
         h = {}
         n = 0
         not_in_r1 = 0
@@ -173,26 +199,9 @@ class KemenyComputingFactory:
                 not_in_r1 += 1
         vect_tied[5] += not_in_r1 * (not_in_r1 - 1) / 2
         vect_tied[3] += not_in_r1 * len(h)
+        total = n
         for length_bucket_r1 in h.values():
-            vect_tied[0] += length_bucket_r1 * (n - length_bucket_r1)
+            total -= length_bucket_r1
+            vect_before[2] += length_bucket_r1 * total
             vect_tied[2] += length_bucket_r1 * (length_bucket_r1 - 1) / 2
         return sort(asarray(bucket), kind='mergesort')
-
-    def get_distance_to_a_set_of_rankings(self, c: List[List[int]], rankings: List[List[List[int]]]) -> float:
-        elements_r1 = {}
-        id_bucket = 1
-        for bucket in c:
-            for element in bucket:
-                elements_r1[element] = id_bucket
-            id_bucket += 1
-        before = zeros(6, dtype=int)
-        tied = zeros(6, dtype=int)
-        for ranking in rankings:
-            i = 0
-            tple = self.get_before_same_counting(elements_r1, ranking, id_bucket)
-
-
-
-rank1 = [[1, 2], [3, 4]]
-kt = KemenyComputingFactory(get_scoring_scheme("ktg", p=0.75))
-kt.get_distance_to_an_other_ranking(rank1, rank1)

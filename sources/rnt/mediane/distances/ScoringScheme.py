@@ -1,10 +1,11 @@
-from numpy import ndarray
+from numpy import ndarray, array
+from mediane.distances.enumeration import get_coeffs_dist
 
 
 class ScoringScheme:
 
-    def __init__(self, matrix=ndarray([[0., 1., 0.5, 0., 1., 0.5], [0.5, 0.5, 0., 0.5, 0.5, 0.]])):
-        self.__matrix = matrix
+    def __init__(self, mat=array([[0., 1., 0.5, 0., 1., 0.5], [0., 1., 0.5, 0., 1., 0.5]])):
+        self.__matrix = mat
 
     def get_matrix(self):
         return self.__matrix
@@ -16,3 +17,7 @@ class ScoringScheme:
         self.__matrix = matrix
 
     matrix = property(__get_matrix, __set_matrix)
+
+    @staticmethod
+    def get_scoring_scheme(id_dist: str, p: float):
+        return ScoringScheme(get_coeffs_dist(id_dist=id_dist, p=p))
