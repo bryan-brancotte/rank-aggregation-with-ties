@@ -7,9 +7,6 @@ class ScoringScheme:
     def __init__(self, mat=array([[0., 1., 0.5, 0., 1., 0.5], [0., 1., 0.5, 0., 1., 0.5]])):
         self.__matrix = mat
 
-    def get_matrix(self):
-        return self.__matrix
-
     def __get_matrix(self):
         return self.__matrix
 

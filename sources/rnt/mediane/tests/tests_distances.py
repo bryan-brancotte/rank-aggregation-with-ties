@@ -29,11 +29,16 @@ class DistanceTestCase(TestCase):
             ranking2=ranking1,
         )
         self.assertEqual(d[GENERALIZED_KENDALL_TAU_DISTANCE], 0)
+        self.assertEqual(d[GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE], 0)
+        self.assertEqual(d[PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE], 0)
+
         d = dist.get_distance_to_an_other_ranking(
             ranking1=ranking1,
             ranking2=ranking2,
         )
         self.assertEqual(d[GENERALIZED_KENDALL_TAU_DISTANCE], 2*p)
+        self.assertEqual(d[GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE], 2*p)
+        self.assertEqual(d[PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE], 2*p)
 
         d = dist.get_distance_to_an_other_ranking(ranking1=ranking3, ranking2=ranking4)
 
@@ -50,6 +55,11 @@ class DistanceTestCase(TestCase):
         self.assertEqual(d[GENERALIZED_KENDALL_TAU_DISTANCE], 1)
         self.assertEqual(d[GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE], 0)
         self.assertEqual(d[PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE], 1)
+
+        kem = dist.get_distance_to_a_set_of_rankings(ranking4, [ranking3, ranking3])
+        self.assertEqual(kem[GENERALIZED_KENDALL_TAU_DISTANCE], 32+8*p)
+        self.assertEqual(kem[GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE], 4)
+        self.assertEqual(kem[PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE], 32+4*p)
 
     # def test_KendallTauGeneralizedNSquare(self):
     # self.run_test_on_a_distance(KendallTauGeneralizedNSquare())

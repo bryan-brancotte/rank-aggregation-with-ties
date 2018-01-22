@@ -61,4 +61,3 @@ def get_coeffs_dist(id_dist: str, p: float) -> ndarray:
         return array([[0., 1., p, 0., 1., 0.], [p, p, 0, p, p, 0.]])
     else:
         return array([[0., 0., 0., 0., 0., 0.], [0., 0., 0., 0., 0., 0.]])
-

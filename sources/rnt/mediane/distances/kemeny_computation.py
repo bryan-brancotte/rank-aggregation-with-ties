@@ -88,7 +88,7 @@ class KemenyComputingFactory:
             vect_before[5] += size_ties_r1_both_missing_in_r2 * tot_missing_r2
             vect_tied[3] += (size_buckets[id_ties] - size_ties_r1_both_missing_in_r2)*size_ties_r1_both_missing_in_r2
 
-        KemenyComputingFactory.compute_inversions(ranking2, 1, len(ranking2), vect_before, vect_tied, id_max)
+        KemenyComputingFactory.__inversions(ranking2, 1, len(ranking2), vect_before, vect_tied, id_max)
         res = (vect_before, vect_tied)
         return res
 
@@ -96,7 +96,7 @@ class KemenyComputingFactory:
         elements_r1 = {}
         size_buckets = {}
         id_bucket = 1
-        scoring_scheme = self.scoring_scheme.get_matrix()
+        scoring_scheme = self.scoring_scheme.matrix
         for bucket in c:
             size_buckets[id_bucket] = len(bucket)
             for element in bucket:
@@ -112,19 +112,19 @@ class KemenyComputingFactory:
         return abs(vdot(before, scoring_scheme[0])) + abs(vdot(tied, scoring_scheme[1]))
 
     @staticmethod
-    def compute_inversions(ranking: Dict, left: int, right: int, vect1: ndarray, vect2: ndarray, id_max: int):
+    def __inversions(ranking: Dict, left: int, right: int, vect1: ndarray, vect2: ndarray, id_max: int):
         if right == left:
-            return KemenyComputingFactory.manage_bucket(ranking.get(right), vect1, vect2, id_max)
+            return KemenyComputingFactory.__manage_bucket(ranking.get(right), vect1, vect2, id_max)
         else:
             middle = (right - left) // 2
-            return KemenyComputingFactory.merge(KemenyComputingFactory.compute_inversions
-                                                (ranking, left, middle + left, vect1, vect2, id_max),
-                                                KemenyComputingFactory.compute_inversions
-                                                (ranking, middle + left + 1, right, vect1, vect2, id_max),
-                                                vect1, vect2, id_max)
+            return KemenyComputingFactory.__merge(KemenyComputingFactory.__inversions(ranking, left, middle + left,
+                                                                                      vect1, vect2, id_max),
+                                                  KemenyComputingFactory.__inversions(ranking, middle + left + 1, right,
+                                                                                      vect1, vect2, id_max),
+                                                  vect1, vect2, id_max)
 
     @staticmethod
-    def merge(left: ndarray, right: ndarray, vect_before: ndarray, vect_tied: ndarray, id_max: int):
+    def __merge(left: ndarray, right: ndarray, vect_before: ndarray, vect_tied: ndarray, id_max: int):
         left_copy = left.copy()
         right_copy = right.copy()
         res = zeros(len(left_copy) + len(right_copy), dtype=int)
@@ -184,7 +184,7 @@ class KemenyComputingFactory:
         return res
 
     @staticmethod
-    def manage_bucket(bucket: List[int], vect_before: ndarray, vect_tied: ndarray, id_max: int) -> ndarray:
+    def __manage_bucket(bucket: List[int], vect_before: ndarray, vect_tied: ndarray, id_max: int) -> ndarray:
         h = {}
         n = 0
         not_in_r1 = 0
