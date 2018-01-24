@@ -4,16 +4,15 @@ from mediane.distances.enumeration import get_coeffs_dist
 
 class ScoringScheme:
 
-    def __init__(self, mat=array([[0., 1., 0.5, 0., 1., 0.5], [0., 1., 0.5, 0., 1., 0.5]])):
-        self.__matrix = mat
+    def __init__(self, matrix=array([[0., 1., 0.5, 0., 1., 0.5], [0., 1., 0.5, 0., 1., 0.5]])):
+        self._matrix = matrix
 
-    def __get_matrix(self):
-        return self.__matrix
+    @property
+    def matrix(self):
+        return self._matrix
 
-    def __set_matrix(self, matrix: ndarray):
-        self.__matrix = matrix
-
-    matrix = property(__get_matrix, __set_matrix)
+    def __str__(self):
+        return str(self._matrix)
 
     @staticmethod
     def get_scoring_scheme(id_dist: str, p: float):

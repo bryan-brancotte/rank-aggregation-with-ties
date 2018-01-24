@@ -17,7 +17,7 @@ class KemenyComputingFactory:
     scoring_scheme = property(__get_scoring_scheme, __set_scoring_scheme)
 
     def get_distance_to_an_other_ranking(self, ranking1: List[List[int]], ranking2: List[List[int]],) -> float:
-        cost_matrix = self.scoring_scheme.get_matrix()
+        cost_matrix = self.scoring_scheme.matrix
         elements_r1 = {}
         size_buckets = {}
         id_bucket = 1
@@ -27,7 +27,6 @@ class KemenyComputingFactory:
                 elements_r1[element] = id_bucket
             id_bucket += 1
         relative_pos = KemenyComputingFactory.get_before_tied_counting(elements_r1, size_buckets, ranking2, id_bucket)
-        print(relative_pos)
         return abs(vdot(relative_pos[0], cost_matrix[0])) + abs(vdot(relative_pos[1], cost_matrix[1]))
 
     @staticmethod
@@ -58,7 +57,6 @@ class KemenyComputingFactory:
 
             ranking2[id_ranking] = bucket_r2
             id_ranking += 1
-
         presence = zeros(count_r2, dtype=int)
         cumulated_up = zeros(count_r2, dtype=int)
         cumulated_down = zeros(count_r2, dtype=int)
@@ -146,6 +144,7 @@ class KemenyComputingFactory:
                 res[k] = nb
                 k += 1
                 i += 1
+
             elif nb > nb2:
                 if nb2 < id_max:
                     vect_before[1] += n - i - not_in_r1_left
@@ -168,8 +167,8 @@ class KemenyComputingFactory:
                     cpt2 += 1
                 if nb < id_max:
                     vect_tied[0] += cpt1 * cpt2
-                    vect_before[0] += m - j - not_in_r1_right
-                    vect_before[1] += n - i - not_in_r1_left
+                    vect_before[0] += cpt1*(m - j - not_in_r1_right)
+                    vect_before[1] += cpt2*(n - i - not_in_r1_left)
                     vect_before[3] += cpt1 * not_in_r1_right
                     vect_before[4] += cpt2 * not_in_r1_left
 
@@ -202,6 +201,7 @@ class KemenyComputingFactory:
         total = n
         for length_bucket_r1 in h.values():
             total -= length_bucket_r1
+
             vect_before[2] += length_bucket_r1 * total
             vect_tied[2] += length_bucket_r1 * (length_bucket_r1 - 1) / 2
         return sort(asarray(bucket), kind='mergesort')
