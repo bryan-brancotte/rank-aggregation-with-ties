@@ -5,7 +5,7 @@ from mediane.distances.ScoringScheme import ScoringScheme
 from mediane.distances.enumeration import GENERALIZED_KENDALL_TAU_DISTANCE, GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE, \
     PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE
 from mediane.distances.kemeny_computation import KemenyComputingFactory
-from numpy import zeros, count_nonzero, vdot, array, ndarray, shape, amax, where, nditer, argmax
+from numpy import zeros, count_nonzero, vdot, array, ndarray, shape, amax, where, nditer, argmin
 from os import listdir
 from mediane.median_ranking_tools import parse_ranking_with_ties_of_int
 
@@ -53,6 +53,7 @@ class BioConsert(MedianRanking):
         positions = self.__departure_rankings(rankings, elem_id)
 
         matrix = self.__cost_matrix(positions)
+
         result = {}
         dst_min = float('inf')
         id_ranking = 0
@@ -77,7 +78,10 @@ class BioConsert(MedianRanking):
         ranking_dict = {}
 
         for id_ranking in result.values():
-            to_be_translated = positions[:, id_ranking]
+            if id_ranking < len(rankings):
+                to_be_translated = positions[:, id_ranking]
+            else:
+                to_be_translated = all_together
             ranking_dict.clear()
             for el in range(n):
                 id_bucket = to_be_translated[el]
@@ -98,7 +102,6 @@ class BioConsert(MedianRanking):
 
     @staticmethod
     def __bio_consert(ranking: ndarray, dst_init: float, matrix: ndarray) -> float:
-
         n = ranking.size
         max_id_bucket = amax(ranking)
         if count_nonzero(ranking < 0) > 0:
@@ -111,40 +114,56 @@ class BioConsert(MedianRanking):
         leave_bucket = zeros(3, dtype=float)
         improvement = True
         dst = dst_init
+        tour = 0
         while improvement:
+            tour += 1
+            # print("DST = ", dst)
+            # print("ranking = ", ranking, " ON COMMENCE")
             improvement = False
+            # print("\n\n\nGO ON")
+
             ind_x = 0
             for element in range(n):
                 size_bucket = 0
-
                 id_bucket_element = ranking[element]
+                # print("\tElement_id = ", element, " bucket = ", id_bucket_element)
+
                 delta_distance_change.fill(0.0)
                 leave_bucket.fill(0.0)
                 delta_distance_add.fill(0.0)
 
                 for el, bucket in nditer([where(ranking < id_bucket_element), ranking[ranking < id_bucket_element]],
                                          ['zerosize_ok']):
-                    delta_distance_change[bucket] += matrix[ind_x + el][2] - matrix[ind_x + el][1]
-                    delta_distance_change[bucket-1] += matrix[ind_x + el][0] - matrix[ind_x + el][2]
+                    a = int(el)
+                    # print("\t\t\t with : ", el, " buck = ", bucket, " elem = ", id_elements.get(a))
+                    delta_distance_change[bucket] += matrix[ind_x + a][2] - matrix[ind_x + a][1]
+                    delta_distance_change[bucket-1] += matrix[ind_x + a][0] - matrix[ind_x + a][2]
 
-                    delta_distance_add[bucket] += matrix[ind_x + el][0] - matrix[ind_x + el][1]
+                    delta_distance_add[bucket] += matrix[ind_x + a][0] - matrix[ind_x + a][1]
+                    # print("\t\t\t", delta_distance_add)
 
                 for el, bucket in nditer([where(ranking == id_bucket_element), ranking[ranking == id_bucket_element]]):
-                    leave_bucket += matrix[ind_x + el]
+                    a = int(el)
+                    leave_bucket += matrix[ind_x + a]
                     size_bucket += 1
 
                 for el, bucket in nditer([where(ranking > id_bucket_element), ranking[ranking > id_bucket_element]],
                                          ['zerosize_ok']):
-                    delta_distance_change[bucket] += matrix[ind_x + el][2] - matrix[ind_x + el][0]
-                    delta_distance_change[bucket+1] += matrix[ind_x + el][1] - matrix[ind_x + el][2]
-                    delta_distance_add[bucket+1] += matrix[ind_x + el][1] - matrix[ind_x + el][0]
+                    a = int(el)
+                    delta_distance_change[bucket] += matrix[ind_x + a][2] - matrix[ind_x + a][0]
+                    delta_distance_change[bucket+1] += matrix[ind_x + a][1] - matrix[ind_x + a][2]
+
+                    delta_distance_add[bucket+1] += matrix[ind_x + a][1] - matrix[ind_x + a][0]
 
                 delta_distance_change[id_bucket_element-1] += leave_bucket[0] - leave_bucket[2]
                 delta_distance_change[id_bucket_element + 1] += leave_bucket[1] - leave_bucket[2]
 
                 delta_distance_add[id_bucket_element] += leave_bucket[0] - leave_bucket[2]
+                # print("\t\t\t", delta_distance_add)
                 delta_distance_add[id_bucket_element-1] += leave_bucket[0] - leave_bucket[2]
+                # print("\t\t\t", delta_distance_add)
                 delta_distance_add[id_bucket_element + 1] += leave_bucket[1] - leave_bucket[2]
+                # print("\t\t\t", delta_distance_add)
 
                 for id_buckets in range(id_bucket_element-2, -1, -1):
                     delta_distance_change[id_buckets] += delta_distance_change[id_buckets+1]
@@ -154,35 +173,69 @@ class BioConsert(MedianRanking):
                     delta_distance_change[id_buckets] += delta_distance_change[id_buckets-1]
                     delta_distance_add[id_buckets] += delta_distance_add[id_buckets-1]
 
-                delta_distance_change[-1] = -1
-                delta_distance_add[-1] = -1
-                first_negative = argmax(delta_distance_change < 0)
+                delta_distance_change[-1] = 0
+                delta_distance_change[max_id_bucket + 1] = 0
+                delta_distance_add[-1] = 0
 
-                if first_negative <= max_id_bucket:
+                # print("delta change ", delta_distance_change)
+                first_negative = argmin(delta_distance_change)
+                first_negative2 = argmin(delta_distance_change)
+                d1 = delta_distance_change[first_negative]
+                d2 = delta_distance_add[first_negative2]
+                change = False
+                add = False
+                if d1 < 0:
+                    if d2 < d1:
+                        add = True
+                    else:
+                        change = True
+                # print("ind best neg : ", first_negative, " neg : ", delta_distance_change[first_negative])
+
+                # print("\t\t\t", delta_distance_add)
+                # first_negative = argmax(delta_distance_change < 0)
+                # print("\t\tCHANGE : ", delta_distance_change)
+                # print("\t\tADD : ", delta_distance_add)
+                if change:
                     improvement = True
+                    # print("\t\t\t\tEX RANKING : ", ranking)
+                    # print("\t\tChange :", "element = ", element, "ex buck =  ", id_bucket_element, " new = ",
+                    # first_negative)
                     ranking[element] = first_negative
-                    dst += delta_distance_change[first_negative]
+
+                    dst += d1
                     if size_bucket == 1:
                         ranking[ranking > id_bucket_element] -= 1
                         max_id_bucket -= 1
+                    # print("\t\t\t\t   RANKING : ", ranking, "\n\n")
 
-                else:
-                    first_negative = argmax(delta_distance_add < 0)
-                    if first_negative <= max_id_bucket + 1:
-                        improvement = True
+                elif add:
+                    # print("\t\tTENTATIVE")
+                    #first_negative = argmin(delta_distance_add)
+                    # print("first neg = ", first_negative)
+                    # first_negative = argmax(delta_distance_add < 0)
+                    #if delta_distance_add[first_negative] < 0:
+                    improvement = True
+                    dst += d2
+                        # print("\t\t\t\tEX RANKING : ", ranking)
+                        # print("\t\tAdd : element = ", element, "ex buck =  ", id_bucket_element, " new = ",
+                        # first_negative)
+
+                    if size_bucket > 1:
+                        ranking[ranking >= first_negative] += 1
                         ranking[element] = first_negative
-                        dst += delta_distance_change[first_negative]
-                        if size_bucket > 1:
-                            ranking[ranking >= first_negative] += 1
-                            max_id_bucket += 1
+
+                        max_id_bucket += 1
+                    else:
+                        if first_negative < id_bucket_element:
+                            ranking[(ranking >= first_negative) & (ranking < id_bucket_element)] += 1
+                            ranking[element] = first_negative
                         else:
-                            if first_negative < id_bucket_element:
-                                ranking[(ranking >= first_negative) & (ranking < id_bucket_element)] += 1
-                            else:
-                                ranking[(ranking > id_bucket_element) & (ranking <= first_negative)] += 1
+                            ranking[(ranking > id_bucket_element) & (ranking < first_negative)] -= 1
+                            ranking[element] = first_negative - 1
 
-                        ranking[element] = first_negative
+                        # print("\t\t\t\t   RANKING : ", ranking, "\n\n")
                 ind_x += n
+            # print("end : improvment = ", improvement, " dst = ", dst)
         return dst
 
     def __departure_rankings(self, rankings: List[List[List[int]]], elements_id: Dict) -> ndarray:
@@ -266,34 +319,26 @@ class BioConsert(MedianRanking):
         )
 
 
-# nb_files = 0
-sc = ScoringScheme.get_scoring_scheme("ktg", 1.0)
+# fich_output = open("/home/pierre/Bureau/final.txt", "w")
+# # nb_files = 0
+# sc = ScoringScheme.get_scoring_scheme("ktg", 1.0)
 # alg = BioConsert(sc)
-keme = KemenyComputingFactory(sc)
+# keme = KemenyComputingFactory(sc)
+#
 # dossier = "/home/pierre/Documents/Doctorat/Datasets/datasets-bio/"
 # for fichier_str in listdir(dossier):
 #     if "GS" not in fichier_str:
-#         # print("\n\n")
-#         nb_files += 1
+#
+#         # print(fichier_str)
 #         fichier = open(dossier+fichier_str, "r")
 #         ranks = []
 #         for rng in fichier.read().split("\n"):
 #             if len(rng) > 5:
 #                 ranks.append(parse_ranking_with_ties_of_int(rng))
-#         # print("RANKINGS : ")
-#         # for ra in ranks:
-#             # print(ra)
 #         cons = alg.compute_median_rankings(ranks, True)[-1]
 #         # print(cons)
-#         # print(fichier_str, " -> ", keme.get_distance_to_a_set_of_rankings(cons, ranks))
-#         # for ra in ranks:
-#             # print(keme.get_distance_to_an_other_ranking(ranking1=cons, ranking2=ra))
+#         fich_output.write(fichier_str + "  " + str(keme.get_distance_to_a_set_of_rankings(cons, ranks)) + "\n")
+#
 #         fichier.close()
-#         break
-# print(nb_files)
-
-
-r1 = [[1], [3], [2, 9, 5, 6, 15, 16], [11, 12], [7], [22, 26, 25, 8, 21, 19, 17, 14, 4, 28, 10, 27, 24, 18, 20, 23, 13]]
-r2 = [[1],[5, 6],[3, 11, 12], [4], [7], [24, 17, 25, 19], [26, 22, 8, 21, 9, 16, 2, 14, 15, 28, 10, 27, 18, 20, 23, 13]]
-
-print(keme.get_distance_to_an_other_ranking(r1, r2))
+# # print(nb_files)
+# fich_output.close()
