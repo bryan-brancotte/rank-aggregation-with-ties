@@ -8,3 +8,5 @@ djangorestframework==3.7.3
 Markdown==2.6.10
 django-filter==1.1.0
 Pygments==2.2.0
+django-extensions
+pygraphviz

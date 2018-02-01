@@ -7,6 +7,8 @@ from mediane.algorithms.enumeration import get_from as get_algo_from
 from mediane.median_ranking_tools import parse_ranking_with_ties_of_str
 from mediane.validators import sound_dataset_validator
 
+import json
+
 
 class DataSet(models.Model):
     name = models.CharField(
@@ -86,8 +88,23 @@ class Distance(models.Model):
     key_name_is_read_only = models.BooleanField(
         default=False,
     )
+    owner = models.ForeignKey(
+        get_user_model(),
+        help_text=_('The user who can see, edit and delete it'),
+    )
     public = models.BooleanField(
         help_text=_('Can it be seen by everyone?'),
+        default=False,
+    )
+    scoring_scheme_str = models.TextField(
+        verbose_name=_('scoring_scheme'),
+        help_text=_('The scoring scheme in a json compatible format'),
+        null=True,
+        blank=True,
+    )
+    is_scoring_scheme_relevant = models.BooleanField(
+        verbose_name=_('is_scoring_scheme_relevant'),
+        help_text=_('Doas looking at the scoring scheme have a meaning ?'),
         default=False,
     )
 
@@ -101,6 +118,24 @@ class Distance(models.Model):
     @property
     def desc(self):
         return ugettext(self.key_name + "_desc")
+
+    @property
+    def scoring_scheme(self):
+        if self.scoring_scheme_str is None or self.scoring_scheme_str == "":
+            return {}
+        return json.loads(self.scoring_scheme_str)
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        # try to parse the scoring scheme, causing an exception and making impossible to save invalid schema
+        if self.is_scoring_scheme_relevant:
+            self.scoring_scheme
+        super(Distance, self).save(
+            force_insert=force_insert,
+            force_update=force_update,
+            using=using,
+            update_fields=update_fields,
+        )
 
 
 class Normalization(models.Model):

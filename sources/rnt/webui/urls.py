@@ -30,4 +30,7 @@ urlpatterns = [
     url(r'^datasets/add/$', DataSetCreate.as_view(), name='dataset_add'),
     url(r'^datasets/(?P<pk>\d+)/edit/$', DataSetUpdate.as_view(), name='dataset_edit'),
     url(r'^datasets/(?P<pk>\d+)/delete/$', DataSetDelete.as_view(), name='dataset_delete'),
+
+    url(r'^distances/$', views.DistanceListView.as_view(), name='distance-list'),
+    url(r'^distances/(?P<pk>\d+)/$', views.DistanceDetailView.as_view(), name='distance_view'),
 ]

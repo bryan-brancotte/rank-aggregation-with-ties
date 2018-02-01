@@ -64,6 +64,8 @@
                 <li class="{{ request|is_active:'webui:home' }}"><a href="{% url 'webui:home'%}">Home</a></li>
                 <li class="{{ request|is_active_or_desc:'webui:dataset-list' }}"><a
                         href="{% url 'webui:dataset-list'%}">Datasets</a></li>
+                <li class="{{ request|is_active_or_desc:'webui:distance-list' }}"><a
+                        href="{% url 'webui:distance-list'%}">Distances</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 {%if not request.user.is_authenticated %}

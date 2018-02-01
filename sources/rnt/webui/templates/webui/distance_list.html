@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Distances{% endblock %}
+{% block page_title %}Distances{% endblock %}
+{% block container-class %}container{% endblock %}
+{% block content%}
+<div class="col-xs-12">
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Key name</th>
+            <th>Scoring scheme</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for object in object_list %}
+        <tr>
+            <td>
+                <a href="{%url 'webui:distance_view' pk=object.pk %}">{{ object.name }}</a>
+            </td>
+            <td>
+                <a href="{%url 'webui:distance_view' pk=object.pk %}">{{ object.key_name }}</a>
+            </td>
+            <td>
+                {% if object.is_scoring_scheme_relevant %}
+                <i class="fa fa-check-square-o"></i>
+                {%else%}
+                <i class="fa fa-ban"></i>
+                {%endif%}
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td>No distance yet.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <a role="button" href="{url 'webui:distance_add'%}" class="btn btn-primary pull-right" aria-disabled="true">Add</a>
+</div>
+{% endblock%}

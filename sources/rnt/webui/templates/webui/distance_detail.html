@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load bootstrap %}
+{% load static %}
+{% load i18n %}
+{% load webui_tags %}
+{% block title %}Distance '{{ object.name }}'{% endblock %}
+{% block content_page_title %}
+<div class="col-xs-9">
+    <h1>Distance '{{ object.name }}'
+        <small>(key_name: '{{object.key_name}}')</small>
+    </h1>
+</div>
+<div class="col-xs-3 text-right">
+    <h1>
+        <a href="{% url 'admin:mediane_distance_change' object.pk %}" role="button" class="btn btn-primary"><i
+                class="fa fa-pencil"></i></a>
+    </h1>
+</div>
+{% endblock %}
+{% block container-class %}container{% endblock %}
+{% block content%}
+<div class="col-xs-12">
+    <table class="table">
+        <tr>
+            <th style="width:1px">Visibility</th>
+            <td>{% if object.public %}<i class="fa fa-globe"></i> Public{%else%}<i class="fa fa-user-secret"></i>
+                Private{%endif%}
+            </td>
+        </tr>
+        <tr>
+            <th>Scoring&nbsp;scheme</th>
+            <td>
+                {% if object.is_scoring_scheme_relevant %}
+                {%include 'webui/scoring_scheme_detail.html' with scoring_scheme=object.scoring_scheme %}
+                {%else%}
+                <i class="fa fa-ban"></i>
+                {%endif%}
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="col-xs-12">
+    <a href="{% url 'webui:distance-list' %}" role="button" class="btn btn-primary"><i class="fa fa-arrow-left"></i> Back</a>
+</div>
+{% endblock%}

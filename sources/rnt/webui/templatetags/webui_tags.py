@@ -25,6 +25,11 @@ def count_line(val):
 
 
 @register.filter
+def count_line_plus_one(val):
+    return count_line(val) + 1
+
+
+@register.filter
 def max(i, cap):
     return i if i < cap else cap
 

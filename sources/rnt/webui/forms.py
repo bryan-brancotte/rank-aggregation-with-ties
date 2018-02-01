@@ -84,10 +84,11 @@ r4 := [[B],[C],[A,D,E]]""",
         widget=forms.RadioSelect,
         label='',
     )
-    dist = forms.ChoiceField(
-        choices=enum_dist.as_tuple_list(),
+    dist = forms.ModelChoiceField(
+        queryset=Distance.objects.filter(~Q(pk__isnull=True)),
         widget=forms.RadioSelect,
         label='',
+        empty_label=None,
     )
     algo = forms.ChoiceField(
         choices=[],
@@ -127,10 +128,7 @@ r4 := [[B],[C],[A,D,E]]""",
             (k, _(k)) for k in
             Algorithm.objects.filter(q).values_list('key_name', flat=True)
             ]
-        self.fields['dist'].choices = [
-            (k, _(k)) for k in
-            Distance.objects.filter(q).values_list('key_name', flat=True)
-            ]
+        self.fields['dist'].queryset = Distance.objects.filter(q)
         self.fields['norm'].choices = [
             (k, _(k)) for k in
             Normalization.objects.filter(q).values_list('key_name', flat=True)
