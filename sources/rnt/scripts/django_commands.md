@@ -14,6 +14,31 @@ python manage.py makemigrations
 python manage.py migrate
 ```
 
+### generate language files
+
+```bash
+makemessages -l en -l fr --no-location
+```
+
+
+
+### compile language file
+
+```bash
+python compilemessages
+```
+
+
+
+### run tests
+
+```bash
+python manage.py test
+```
+
+
+
+
 
 ### generate models.png
 
