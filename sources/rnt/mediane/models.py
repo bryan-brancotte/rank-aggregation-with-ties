@@ -113,7 +113,7 @@ class Distance(models.Model):
 
     @property
     def name(self):
-        return ugettext(self.key_name)
+        return ugettext(self.key_name + "_name")
 
     @property
     def desc(self):

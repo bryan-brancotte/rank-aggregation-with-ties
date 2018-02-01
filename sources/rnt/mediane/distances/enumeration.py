@@ -33,9 +33,9 @@ def get_from(id_dist):
 
 
 def __dummy_method_to_have_translations():
-    _('KTG')
-    _('KTGI')
-    _('PSEUDO_METRIC_KTGI')
+    _('KTG_name')
+    _('KTGI_name')
+    _('PSEUDO_METRIC_KTGI_name')
     _('KTG_desc')
     _('KTGI_desc')
     _('PSEUDO_METRIC_KTGI_desc')
