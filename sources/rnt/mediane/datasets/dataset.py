@@ -111,6 +111,7 @@ class Dataset:
                 c = np.count_nonzero(positions[e2] == -1)
                 d = np.count_nonzero(positions[e1] == -1)
                 e = np.count_nonzero(positions[e1] < positions[e2])
+                # a verifier le premier et troisieme coeff ...
                 matrix[ind1] = [e-d+a, b-a, m-(a+b+c+d+e), c-a, d-a, a]
                 matrix[ind2] = [e - d + a, b - a, m - (a + b + c + d + e), c - a, d - a, a]
 

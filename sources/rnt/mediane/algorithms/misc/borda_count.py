@@ -25,7 +25,7 @@ class BordaCount(MedianRanking):
                     if elem not in points:
                         points[elem] = {}
                         points[elem][0] = 0
-                        points[elem][1] = 0
+                        points[elem][1] = 0 
 
                     points[elem][0] += id_bucket
                     points[elem][1] += 1

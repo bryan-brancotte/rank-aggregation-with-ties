@@ -12,7 +12,7 @@ from django.views.generic.list import ListView
 
 from mediane.algorithms.enumeration import get_from as get_algo_from
 from mediane.distances.enumeration import get_from as get_dist_from
-from mediane.models import DataSet
+from mediane.models import DataSet, Distance
 from mediane.normalizations.enumeration import get_from as get_norm_from
 from mediane.process import execute_median_rankings_computation_from_rankings, \
     execute_median_rankings_computation_from_datasets, compute_consensus_settings_based_on_datasets
@@ -82,7 +82,7 @@ def dataset_compute(request):
     return JsonResponse(dict(
         results=submission_results,
         dist=dict(
-            id=form.cleaned_data["dist"],
+            id=form.cleaned_data["dist"].key_name,
             name=get_dist_from(form.cleaned_data["dist"]),
         ),
         norm=dict(
@@ -141,6 +141,29 @@ class DataSetDetailView(DetailView):
         obj = self.get_object()
         if obj.public or self.request.user.id == obj.owner.id:
             return super(DataSetDetailView, self).dispatch(*args, **kwargs)
+        return redirect('%s?next=%s' % (reverse('webui:login'), self.request.path))
+
+
+class DistanceListView(ListView):
+    model = Distance
+    template_name = "webui/distance_list.html"
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated():
+            ownership = Q(owner=self.request.user)
+        else:
+            ownership = Q(pk=None)
+        return Distance.objects.filter(ownership | Q(public=True))
+
+
+class DistanceDetailView(DetailView):
+    model = Distance
+    template_name = "webui/distance_detail.html"
+
+    def dispatch(self, *args, **kwargs):
+        obj = self.get_object()
+        if obj.public or self.request.user.id == obj.owner.id:
+            return super(DistanceDetailView, self).dispatch(*args, **kwargs)
         return redirect('%s?next=%s' % (reverse('webui:login'), self.request.path))
 
 

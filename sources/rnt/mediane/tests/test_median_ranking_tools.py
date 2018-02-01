@@ -60,6 +60,10 @@ class EvaluateDatasetAndProvideStatsTestCase(TestCase):
             "[[1],[2],[4]]",
             "[[1],[2],[3],[4]]",
         ]
+        self.rankings_7 = [
+            "[[1],[2]]",
+            "[[1]]",
+        ]
 
     def test_1(self):
         evaluation = evaluate_dataset_and_provide_stats(self.rankings_1)
@@ -94,5 +98,12 @@ class EvaluateDatasetAndProvideStatsTestCase(TestCase):
         evaluation = evaluate_dataset_and_provide_stats(self.rankings_6)
         assert evaluation["n"] == 4
         assert evaluation["m"] == 3
+        assert not evaluation["complete"]
+        assert not evaluation["invalid"]
+
+    def test_7(self):
+        evaluation = evaluate_dataset_and_provide_stats(self.rankings_7)
+        assert evaluation["n"] == 2
+        assert evaluation["m"] == 2
         assert not evaluation["complete"]
         assert not evaluation["invalid"]

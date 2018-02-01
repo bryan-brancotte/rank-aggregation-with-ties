@@ -18,7 +18,7 @@
 {% block container-class %}container{% endblock %}
 {% block content%}
 <div class="col-xs-12 col-sm-8 col-md-9 col-lg-10 col-xxl-11">
-    <textarea class="form-control text-area" rows="{{ object.content|count_line|max:8 }}" readonly="readonly">{{ object.content}}</textarea>
+    <textarea class="form-control text-area" rows="{{ object.content|count_line_plus_one|max:8 }}" readonly="readonly">{{ object.content}}</textarea>
 </div>
 <div class="col-xs-8 col-xs-offset-2 col-sm-offset-0 col-sm-4 col-md-3 col-lg-2 col-xxl-1">
     <table class="table table-condensed">

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'mediane',
     'webui',
     'webapi',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [

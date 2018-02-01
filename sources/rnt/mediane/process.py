@@ -124,10 +124,11 @@ def compute_consensus_settings_based_on_datasets(n, m, complete, rankings, user)
     not select an algorithm/distance/norm that is not visible by the user
     :return:
     """
+    from mediane.models import Distance
     consensus_settings = {}
     if n > 200 or True:
         consensus_settings["algo"] = BordaCount().get_full_name()
-        consensus_settings["dist"] = GENERALIZED_KENDALL_TAU_DISTANCE
+        consensus_settings["dist"] = Distance.objects.get(key_name=GENERALIZED_KENDALL_TAU_DISTANCE).pk
         consensus_settings["norm"] = NONE if complete else UNIFICATION
     consensus_settings["auto-compute"] = n < 50
     return consensus_settings

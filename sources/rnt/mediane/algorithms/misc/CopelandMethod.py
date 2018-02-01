@@ -1,13 +1,10 @@
 from typing import List
-
 from mediane.algorithms.median_ranking import MedianRanking
 from mediane.distances.enumeration import GENERALIZED_KENDALL_TAU_DISTANCE
-from mediane.distances.KendallTauGeneralizedNlogN import KendallTauGeneralizedNlogN
+import operator
 
 
-class PickAPerm(MedianRanking):
-    def __init__(self,  p=1):
-        self.p = p
+class CopelandMethod(MedianRanking):
 
     def compute_median_rankings(self, rankings: List[List[List[int]]], return_at_most_one_ranking: bool = False):
         """
@@ -19,17 +16,31 @@ class PickAPerm(MedianRanking):
         If the algorithm is not able to provide multiple consensus, or if return_at_most_one_ranking is True then, it
         should return a list made of the only / the first consensus found
         """
-        k = KendallTauGeneralizedNlogN(self.p)
-        dst_min = float('inf')
-        consensus = []
+        elements = {}
         for ranking in rankings:
-            dist = k.get_distance_to_a_set_of_rankings(ranking, rankings).get(GENERALIZED_KENDALL_TAU_DISTANCE)
-            if dist < dst_min:
-                dst_min = dist
-                consensus.clear()
-                consensus.append(ranking)
-            elif dist == dst_min and not return_at_most_one_ranking:
-                consensus.append(ranking)
+            win = 0
+            lose = 0
+            for bucket in ranking:
+                win += len(bucket)
+            for bucket in ranking:
+                win -= len(bucket)
+                for element in bucket:
+                    if element in elements:
+                        elements[element] += win - lose
+                    else:
+                        elements[element] = win - lose
+                lose += len(bucket)
+        bucket = []
+        consensus = []
+        old_value = -1
+        # sorted_elements = sorted(elements.items(), key=operator.itemgetter(1))
+        # old_value = sorted_elements[0][1]
+        for key, val in sorted(elements.items(), key=operator.itemgetter(1), reverse=True):
+            if val != old_value:
+                bucket = []
+                consensus.append(bucket)
+                old_value = val
+            bucket.append(key)
         return [consensus]
 
     def is_breaking_ties_arbitrarily(self):
@@ -39,7 +50,7 @@ class PickAPerm(MedianRanking):
         return False
 
     def get_full_name(self):
-        return "Pick a Perm"
+        return "CopelandMethod"
 
     def get_handled_distances(self):
         """
@@ -49,3 +60,4 @@ class PickAPerm(MedianRanking):
         return (
             GENERALIZED_KENDALL_TAU_DISTANCE,
         )
+
