@@ -215,6 +215,10 @@ class Job(models.Model):
         verbose_name=_('bench'),
     )
 
+    def get_task(self):
+        pass
+        #  task = self.task_set.order_by('?').first()
+
     # def get_absolute_url(self):
     #     return reverse('webui:job_view', args=[self.pk])
 
