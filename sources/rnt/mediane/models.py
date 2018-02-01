@@ -109,7 +109,7 @@ class Distance(models.Model):
     )
 
     def __str__(self):
-        return self.key_name
+        return self.name
 
     @property
     def name(self):
