@@ -10,6 +10,7 @@ def migration_code(apps, schema_editor):
         defaults=dict(
             is_scoring_scheme_relevant=True,
             scoring_scheme_str="[[0.0, 1.0, 1.0, 1.0, 1.0, 1.0], [1.0, 1.0, 0.0, 1.0, 1.0, 1.0]]",
+            public=True,
         ),
     )
     Distance.objects.update_or_create(
@@ -17,6 +18,7 @@ def migration_code(apps, schema_editor):
         defaults=dict(
             is_scoring_scheme_relevant=True,
             scoring_scheme_str="[[0.0, 1.0, 1.0, 0.0, 0.0, 0.0], [1.0, 1.0, 0.0, 0.0, 0.0, 0.0]]",
+            public=True,
         ),
     )
     Distance.objects.update_or_create(
@@ -24,6 +26,7 @@ def migration_code(apps, schema_editor):
         defaults=dict(
             is_scoring_scheme_relevant=True,
             scoring_scheme_str="[[0.0, 1.0, 0.5, 0.0, 1.0, 0.0], [0.5, 0.5, 0.0, 0.5, 0.5, 0.0]]",
+            public=True,
         ),
     )
 

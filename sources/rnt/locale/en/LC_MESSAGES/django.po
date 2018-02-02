@@ -23,7 +23,7 @@ msgid "KTG_name"
 msgstr "Generalized kendall tau distance"
 
 msgid "KTGI_name"
-msgstr "Generalized kendall tau distance"
+msgstr "Induced generalized kendall tau distance"
 
 msgid "PSEUDO_METRIC_KTGI_name"
 msgstr "Pseudo metric for truncated datasets"
@@ -46,6 +46,14 @@ msgstr ""
 "reducing the biais introduce when the dataset is truncated, meaning where "
 "elements in the tail of the dataset's rankings may have been removed to "
 "reduce the length of rankings."
+
+msgid "KTGU_name"
+msgstr "Generalized kendall tau distance with unification"
+
+msgid "KTGU_desc"
+msgstr ""
+"The generalized kendall tau distance following [Fagin et al 2006, Cohen-"
+"Boulakia et al 2011] where the dataset is seen as being unified [Brancotte et al 2015]."
 
 msgid "The number of rankings"
 msgstr ""
