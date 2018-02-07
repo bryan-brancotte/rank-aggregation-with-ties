@@ -45,6 +45,7 @@ class BioConsert(MedianRanking):
         """
         res = []
         kem = KemenyComputingFactory(scoring_scheme=self.scoring_scheme)
+        # kem = KendallTauGeneralizedNlogN()
         elem_id = {}
         id_elements = {}
         id_elem = 0
@@ -66,19 +67,26 @@ class BioConsert(MedianRanking):
         dst_min = float('inf')
         id_ranking = 0
 
-        for ranking in rankings:
-            dst_init = kem.get_distance_to_a_set_of_rankings(ranking, rankings)
-            dst_ranking = self.__bio_consert(positions[:, id_ranking], dst_init, matrix)
-            if dst_ranking <= dst_min:
-                if dst_ranking < dst_min:
-                    result.clear()
-                result[str(positions[:, id_ranking])] = id_ranking
-                dst_min = dst_ranking
-            id_ranking += 1
-        all_together = zeros(n, dtype=int)
+        memoi = set()
 
-        dst_ranking = BioConsert.__bio_consert(all_together, kem.get_distance_to_a_set_of_rankings(
-            [list(elem_id.keys())], rankings), matrix)
+        for ranking in rankings:
+            rank_array = positions[:, id_ranking]
+            if str(rank_array) not in memoi:
+                memoi.add(str(rank_array))
+                dst_init = kem.get_distance_to_a_set_of_rankings(ranking, rankings)
+                dst_ranking = self.__bio_consert(rank_array, dst_init, matrix, memoi)
+
+                if dst_ranking <= dst_min:
+                    if dst_ranking < dst_min:
+                        result.clear()
+                    result[str(positions[:, id_ranking])] = id_ranking
+                    dst_min = dst_ranking
+
+            id_ranking += 1
+
+        all_together = zeros(n, dtype=int)
+        ds = kem.get_distance_to_a_set_of_rankings([list(elem_id.keys())], rankings)
+        dst_ranking = BioConsert.__bio_consert(all_together, ds, matrix, memoi)
         if dst_ranking <= dst_min:
             if dst_ranking < dst_min or return_at_most_one_ranking:
                 result.clear()
@@ -106,10 +114,16 @@ class BioConsert(MedianRanking):
         # for cons in result:
         #    rankings_hash.clear()
         #    for id_bucket in cons:
+        # print(memoi)
         return res
 
     @staticmethod
-    def __bio_consert(ranking: ndarray, dst_init: float, matrix: ndarray) -> float:
+    def __bio_consert(ranking: ndarray, dst_init: float, matrix: ndarray, memoi: set) -> float:
+        # print("ENTER")
+        # print("\tr = ", ranking)
+        if str(ranking) in memoi:
+            return float('inf')
+        memoi.add(str(ranking))
         n = ranking.size
         max_id_bucket = amax(ranking)
         if count_nonzero(ranking < 0) > 0:
@@ -119,58 +133,81 @@ class BioConsert(MedianRanking):
         improvement = True
         dst = dst_init
         while improvement:
+            # print("\n\n\t new round")
             improvement = False
-            # print("\n\n\nGO ON")
+            # # print("\n\n\nGO ON")
             for element in range(n):
+                # print("\t\t try with ", element)
+                cha = zeros(max_id_bucket + 2, dtype=float)
+                add = zeros(max_id_bucket + 3, dtype=float)
+
                 bucket_elem = ranking[element]
-                change, add, alone = BioConsert._compute_delta_costs(ranking, element, matrix, max_id_bucket)
-                to = BioConsert._search_to_change_bucket(bucket_elem, change, max_id_bucket)
-                if to != 0:
+                alone = BioConsert._compute_delta_costs(ranking, element, matrix, max_id_bucket, cha, add)
+                to, diff = BioConsert._search_to_change_bucket(bucket_elem, cha, max_id_bucket)
+                if to >= 0:
                     improvement = True
+                    # print("\t\t\t\tchange ! elem ", element, " from ", bucket_elem, " to ", to)
                     # change
-                    BioConsert._change_bucket(ranking, element, bucket_elem, bucket_elem + to, alone)
+                    dst += diff
+                    BioConsert._change_bucket(ranking, element, bucket_elem, to, alone)
                     if alone:
                         max_id_bucket -= 1
+                    st = str(ranking)
+                    if st in memoi:
+                        return float('inf')
+                    memoi.add(st)
+                    # print("\t\t\t\tnew ranking : ", ranking, "     ", "max = ", max_id_bucket)
                 else:
-                    to = BioConsert._search_to_add_bucket(bucket_elem, add, max_id_bucket)
+                    to, diff = BioConsert._search_to_add_bucket(bucket_elem, add, max_id_bucket)
                     if to >= 0:
+                        # print("\t\t\t\tadd ! elem", element, " from ", bucket_elem, " to ", to)
 
                         improvement = True
+                        dst += diff
+
                         BioConsert._add_bucket(ranking, element, bucket_elem, to, alone)
                         if not alone:
                             max_id_bucket += 1
-
+                        st = str(ranking)
+                        if st in memoi:
+                            return float('inf')
+                        memoi.add(st)
+                        # print("\t\t\t\tnew ranking : ", ranking, "     ", "max = ", max_id_bucket)
         return dst
 
     @staticmethod
     def _compute_delta_costs(
             ranking: ndarray,
             element: int, matrix:
-            ndarray, max_id_bucket: int) -> Tuple[ndarray, ndarray, bool]:
+            ndarray, max_id_bucket: int,
+            delta_change: ndarray,
+            delta_add: ndarray) -> bool:
         costs = matrix[element]
         id_bucket_element = ranking[element]
-        # print("\tElement_id = ", element, " bucket = ", id_bucket_element)
-        # print("\tetat ranking : ", ranking)
-
-        delta_change = zeros(max_id_bucket + 2, dtype=float)
-        delta_add = zeros(max_id_bucket + 3, dtype=float)
-
+        # # print("\tElement_id = ", element, " bucket = ", id_bucket_element)
+        # # print("\tetat ranking : ", ranking)
+        # print("\n\t\t\tcompute BEFORE")
         for el in nditer(where(ranking < id_bucket_element)[0], ['zerosize_ok']):
             el_int = el.item()
             bucket = ranking[el_int]
+            # print("\t\t\tel = ", el, " buck = ", bucket)
+
             delta_change[bucket] += costs[el_int][2] - costs[el_int][1]
             delta_change[bucket - 1] += costs[el_int][0] - costs[el_int][2]
 
             delta_add[bucket] += costs[el_int][0] - costs[el_int][1]
+        # print("\t\t\t ch = ", delta_change, " add = ", delta_add)
 
         same = where(ranking == id_bucket_element)[0]
 
         leave_bucket = np_sum(costs[same], axis=0)
+        # print("\t\t\tleav = ", leave_bucket)
 
-        for el, bucket in nditer([where(ranking > id_bucket_element), ranking[ranking > id_bucket_element]],
-                                 ['zerosize_ok']):
+        # print("\t\t\tcompute AFTER")
+        for el in nditer(where(ranking > id_bucket_element)[0], ['zerosize_ok']):
             el_int = el.item()
             bucket = ranking[el_int]
+            # print("\t\t\tel = ", el, " buck = ", bucket)
 
             delta_change[bucket] += costs[el_int][2] - costs[el_int][0]
             delta_change[bucket + 1] += costs[el_int][1] - costs[el_int][2]
@@ -185,16 +222,16 @@ class BioConsert(MedianRanking):
 
         # BE CAREFUL, index < current bucket are inverted !!!!
         delta_change[0:id_bucket_element] = cumsum(delta_change[0:id_bucket_element][::-1])
-        delta_change[id_bucket_element:max_id_bucket] = cumsum(delta_change[id_bucket_element:max_id_bucket])
+        delta_change[id_bucket_element:max_id_bucket+1] = cumsum(delta_change[id_bucket_element:max_id_bucket+1])
 
         delta_add[0:id_bucket_element+1] = cumsum(delta_add[0:id_bucket_element+1][::-1])
-        delta_add[id_bucket_element+1:max_id_bucket+1] = cumsum(delta_add[id_bucket_element+1:max_id_bucket+1])
+        delta_add[id_bucket_element+1:max_id_bucket+2] = cumsum(delta_add[id_bucket_element+1:max_id_bucket+2])
 
-        # print("begin loop1")
+        # # print("begin loop1")
         # for id_buckets in range(id_bucket_element - 2, -1, -1):
         #    delta_change[id_buckets] += delta_change[id_buckets + 1]
         #    delta_add[id_buckets] += delta_add[id_buckets + 1]
-        # print("begin loop2")
+        # # print("begin loop2")
 
         # for id_buckets in range(id_bucket_element + 2, max_id_bucket + 2, 1):
         #    delta_change[id_buckets] += delta_change[id_buckets - 1]
@@ -202,10 +239,14 @@ class BioConsert(MedianRanking):
 
         delta_change[-1] = -1
         delta_add[-1] = -1
-        return delta_change, delta_add, same.shape[0] == 1
+
+        # print("cha : ", delta_change[0:id_bucket_element][::-1], delta_change[id_bucket_element:])
+        # print("add : ", delta_add[0:id_bucket_element+1][::-1], delta_add[id_bucket_element+1:])
+        # input("appuie")
+        return same.shape[0] == 1
 
     @staticmethod
-    def _search_to_change_bucket(buck_elem: int, change_costs: ndarray, max_id_bucket: int) -> int:
+    def _search_to_change_bucket(buck_elem: int, change_costs: ndarray, max_id_bucket: int) -> tuple:
         """
         :param buck_elem: the id of the bucket where the current elem is
         :type buck_elem: int
@@ -213,16 +254,21 @@ class BioConsert(MedianRanking):
         :type change_costs: ndarray
         :param max_id_bucket: the max of id buckets
         :type max_id_bucket: int
-        :return the difference between actuel position of elem and the future position if distance can be improved
-                0 is returned if no changing move can decrease the score
+        :return the id of the future bucket of current element if a change can decrease the score, -1 otherwise
         """
         # first, search at the right of the current position : the 1s position with negative value
-        arrival = int(argmax(change_costs[buck_elem:] < 0)) + buck_elem
+        arrival = argmax(change_costs[buck_elem:] < 0).item() + buck_elem
         # if arrival is within [current position, max_id_bucket] : elment will change bucket
         if arrival <= max_id_bucket:
-            return arrival - buck_elem
+            # print("DIFF ", change_costs[arrival])
+
+            return arrival, change_costs[arrival]
         # if no change at right can be done : check left values
-        return -argmax(change_costs[:buck_elem+1] < 0).item()
+        arrival = argmax(change_costs[:buck_elem+1] < 0).item()
+        if arrival > 0 or change_costs[arrival] < 0:
+            # print("DIFF ", change_costs[arrival])
+            return buck_elem - arrival - 1, change_costs[arrival]
+        return -1, 0.0
 
     @staticmethod
     def _change_bucket(ranking: ndarray, element: int, old_pos: int, new_pos: int, alone_in_old_bucket: bool):
@@ -239,12 +285,15 @@ class BioConsert(MedianRanking):
         :param alone_in_old_bucket : is element elone in its current bucket
         :type old_pos: bool
         """
+        # print("\t\t\t\t\tBEG CHA ", ranking)
+
         ranking[element] = new_pos
         if alone_in_old_bucket:
             ranking[ranking > old_pos] -= 1
+        # print("\t\t\t\t\tEND CHA ", ranking)
 
     @staticmethod
-    def _search_to_add_bucket(buck_elem: int, add_costs: ndarray, max_id_bucket: int) -> int:
+    def _search_to_add_bucket(buck_elem: int, add_costs: ndarray, max_id_bucket: int) -> tuple:
         """
         :param buck_elem: the id of the bucket where the current elem is
         :type buck_elem: int
@@ -256,12 +305,11 @@ class BioConsert(MedianRanking):
         """
         new_pos = argmax(add_costs[buck_elem+1:] < 0).item() + buck_elem + 1
         if new_pos <= max_id_bucket + 1:
-            return new_pos
-        new_pos = buck_elem - argmax(add_costs[0:buck_elem+1] < 0).item()
-
+            return new_pos, add_costs[new_pos]
+        new_pos = argmax(add_costs[0:buck_elem+1] < 0).item()
         if new_pos > 0 or add_costs[0] < 0:
-            return new_pos
-        return -1
+            return buck_elem - new_pos, add_costs[new_pos]
+        return -1, 0.0
 
     @staticmethod
     def _add_bucket(ranking: ndarray, element: int, old_pos: int, new_pos: int, alone_in_old_bucket: bool):
@@ -278,21 +326,24 @@ class BioConsert(MedianRanking):
         :param alone_in_old_bucket : is element elone in its current bucket
         :type old_pos: bool
         """
+        # print("\t\t\t\t\tBEG ADD ", ranking)
         if old_pos < new_pos:
             if alone_in_old_bucket:
-                ranking[ranking >= new_pos] += 1
-                ranking[element] = new_pos
-            else:
                 ranking[(ranking > old_pos) & (ranking < new_pos)] -= 1
                 ranking[element] = new_pos - 1
+            else:
+                ranking[ranking >= new_pos] += 1
+                ranking[element] = new_pos
 
         else:
             if alone_in_old_bucket:
-                ranking[ranking >= new_pos] += 1
-                ranking[element] = new_pos
-            else:
                 ranking[(ranking >= new_pos) & (ranking < old_pos)] += 1
                 ranking[element] = new_pos
+
+            else:
+                ranking[ranking >= new_pos] += 1
+                ranking[element] = new_pos
+        # print("\t\t\t\t\tEND ADD ", ranking)
 
     def __departure_rankings(self, rankings: List[List[List[int]]], elements_id: Dict) -> ndarray:
         if len(self.starting_algorithms) == 0:
@@ -323,6 +374,7 @@ class BioConsert(MedianRanking):
 
     def __cost_matrix(self, positions: ndarray) -> ndarray:
         matrix_scoring_scheme = self.scoring_scheme.matrix
+        # print(matrix_scoring_scheme)
         cost_before = matrix_scoring_scheme[0]
         cost_tied = matrix_scoring_scheme[1]
         cost_after = array([cost_before[1], cost_before[0], cost_before[2], cost_before[4], cost_before[3],
@@ -345,7 +397,6 @@ class BioConsert(MedianRanking):
                 put_tied = vdot(relative_positions, cost_tied)
                 matrix[e1][e2] = [put_before, put_after, put_tied]
                 matrix[e2][e1] = [put_after, put_before, put_tied]
-
         return matrix
 
     def is_breaking_ties_arbitrarily(self):
@@ -371,7 +422,7 @@ class BioConsert(MedianRanking):
 
 # fich_output = open("/home/pierre/Bureau/final.txt", "w")
 # nb_files = 0
-sc = ScoringScheme.get_scoring_scheme("ktg", 1.0)
+sc = ScoringScheme.get_scoring_scheme("ktg", 1)
 alg = BioConsert(sc)
 keme = KemenyComputingFactory(sc)
 
@@ -379,16 +430,19 @@ dossier = "/home/pierre/Documents/Doctorat/Datasets/datasets-bio/"
 for fichier_str in listdir(dossier):
     if "GS" not in fichier_str:
 
-        print(fichier_str)
+        # print(fichier_str)
         fichier = open(dossier + fichier_str, "r")
         ranks = []
         for rng in fichier.read().split("\n"):
             if len(rng) > 5:
                 ranks.append(parse_ranking_with_ties_of_int(rng))
         cons = alg.compute_median_rankings(ranks, True)[-1]
-        # print(cons)
+        # # print(cons)
+        print(fichier_str, " ", keme.get_distance_to_a_set_of_rankings(cons, ranks))
         # fich_output.write(fichier_str + "  " + str(keme.get_distance_to_a_set_of_rankings(cons, ranks)) + "\n")
 
         fichier.close()
-# print(nb_files)
+# # print(nb_files)
 # fich_output.close()
+
+
