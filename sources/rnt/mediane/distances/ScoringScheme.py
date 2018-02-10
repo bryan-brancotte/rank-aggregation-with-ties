@@ -4,7 +4,7 @@ from mediane.distances.enumeration import get_coeffs_dist
 
 class ScoringScheme:
 
-    def __init__(self, matrix=array([[0., 1., 0.5, 0., 1., 0.5], [0., 1., 0.5, 0., 1., 0.5]])):
+    def __init__(self, matrix=array([[0., 1., 1., 0., 1., 1.], [1., 1., 0., 1., 1., 0.]])):
         self._matrix = matrix
 
     @property

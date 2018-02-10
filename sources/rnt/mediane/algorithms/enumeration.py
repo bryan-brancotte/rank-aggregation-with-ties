@@ -5,12 +5,14 @@ from mediane.algorithms.fagin.med_rank import MedRank
 from mediane.algorithms.misc.borda_count import BordaCount
 from mediane.algorithms.ailon.kwiksort.kwiksort_random import KwikSortRandom
 from mediane.algorithms.misc.CopelandMethod import CopelandMethod
+from mediane.algorithms.lri.BioConsert import BioConsert
+from mediane.algorithms.lri.BioCo import BioCo
 
 
 class AlgorithmEnumeration:
     __tuple_list = None
     __median_ranking_algorithms = [
-        BordaCount, PickAPerm, MedRank, KwikSortRandom, CopelandMethod
+        BordaCount, PickAPerm, MedRank, KwikSortRandom, CopelandMethod, BioConsert, BioCo
     ]
 
     def __init__(self):
@@ -43,7 +45,7 @@ algorithmEnumeration = AlgorithmEnumeration()
 
 def get_median_ranking_algorithms():
     return [
-        BordaCount, PickAPerm, MedRank, KwikSortRandom,
+        BordaCount, PickAPerm, MedRank, KwikSortRandom, BioConsert, BioCo
     ]
 
 
