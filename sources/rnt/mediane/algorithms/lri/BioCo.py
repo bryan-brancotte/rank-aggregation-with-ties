@@ -9,5 +9,3 @@ class BioCo(BioConsert):
 
     def get_full_name(self):
         return "BioCo"
-
-
