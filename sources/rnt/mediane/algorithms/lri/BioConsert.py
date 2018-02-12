@@ -25,8 +25,8 @@ class BioConsert(MedianRanking):
     def compute_median_rankings(
             self,
             rankings: List[List[List[int]]],
-            distance, return_at_most_one_ranking:
-            bool = False)-> List[List[List[int]]]:
+            distance,
+            return_at_most_one_ranking: bool = False)-> List[List[List[int]]]:
         """
         :param rankings: A set of rankings
         :type rankings: list
