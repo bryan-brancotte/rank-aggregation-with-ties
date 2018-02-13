@@ -120,6 +120,7 @@ function compute_consensus_from_dataset(form, callback){
             $('#results_table').empty(); // empty in case the columns change
 
             results_table = $('#results_table').DataTable( {
+                bSort: false,
                 data: data['results'],
                 columns: [
                     {
