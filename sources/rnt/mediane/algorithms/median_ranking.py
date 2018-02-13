@@ -21,7 +21,8 @@ class MedianRanking:
         :type return_at_most_one_ranking: bool
         :return one or more consensus if the underlying algorithm can find multiple solution as good as each other.
         If the algorithm is not able to provide multiple consensus, or if return_at_most_one_ranking is True then, it
-        should return a list made of the only / the first consensus found
+        should return a list made of the only / the first consensus found.
+        In all scenario, the algorithm returns an array of consensus
         :raise DistanceNotHandledException when the algorithm cannot compute the consensus following the distance given
         as parameter
         """
