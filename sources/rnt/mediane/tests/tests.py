@@ -42,7 +42,6 @@ class NameAllDifferentTestCase(TestCase):
 
 class FullyImplementedAlgorithmTestCase(TestCase):
     def test_basically_implemented(self):
-        distance = Distance.objects.all()[0]
         for Algo in get_median_ranking_algorithms():
             instance = Algo()
             self.assertTrue(
@@ -63,15 +62,54 @@ class FullyImplementedAlgorithmTestCase(TestCase):
             )
             self.assertTrue(
                 instance.compute_median_rankings(
-                    rankings=(),
+                    rankings=[],
                     distance=instance.get_handled_distances()[0],
                 ) == [[]],
                 'Algo %s must return a array containing an empty consensus' % instance.get_full_name()
             )
             self.assertTrue(
                 instance.compute_median_rankings(
-                    rankings=(('1', '2'), ('3', '4')),
+                    rankings=[[[1, 2], [3, 4]], [[1, 2], [3, 4]]],
                     distance=instance.get_handled_distances()[0],
                 ) is not None,
-                'Algo %s must return somthing and not crash' % instance.get_full_name()
+                'Algo %s must return something and not crash' % instance.get_full_name()
             )
+
+    def test_results_with_dataset(self):
+        for Algo in get_median_ranking_algorithms():
+            instance = Algo()
+            for rankings in (
+                    [
+                        [[1, 2], [3, 4]], [[1, 2], [3, 4]],
+                    ],
+                    [
+                        [[1, 3], [2, 4], [5]],
+                        [[1], [4], [2, 5], [3]],
+                        [[2, 4], [3], [1], [5]],
+                        [[2], [3], [1, 4, 5]]
+                    ],
+            ):
+                cs = instance.compute_median_rankings(
+                    rankings=rankings,
+                    distance=instance.get_handled_distances()[0],
+                )
+                self.assertTrue(
+                    isinstance(cs, list),
+                    'Algo %s must return an array of consensus, even if not containing any consensus' % instance.get_full_name()
+                )
+                self.assertTrue(
+                    len(cs) > 0,
+                    'Algo %s must return at least one consensus' % instance.get_full_name()
+                )
+                self.assertTrue(
+                    isinstance(cs[0], list),
+                    'Algo %s must return at least one consensus, here the first thing is not an array=> not a ranking' % instance.get_full_name()
+                )
+                self.assertTrue(
+                    isinstance(cs[0][0], list),
+                    'Algo %s must return an array of consensus, here the bucket of the first thing is not an array=> not valid a bucket => not valid a ranking' % instance.get_full_name()
+                )
+                self.assertTrue(
+                    isinstance(cs[0][0][0], int),
+                    'Algo %s must return an array of consensus, here the first element of the first bucket of the first ranking is not an integer=> not an element => not valid a bucket => not valid a ranking' % instance.get_full_name()
+                )

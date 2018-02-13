@@ -67,7 +67,7 @@ class MedRank(MedianRanking):
                 ranking_res.append(bucket_res)
                 bucket_res = []
 
-        return ranking_res if len(ranking_res) > 0 else [[]]
+        return [ranking_res] if len(ranking_res) > 0 else [[]]
 
     def is_breaking_ties_arbitrarily(self):
         return True
