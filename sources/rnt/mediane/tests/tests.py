@@ -4,6 +4,7 @@ from django.test import TestCase
 from mediane.algorithms.enumeration import get_median_ranking_algorithms
 from mediane.median_ranking_tools import parse_ranking_with_ties, parse_ranking_with_ties_of_str, \
     parse_ranking_with_ties_of_int
+from mediane.models import Distance
 
 
 class RankingParserTestCase(TestCase):
@@ -41,6 +42,7 @@ class NameAllDifferentTestCase(TestCase):
 
 class FullyImplementedAlgorithmTestCase(TestCase):
     def test_basically_implemented(self):
+        distance = Distance.objects.all()[0]
         for Algo in get_median_ranking_algorithms():
             instance = Algo()
             self.assertTrue(
@@ -60,10 +62,16 @@ class FullyImplementedAlgorithmTestCase(TestCase):
                 'Algo %s must implement is_using_random_value' % instance.get_full_name()
             )
             self.assertTrue(
-                instance.compute_median_rankings(rankings=()) == [[]],
+                instance.compute_median_rankings(
+                    rankings=(),
+                    distance=instance.get_handled_distances()[0],
+                ) == [[]],
                 'Algo %s must return a array containing an empty consensus' % instance.get_full_name()
             )
             self.assertTrue(
-                instance.compute_median_rankings(rankings=(('1', '2'), ('3', '4'))) is not None,
+                instance.compute_median_rankings(
+                    rankings=(('1', '2'), ('3', '4')),
+                    distance=instance.get_handled_distances()[0],
+                ) is not None,
                 'Algo %s must return somthing and not crash' % instance.get_full_name()
             )

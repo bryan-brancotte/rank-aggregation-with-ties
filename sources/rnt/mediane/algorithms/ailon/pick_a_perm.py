@@ -30,7 +30,7 @@ class PickAPerm(MedianRanking):
 
         k = KendallTauGeneralizedNlogN(self.p)
         dst_min = float('inf')
-        consensus = []
+        consensus = [[]]
         for ranking in rankings:
             dist = k.get_distance_to_a_set_of_rankings(ranking, rankings).get(GENERALIZED_KENDALL_TAU_DISTANCE)
             if dist < dst_min:
@@ -39,7 +39,7 @@ class PickAPerm(MedianRanking):
                 consensus.append(ranking)
             elif dist == dst_min and not return_at_most_one_ranking:
                 consensus.append(ranking)
-        return [consensus]
+        return consensus
 
     def is_breaking_ties_arbitrarily(self):
         return False

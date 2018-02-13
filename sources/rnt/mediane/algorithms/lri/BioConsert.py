@@ -56,7 +56,7 @@ class BioConsert(MedianRanking):
         nb_elements = len(elem_id)
 
         if nb_elements == 0:
-            return []
+            return [[]]
 
         positions = self.__departure_rankings(rankings, elem_id)
 
