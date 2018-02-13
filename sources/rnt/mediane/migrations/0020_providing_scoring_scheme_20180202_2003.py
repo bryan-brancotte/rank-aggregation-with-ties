@@ -11,6 +11,7 @@ def migration_code(apps, schema_editor):
             is_scoring_scheme_relevant=True,
             scoring_scheme_str="[[0.0, 1.0, 1.0, 0.0, 1.0, 1.0], [1.0, 1.0, 0.0, 1.0, 1.0, 0.0]]",
             public=True,
+            owner=Distance.objects.get(key_name="KTG").owner,
         ),
     )
 
