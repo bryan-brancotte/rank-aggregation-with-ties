@@ -5,13 +5,16 @@ from django.db import migrations
 
 def migration_code(apps, schema_editor):
     Distance = apps.get_model("mediane", "Distance")
+    d = Distance.objects.get(key_name="KTG")
+    d.pk = None
+    d.key_name = "KTGU"
+    d.save()
     Distance.objects.update_or_create(
         key_name="KTGU",
         defaults=dict(
             is_scoring_scheme_relevant=True,
             scoring_scheme_str="[[0.0, 1.0, 1.0, 0.0, 1.0, 1.0], [1.0, 1.0, 0.0, 1.0, 1.0, 0.0]]",
             public=True,
-            owner=Distance.objects.get(key_name="KTG").owner,
         ),
     )
 
