@@ -39,7 +39,7 @@ def execute_median_rankings_computation_from_rankings(
         rang_iter = range(2, iteration)
         start_timezone = timezone.now()
         for k in rang_iter:
-            algorithm.compute_median_rankings(rankings=rankings)
+            algorithm.compute_median_rankings(rankings=rankings, distance=distance)
         duration = (timezone.now() - start_timezone).total_seconds()
 
     return dict(
