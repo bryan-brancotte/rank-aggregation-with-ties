@@ -60,18 +60,28 @@ def dataset_compute(request):
         print(form.errors)
         return HttpResponseBadRequest()
     if form.cleaned_data["ranking_source"] == "type":
-        submission_results = [execute_median_rankings_computation_from_rankings(
+        print(form.cleaned_data["algo"])
+        if not isinstance(form.cleaned_data["algo"], list):
+            algorithms = [get_algo_from(form.cleaned_data["algo"])()]
+        else:
+            algorithms = [get_algo_from(a)() for a in form.cleaned_data["algo"]]
+        submission_results = execute_median_rankings_computation_from_rankings(
             rankings=form.cleaned_data["rankings"],
-            algorithm=get_algo_from(form.cleaned_data["algo"])(),
+            algorithm=None,
+            algorithms=algorithms,
             distance=form.cleaned_data["dist"],
             normalization=form.cleaned_data["norm"],
             precise_time_measurement=form.cleaned_data["bench"],
-        ),
-        ]
+        )
     elif form.cleaned_data["ranking_source"] == "range":
+        if not isinstance(form.cleaned_data["algo"], list):
+            algorithms = [get_algo_from(form.cleaned_data["algo"])()]
+        else:
+            algorithms = [get_algo_from(a)() for a in form.cleaned_data["algo"]]
         submission_results = execute_median_rankings_computation_from_datasets(
             datasets=form.cleaned_data["dbdatasets"],
-            algorithm=get_algo_from(form.cleaned_data["algo"])(),
+            algorithm=None,
+            algorithms=algorithms,
             distance=form.cleaned_data["dist"],
             normalization=form.cleaned_data["norm"],
             precise_time_measurement=form.cleaned_data["bench"],

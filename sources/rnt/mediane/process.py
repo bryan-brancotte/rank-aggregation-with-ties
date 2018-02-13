@@ -18,10 +18,20 @@ def execute_median_rankings_computation_from_rankings(
         distance,
         precise_time_measurement,
         dataset=None,
+        algorithms=None,
 ):
+    if algorithms:
+        return [execute_median_rankings_computation_from_rankings(
+            rankings=rankings,
+            algorithm=a,
+            normalization=normalization,
+            distance=distance,
+            precise_time_measurement=precise_time_measurement,
+            dataset=dataset,
+        ) for a in algorithms]
     iteration = 1
     start_timezone = timezone.now()
-    c = algorithm.compute_median_rankings(rankings=rankings)
+    c = algorithm.compute_median_rankings(rankings=rankings, distance=distance)
     duration = (timezone.now() - start_timezone).total_seconds()
     while precise_time_measurement and duration < MIN_MEASURE_DURATION:
         # print(iteration, duration)
@@ -60,19 +70,24 @@ def execute_median_rankings_computation_from_datasets(
         normalization,
         distance,
         precise_time_measurement,
+        algorithms=None,
 ):
     submission_results = []
+    algorithms = algorithms or []
+    if algorithm is not None:
+        algorithms.append(algorithm)
     for d in datasets:
-        submission_results.append(
-            execute_median_rankings_computation_from_rankings(
-                rankings=d.rankings,
-                algorithm=algorithm,
-                normalization=normalization,
-                distance=distance,
-                precise_time_measurement=precise_time_measurement,
-                dataset=d,
+        for a in algorithms:
+            submission_results.append(
+                execute_median_rankings_computation_from_rankings(
+                    rankings=d.rankings,
+                    algorithm=a,
+                    normalization=normalization,
+                    distance=distance,
+                    precise_time_measurement=precise_time_measurement,
+                    dataset=d,
+                )
             )
-        )
 
     return submission_results
 

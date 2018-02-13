@@ -90,9 +90,9 @@ r4 := [[B],[C],[A,D,E]]""",
         label='',
         empty_label=None,
     )
-    algo = forms.ChoiceField(
+    algo = forms.MultipleChoiceField(
         choices=[],
-        widget=forms.RadioSelect,
+        widget=forms.CheckboxSelectMultiple,
         label='',
     )
     norm_auto = forms.BooleanField(
