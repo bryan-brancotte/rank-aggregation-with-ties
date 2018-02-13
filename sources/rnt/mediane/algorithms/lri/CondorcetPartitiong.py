@@ -83,7 +83,8 @@ class CondorcetPartitioning(MedianRanking):
                             if len(project_bucket) > 0:
                                 project_ranking.append(project_bucket)
                         project_rankings.append(project_ranking)
-                    res.extend(self.alg.compute_median_rankings(project_rankings, distance, return_at_most_one_ranking))
+                    res.extend(self.alg.compute_median_rankings(project_rankings, distance, return_at_most_one_ranking)
+                               [0])
 
         return [res]
 
