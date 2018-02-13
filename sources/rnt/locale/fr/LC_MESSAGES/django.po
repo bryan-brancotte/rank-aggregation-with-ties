@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-12-23 16:17+0000\n"
+"POT-Creation-Date: 2018-02-01 22:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,13 +20,13 @@ msgstr ""
 msgid "Will be automatically set"
 msgstr ""
 
-msgid "KTG"
+msgid "KTG_name"
 msgstr ""
 
-msgid "KTGI"
+msgid "KTGI_name"
 msgstr ""
 
-msgid "PSEUDO_METRIC_KTGI"
+msgid "PSEUDO_METRIC_KTGI_name"
 msgstr ""
 
 msgid "KTG_desc"
@@ -62,6 +62,21 @@ msgstr ""
 msgid "step"
 msgstr ""
 
+msgid "scoring_scheme"
+msgstr ""
+
+msgid "The scoring scheme in a json compatible format"
+msgstr ""
+
+msgid "is_scoring_scheme_relevant"
+msgstr ""
+
+msgid "Doas looking at the scoring scheme have a meaning ?"
+msgstr ""
+
+msgid "_name"
+msgstr ""
+
 msgid "_desc"
 msgstr ""
 
@@ -73,6 +88,9 @@ msgstr ""
 
 msgid "Creation time"
 msgstr ""
+
+msgid "bench"
+msgstr "Mesure de temps précise"
 
 msgid "the consensus(es) computed for the givent dataset and job's distance"
 msgstr ""
@@ -120,9 +138,6 @@ msgstr ""
 #, python-format
 msgid "At line %(line)d: %(msg)s"
 msgstr ""
-
-msgid "bench"
-msgstr "Mesure de temps précise"
 
 msgid "Forbidden (403)"
 msgstr ""

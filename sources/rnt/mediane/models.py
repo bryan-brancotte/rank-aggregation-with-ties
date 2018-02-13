@@ -107,13 +107,16 @@ class Distance(models.Model):
         help_text=_('Doas looking at the scoring scheme have a meaning ?'),
         default=False,
     )
+    id_order = models.IntegerField(
+        default=0
+    )
 
     def __str__(self):
-        return self.key_name
+        return self.name
 
     @property
     def name(self):
-        return ugettext(self.key_name)
+        return ugettext(self.key_name + "_name")
 
     @property
     def desc(self):

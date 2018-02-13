@@ -6,7 +6,7 @@
 {% block title %}Distance '{{ object.name }}'{% endblock %}
 {% block content_page_title %}
 <div class="col-xs-9">
-    <h1>Distance '{{ object.name }}'
+    <h1>Distance '{{ object.name }}'<br/>
         <small>(key_name: '{{object.key_name}}')</small>
     </h1>
 </div>
@@ -25,6 +25,11 @@
             <th style="width:1px">Visibility</th>
             <td>{% if object.public %}<i class="fa fa-globe"></i> Public{%else%}<i class="fa fa-user-secret"></i>
                 Private{%endif%}
+            </td>
+        </tr>
+        <tr>
+            <th>Description</th>
+            <td>{{object.desc}}
             </td>
         </tr>
         <tr>

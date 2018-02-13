@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-12-23 16:17+0000\n"
+"POT-Creation-Date: 2018-02-01 22:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,23 +19,41 @@ msgstr ""
 msgid "Will be automatically set"
 msgstr ""
 
-msgid "KTG"
+msgid "KTG_name"
 msgstr "Generalized kendall tau distance"
 
-msgid "KTGI"
-msgstr "Generalized induced kendall tau distance"
+msgid "KTGI_name"
+msgstr "Induced generalized kendall tau distance"
 
-msgid "PSEUDO_METRIC_KTGI"
-msgstr "Pseudo metric based on generalized induced kendall tau distance"
+msgid "PSEUDO_METRIC_KTGI_name"
+msgstr "Pseudo metric for truncated datasets"
 
 msgid "KTG_desc"
 msgstr ""
+"The generalized kendall tau distance following [Fagin et al 2006, Cohen-"
+"Boulakia et al 2011]."
 
 msgid "KTGI_desc"
 msgstr ""
+"The induced kendall tau distance [Dwork et al 2001] only consider "
+"disagreements when the two elements are present. Here its generalization "
+"[Brancotte, 2015] follows this principle to encompass ties."
 
 msgid "PSEUDO_METRIC_KTGI_desc"
 msgstr ""
+"Pseudo metric based on generalized induced kendall tau distance. This pseudo "
+"metric was used in ConQur-Bio [Brancotte et al., 2014] and is made for "
+"reducing the biais introduce when the dataset is truncated, meaning where "
+"elements in the tail of the dataset's rankings may have been removed to "
+"reduce the length of rankings."
+
+msgid "KTGU_name"
+msgstr "Generalized kendall tau distance with unification"
+
+msgid "KTGU_desc"
+msgstr ""
+"The generalized kendall tau distance following [Fagin et al 2006, Cohen-"
+"Boulakia et al 2011] where the dataset is seen as being unified [Brancotte et al 2015]."
 
 msgid "The number of rankings"
 msgstr ""
@@ -61,6 +79,23 @@ msgstr ""
 msgid "step"
 msgstr ""
 
+msgid "scoring_scheme"
+msgstr ""
+
+msgid "The scoring scheme in a json compatible format"
+msgstr ""
+
+msgid "is_scoring_scheme_relevant"
+msgstr ""
+
+msgid "Doas looking at the scoring scheme have a meaning ?"
+msgstr ""
+
+#, fuzzy
+#| msgid "KTG_name"
+msgid "_name"
+msgstr "Generalized kendall tau distance"
+
 msgid "_desc"
 msgstr ""
 
@@ -72,6 +107,9 @@ msgstr ""
 
 msgid "Creation time"
 msgstr ""
+
+msgid "bench"
+msgstr "precise time measurement"
 
 msgid "the consensus(es) computed for the givent dataset and job's distance"
 msgstr ""
@@ -119,9 +157,6 @@ msgstr ""
 #, python-format
 msgid "At line %(line)d: %(msg)s"
 msgstr ""
-
-msgid "bench"
-msgstr "precise time measurement"
 
 msgid "Forbidden (403)"
 msgstr ""
@@ -217,3 +252,8 @@ msgstr ""
 
 msgid "Save changes"
 msgstr ""
+
+#, fuzzy
+#~| msgid "KTGI_name"
+#~ msgid "KTGI"
+#~ msgstr "Generalized induced kendall tau distance"

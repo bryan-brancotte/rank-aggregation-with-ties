@@ -1,16 +1,21 @@
 from django.utils.translation import ugettext_lazy as _
 
 from mediane.algorithms.ailon.pick_a_perm import PickAPerm
+from mediane.algorithms.ailon.RepeatChoice import RepeatChoice
 from mediane.algorithms.fagin.med_rank import MedRank
 from mediane.algorithms.misc.borda_count import BordaCount
 from mediane.algorithms.ailon.kwiksort.kwiksort_random import KwikSortRandom
 from mediane.algorithms.misc.CopelandMethod import CopelandMethod
+from mediane.algorithms.lri.BioConsert import BioConsert
+from mediane.algorithms.lri.BioCo import BioCo
+from mediane.algorithms.lri.CondorcetPartitiong import CondorcetPartitioning
 
 
 class AlgorithmEnumeration:
     __tuple_list = None
     __median_ranking_algorithms = [
-        BordaCount, PickAPerm, MedRank, KwikSortRandom, CopelandMethod
+        BordaCount, PickAPerm, MedRank, KwikSortRandom, CopelandMethod, BioConsert, BioCo, CondorcetPartitioning,
+        RepeatChoice
     ]
 
     def __init__(self):
@@ -43,7 +48,8 @@ algorithmEnumeration = AlgorithmEnumeration()
 
 def get_median_ranking_algorithms():
     return [
-        BordaCount, PickAPerm, MedRank, KwikSortRandom,
+        BordaCount, PickAPerm, MedRank, KwikSortRandom, CopelandMethod, BioConsert, BioCo, CondorcetPartitioning,
+        RepeatChoice
     ]
 
 
