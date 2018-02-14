@@ -30,6 +30,8 @@ class ExactAlgorithm(MedianRanking):
         :raise DistanceNotHandledException when the algorithm cannot compute the consensus following the distance given
         as parameter
         """
+        for ranking in rankings:
+            print("r = ", ranking)
         res = []
         elem_id = {}
         id_elements = {}
@@ -48,10 +50,12 @@ class ExactAlgorithm(MedianRanking):
 
         positions = ExactAlgorithm.__positions(rankings, elem_id)
         mat_score = self.__cost_matrix(positions)
+        print(mat_score)
 
         # DEBUT ROBIN
         map_elements_cplex = {}
         my_prob = cplex.Cplex()  # initiate
+        my_prob.parameters.threads.set(1)
         my_prob.set_results_stream(None)  # mute
 
         my_prob.objective.set_sense(my_prob.objective.sense.minimize)  # we want to minimize the objective function
@@ -83,13 +87,13 @@ class ExactAlgorithm(MedianRanking):
 
         for i in range(nb_elements):
             for j in range(i+1, nb_elements):
-                s = "e_%s_%s" % (i, j)
+                s = "t_%s_%s" % (i, j)
                 my_obj.append(mat_score[i][j][2])
                 my_ub.append(1.0)
                 my_lb.append(0.0)
                 my_ctype += "B"
                 my_names.append(s)
-                map_elements_cplex[cpt] = ("e", i, j)
+                map_elements_cplex[cpt] = ("t", i, j)
                 cpt += 1
 
         my_prob.variables.add(obj=my_obj, lb=my_lb, ub=my_ub, types=my_ctype, names=my_names)
@@ -117,7 +121,7 @@ class ExactAlgorithm(MedianRanking):
                     my_sense += "E"
                     first_var = "x_%s_%s" % (i, j)
                     second_var = "x_%s_%s" % (j, i)
-                    third_var = "e_%s_%s" % (i, j)
+                    third_var = "t_%s_%s" % (i, j)
 
                     row = [[first_var, second_var, third_var], [1.0, 1.0, 1.0]]
                     rows.append(row)
@@ -126,14 +130,14 @@ class ExactAlgorithm(MedianRanking):
         for i in range(0, nb_elements):
             for j in range(i+1, nb_elements):
                 for k in range(j+1, nb_elements):
-                    my_rhs.append(1)
+                    my_rhs.append(2)
                     s = "c%s" % count
                     count += 1
                     my_rownames.append(s)
-                    my_sense += "G"
-                    first_var = "x_%s_%s" % (i, j)
-                    second_var = "x_%s_%s" % (j, k)
-                    third_var = "x_%s_%s" % (k, i)
+                    my_sense += "L"
+                    first_var = "x_%s_%s" % (j, i)
+                    second_var = "x_%s_%s" % (k, j)
+                    third_var = "x_%s_%s" % (i, k)
                     row = [[first_var, second_var, third_var], [1.0, 1.0, 1.0]]
                     rows.append(row)
 
@@ -148,14 +152,15 @@ class ExactAlgorithm(MedianRanking):
                     row = [[first_var, second_var, third_var], [1.0, 1.0, 1.0]]
                     rows.append(row)
 
+                    # i with j and j with k -> i with k
                     my_rhs.append(3)
                     s = "c%s" % count
                     count += 1
                     my_rownames.append(s)
                     my_sense += "L"
-                    first_var = "e_%s_%s" % (i, j)
-                    second_var = "e_%s_%s" % (j, k)
-                    third_var = "e_%s_%s" % (i, k)
+                    first_var = "t_%s_%s" % (i, j)
+                    second_var = "t_%s_%s" % (j, k)
+                    third_var = "t_%s_%s" % (i, k)
                     row = [[first_var, second_var, third_var], [2.0, 2.0, -1.0]]
                     rows.append(row)
 
@@ -164,9 +169,9 @@ class ExactAlgorithm(MedianRanking):
                     count += 1
                     my_rownames.append(s)
                     my_sense += "L"
-                    first_var = "e_%s_%s" % (i, k)
-                    second_var = "e_%s_%s" % (j, k)
-                    third_var = "e_%s_%s" % (i, j)
+                    first_var = "t_%s_%s" % (i, k)
+                    second_var = "t_%s_%s" % (j, k)
+                    third_var = "t_%s_%s" % (i, j)
                     row = [[first_var, second_var, third_var], [2.0, 2.0, -1.0]]
                     rows.append(row)
 
@@ -175,13 +180,161 @@ class ExactAlgorithm(MedianRanking):
                     count += 1
                     my_rownames.append(s)
                     my_sense += "L"
-                    first_var = "e_%s_%s" % (i, j)
-                    second_var = "e_%s_%s" % (i, k)
-                    third_var = "e_%s_%s" % (j, k)
+                    first_var = "t_%s_%s" % (i, j)
+                    second_var = "t_%s_%s" % (i, k)
+                    third_var = "t_%s_%s" % (j, k)
                     row = [[first_var, second_var, third_var], [2.0, 2.0, -1.0]]
                     rows.append(row)
+
+                    # 1
+                    my_rhs.append(3)
+                    s = "c%s" % count
+                    count += 1
+                    my_rownames.append(s)
+                    my_sense += "L"
+                    first_var = "x_%s_%s" % (i, j)
+                    second_var = "t_%s_%s" % (j, k)
+                    third_var = "x_%s_%s" % (i, k)
+                    row = [[first_var, second_var, third_var], [2.0, 2.0, -1.0]]
+                    rows.append(row)
+
+                    # 2
+                    my_rhs.append(3)
+                    s = "c%s" % count
+                    count += 1
+                    my_rownames.append(s)
+                    my_sense += "L"
+                    first_var = "x_%s_%s" % (i, k)
+                    second_var = "t_%s_%s" % (j, k)
+                    third_var = "x_%s_%s" % (i, j)
+                    row = [[first_var, second_var, third_var], [2.0, 2.0, -1.0]]
+                    rows.append(row)
+
+                    # 3
+                    my_rhs.append(3)
+                    s = "c%s" % count
+                    count += 1
+                    my_rownames.append(s)
+                    my_sense += "L"
+                    first_var = "x_%s_%s" % (j, i)
+                    second_var = "t_%s_%s" % (i, k)
+                    third_var = "x_%s_%s" % (j, k)
+                    row = [[first_var, second_var, third_var], [2.0, 2.0, -1.0]]
+                    rows.append(row)
+
+                    # 4
+                    my_rhs.append(3)
+                    s = "c%s" % count
+                    count += 1
+                    my_rownames.append(s)
+                    my_sense += "L"
+                    first_var = "x_%s_%s" % (j, k)
+                    second_var = "t_%s_%s" % (i, k)
+                    third_var = "x_%s_%s" % (j, i)
+                    row = [[first_var, second_var, third_var], [2.0, 2.0, -1.0]]
+                    rows.append(row)
+
+                    # 5
+                    my_rhs.append(3)
+                    s = "c%s" % count
+                    count += 1
+                    my_rownames.append(s)
+                    my_sense += "L"
+                    first_var = "x_%s_%s" % (k, i)
+                    second_var = "t_%s_%s" % (i, j)
+                    third_var = "x_%s_%s" % (k, j)
+                    row = [[first_var, second_var, third_var], [2.0, 2.0, -1.0]]
+                    rows.append(row)
+
+                    # 6
+                    my_rhs.append(3)
+                    s = "c%s" % count
+                    count += 1
+                    my_rownames.append(s)
+                    my_sense += "L"
+                    first_var = "x_%s_%s" % (k, j)
+                    second_var = "t_%s_%s" % (i, j)
+                    third_var = "x_%s_%s" % (k, i)
+                    row = [[first_var, second_var, third_var], [2.0, 2.0, -1.0]]
+                    rows.append(row)
+
+                    # 7
+                    my_rhs.append(3)
+                    s = "c%s" % count
+                    count += 1
+                    my_rownames.append(s)
+                    my_sense += "L"
+                    first_var = "x_%s_%s" % (j, i)
+                    second_var = "t_%s_%s" % (j, k)
+                    third_var = "x_%s_%s" % (k, i)
+                    row = [[first_var, second_var, third_var], [2.0, 2.0, -1.0]]
+                    rows.append(row)
+
+                    # 8
+                    my_rhs.append(3)
+                    s = "c%s" % count
+                    count += 1
+                    my_rownames.append(s)
+                    my_sense += "L"
+                    first_var = "x_%s_%s" % (k, i)
+                    second_var = "t_%s_%s" % (j, k)
+                    third_var = "x_%s_%s" % (j, i)
+                    row = [[first_var, second_var, third_var], [2.0, 2.0, -1.0]]
+                    rows.append(row)
+
+                    # 9
+                    my_rhs.append(3)
+                    s = "c%s" % count
+                    count += 1
+                    my_rownames.append(s)
+                    my_sense += "L"
+                    first_var = "x_%s_%s" % (i, j)
+                    second_var = "t_%s_%s" % (i, k)
+                    third_var = "x_%s_%s" % (k, j)
+                    row = [[first_var, second_var, third_var], [2.0, 2.0, -1.0]]
+                    rows.append(row)
+
+                    # 10
+                    my_rhs.append(3)
+                    s = "c%s" % count
+                    count += 1
+                    my_rownames.append(s)
+                    my_sense += "L"
+                    first_var = "x_%s_%s" % (k, j)
+                    second_var = "t_%s_%s" % (i, k)
+                    third_var = "x_%s_%s" % (i, j)
+                    row = [[first_var, second_var, third_var], [2.0, 2.0, -1.0]]
+                    rows.append(row)
+
+                    # 11
+                    my_rhs.append(3)
+                    s = "c%s" % count
+                    count += 1
+                    my_rownames.append(s)
+                    my_sense += "L"
+                    first_var = "x_%s_%s" % (i, k)
+                    second_var = "t_%s_%s" % (i, j)
+                    third_var = "x_%s_%s" % (j, k)
+                    row = [[first_var, second_var, third_var], [2.0, 2.0, -1.0]]
+                    rows.append(row)
+
+                    # 12
+                    my_rhs.append(3)
+                    s = "c%s" % count
+                    count += 1
+                    my_rownames.append(s)
+                    my_sense += "L"
+                    first_var = "x_%s_%s" % (j, k)
+                    second_var = "t_%s_%s" % (i, j)
+                    third_var = "x_%s_%s" % (i, k)
+                    row = [[first_var, second_var, third_var], [2.0, 2.0, -1.0]]
+                    rows.append(row)
+
+
 
         my_prob.linear_constraints.add(lin_expr=rows, senses=my_sense, rhs=my_rhs, names=my_rownames)
+
+        my_prob.write("/home/pierre/Bureau/cplex_test.lp")
 
         # start = my_prob.get_dettime()
         my_prob.solve()  # solve
@@ -216,9 +369,10 @@ class ExactAlgorithm(MedianRanking):
             else:
                 res.append(bucket)
                 bucket = [id_elements.get(elem)]
+                current_nb_def = nb_defeats
 
         res.append(bucket)
-
+        print("RES = ", res)
         return [res]
 
     def __cost_matrix(self, positions: ndarray) -> ndarray:
@@ -279,3 +433,5 @@ class ExactAlgorithm(MedianRanking):
             GENERALIZED_KENDALL_TAU_DISTANCE, GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE,
             PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE
         )
+
+
