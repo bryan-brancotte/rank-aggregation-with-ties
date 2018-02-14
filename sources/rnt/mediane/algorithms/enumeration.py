@@ -9,13 +9,14 @@ from mediane.algorithms.misc.CopelandMethod import CopelandMethod
 from mediane.algorithms.lri.BioConsert import BioConsert
 from mediane.algorithms.lri.BioCo import BioCo
 from mediane.algorithms.lri.CondorcetPartitiong import CondorcetPartitioning
+from mediane.algorithms.lri.ExactAlgorithm import ExactAlgorithm
 
 
 class AlgorithmEnumeration:
     __tuple_list = None
     __median_ranking_algorithms = [
         BordaCount, PickAPerm, MedRank, KwikSortRandom, CopelandMethod, BioConsert, BioCo, CondorcetPartitioning,
-        RepeatChoice
+        RepeatChoice, ExactAlgorithm
     ]
 
     def __init__(self):
@@ -49,7 +50,7 @@ algorithmEnumeration = AlgorithmEnumeration()
 def get_median_ranking_algorithms():
     return [
         BordaCount, PickAPerm, MedRank, KwikSortRandom, CopelandMethod, BioConsert, BioCo, CondorcetPartitioning,
-        RepeatChoice
+        RepeatChoice, ExactAlgorithm
     ]
 
 
