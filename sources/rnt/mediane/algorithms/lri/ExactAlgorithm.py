@@ -5,7 +5,6 @@ from mediane.distances.enumeration import GENERALIZED_KENDALL_TAU_DISTANCE, GENE
     PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE
 from numpy import ndarray, array, shape, zeros, count_nonzero, vdot
 from operator import itemgetter
-import cplex
 
 
 class ExactAlgorithm(MedianRanking):
@@ -17,6 +16,7 @@ class ExactAlgorithm(MedianRanking):
             rankings: List[List[List[int]]],
             distance,
             return_at_most_one_ranking: bool = False)-> List[List[List[int]]]:
+        import cplex
         """
         :param rankings: A set of rankings
         :type rankings: list
