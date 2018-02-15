@@ -1,5 +1,4 @@
 from django.utils.translation import ugettext_lazy as _
-from numpy import ndarray, array
 
 GENERALIZED_KENDALL_TAU_DISTANCE = 'KTG'
 GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE = 'KTGI'
@@ -46,25 +45,3 @@ def __dummy_method_to_have_translations():
     _('PSEUDO_METRIC_KTGI_desc')
     _('KTGU_name')
     _('KTGU_desc')
-
-
-# return a matrix (2,6)
-# 1st line are coeffs for cost_before(elem1, elem2)
-# 2nd line are coeffs for cost_tied(elem1, elem2)
-# column 1 represents nb_rankings with elem1 before elem2
-# column 2 represents nb_rankings with elem1 and elem2 are tied
-# column 3 represents nb_rankings with elem1 after elem2
-# column 4 represents nb_rankings with elem1 and not elem2
-# column 5 represents nb_rankings with elem2 and not elem1
-# column 6 represents nb_rankings with neither elem1 nor elem2
-
-def get_coeffs_dist(id_dist: str, p: float) -> ndarray:
-    upper = id_dist.upper()
-    if upper == GENERALIZED_KENDALL_TAU_DISTANCE:
-        return array([[0., 1.0, p, 0., 1., p], [p, p, 0., p, p, 0.]])
-    elif upper == GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE:
-        return array([[0., 1., p, 0., 0., 0.], [p, p, 0, 0., 0., 0.]])
-    elif upper == PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE:
-        return array([[0., 1., p, 0., 1., 0.], [p, p, 0, p, p, 0.]])
-    else:
-        return array([[0., 0., 0., 0., 0., 0.], [0., 0., 0., 0., 0., 0.]])

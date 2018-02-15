@@ -32,7 +32,7 @@ class PickAPerm(MedianRanking):
         dst_min = float('inf')
         consensus = [[]]
         for ranking in rankings:
-            dist = k.get_distance_to_a_set_of_rankings(ranking, rankings).get(distance)
+            dist = k.get_distance_to_a_set_of_rankings(ranking, rankings).get(distance.id_order)
             if dist < dst_min:
                 dst_min = dist
                 consensus.clear()

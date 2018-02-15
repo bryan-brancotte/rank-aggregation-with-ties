@@ -44,7 +44,7 @@ class KendallTauGeneralizedNlogN(DistanceCalculator):
     ) -> Dict[int, float]:
         dst = 0
         for r in rankings:
-            dst += self.get_distance_to_an_other_ranking(c, r)[self.distance]
+            dst += self.get_distance_to_an_other_ranking(c, r)[self.distance.id_order]
 
         return {
             self.distance.id_order: dst

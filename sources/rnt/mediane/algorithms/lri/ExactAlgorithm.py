@@ -364,7 +364,6 @@ class ExactAlgorithm(MedianRanking):
                 current_nb_def = nb_defeats
 
         res.append(bucket)
-        print("RES = ", res)
         return [res]
 
     @staticmethod

@@ -1,9 +1,10 @@
 from mediane.algorithms.ailon.kwiksort.kwiksortabs import KwikSortAbs
-from mediane.distances.enumeration import *
+from mediane.distances.enumeration import GENERALIZED_KENDALL_TAU_DISTANCE, GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE, \
+    PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE
 
 from typing import List
 from random import choice
-from numpy import zeros, count_nonzero, vdot
+from numpy import zeros, count_nonzero, vdot, ndarray
 
 
 class KwikSortRandom(KwikSortAbs):
