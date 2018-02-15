@@ -1,6 +1,7 @@
 from mediane.algorithms.median_ranking import MedianRanking
 
 from typing import List
+from numpy import ndarray, asarray
 
 
 class KwikSortAbs(MedianRanking):
@@ -8,8 +9,8 @@ class KwikSortAbs(MedianRanking):
     def compute_median_rankings(
             self,
             rankings: List[List[List[int]]],
-            distance, return_at_most_one_ranking:
-            bool = False)-> List[List[List[int]]]:
+            distance,
+            return_at_most_one_ranking: bool = False)-> List[List[List[int]]]:
         """
         :param rankings: A set of rankings
         :type rankings: list
@@ -26,8 +27,9 @@ class KwikSortAbs(MedianRanking):
 
         consensus = []
         elements_translated_target = []
+        scoring_scheme = asarray(distance.scoring_scheme)
         var = self.prepare_internal_vars(elements_translated_target, rankings)
-        self.kwik_sort(consensus, elements_translated_target, var)
+        self.kwik_sort(consensus, elements_translated_target, var, scoring_scheme)
         return [consensus]
 
     def prepare_internal_vars(self, elements_translated_target: List, rankings: List[List[List[int]]]):
@@ -39,11 +41,11 @@ class KwikSortAbs(MedianRanking):
         raise NotImplementedError("The method not implemented")
     # public abstract V getPivot(List < V > elements, U var);
 
-    def where_should_it_be(self, element: int, pivot: int, elements: List[int], var):
+    def where_should_it_be(self, element: int, pivot: int, elements: List[int], var, scoring_scheme: ndarray):
         raise NotImplementedError("The method not implemented")
     # public abstract int whereShouldItBe(V element, V pivot, List < V > elements, U var);
 
-    def kwik_sort(self, consensus: List[List[int]], elements: List[int], var):
+    def kwik_sort(self, consensus: List[List[int]], elements: List[int], var, scoring_scheme: ndarray):
         after = []
         before = []
         same = []
@@ -53,7 +55,7 @@ class KwikSortAbs(MedianRanking):
             same.append(pivot)
         for element in elements:
             if element != pivot:
-                pos = self.where_should_it_be(element, pivot, elements, var)
+                pos = self.where_should_it_be(element, pivot, elements, var, scoring_scheme)
                 if pos < 0:
                     before.append(element)
                 elif pos > 0:
@@ -64,13 +66,13 @@ class KwikSortAbs(MedianRanking):
         if len(before) == 1:
             consensus.append(before)
         elif len(before) > 0:
-            self.kwik_sort(consensus, before, var)
-        if len(same)>0:
+            self.kwik_sort(consensus, before, var, scoring_scheme)
+        if len(same) > 0:
             consensus.append(same)
         if len(after) == 1:
             consensus.append(after)
         elif len(after) > 0:
-            self.kwik_sort(consensus, after, var)
+            self.kwik_sort(consensus, after, var, scoring_scheme)
 
     def is_breaking_ties_arbitrarily(self):
         raise NotImplementedError("The method not implemented")

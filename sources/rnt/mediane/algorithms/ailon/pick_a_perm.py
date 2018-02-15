@@ -12,8 +12,8 @@ class PickAPerm(MedianRanking):
     def compute_median_rankings(
             self,
             rankings: List[List[List[int]]],
-            distance, return_at_most_one_ranking:
-            bool = False)-> List[List[List[int]]]:
+            distance,
+            return_at_most_one_ranking: bool = False)-> List[List[List[int]]]:
         """
         :param rankings: A set of rankings
         :type rankings: list
@@ -28,11 +28,11 @@ class PickAPerm(MedianRanking):
         as parameter
         """
 
-        k = KendallTauGeneralizedNlogN(self.p)
+        k = KendallTauGeneralizedNlogN(distance)
         dst_min = float('inf')
         consensus = [[]]
         for ranking in rankings:
-            dist = k.get_distance_to_a_set_of_rankings(ranking, rankings).get(GENERALIZED_KENDALL_TAU_DISTANCE)
+            dist = k.get_distance_to_a_set_of_rankings(ranking, rankings).get(distance)
             if dist < dst_min:
                 dst_min = dist
                 consensus.clear()

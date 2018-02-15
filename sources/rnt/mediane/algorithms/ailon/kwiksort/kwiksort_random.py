@@ -8,10 +8,6 @@ from numpy import zeros, count_nonzero, vdot
 
 class KwikSortRandom(KwikSortAbs):
 
-    def __init__(self,  p=1, distance=GENERALIZED_KENDALL_TAU_DISTANCE):
-        self.p = p
-        self.distance = distance
-
     def prepare_internal_vars(self, elements_translated_target: List, rankings: List[List[List[int]]]):
         elements = {}
         id_element = 0
@@ -39,11 +35,10 @@ class KwikSortRandom(KwikSortAbs):
     def get_pivot(self, elements: List[int], var):
         return choice(elements)
 
-    def where_should_it_be(self, element: int, pivot: int, elements: List[int], var):
+    def where_should_it_be(self, element: int, pivot: int, elements: List[int], var, scoring_scheme: ndarray):
         pivot_var = var[1][var[0].get(pivot)]
         element_var = var[1][var[0].get(element)]
         m = len(pivot_var)
-        coeffs_distance = get_coeffs_dist(self.distance, self.p)
 
         a = count_nonzero(pivot_var + element_var == -2)
         b = count_nonzero(pivot_var == element_var)
@@ -52,9 +47,9 @@ class KwikSortRandom(KwikSortAbs):
         e = count_nonzero(element_var < pivot_var)
 
         comp = [e-d+a, m-e-b-c+a, b-a, c-a, d-a, a]
-        cost_before = vdot(coeffs_distance[0], comp)
-        cost_same = vdot(coeffs_distance[1], comp)
-        cost_after = vdot(coeffs_distance[0], [m-e-b-c+a,  e-d+a, b-a, d-a, c-a, a])
+        cost_before = vdot(scoring_scheme[0], comp)
+        cost_same = vdot(scoring_scheme[1], comp)
+        cost_after = vdot(scoring_scheme[0], [m-e-b-c+a,  e-d+a, b-a, d-a, c-a, a])
 
         if cost_same <= cost_before:
             if cost_same <= cost_after:

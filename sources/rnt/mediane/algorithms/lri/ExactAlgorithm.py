@@ -1,16 +1,13 @@
 from typing import List, Dict
 from mediane.algorithms.median_ranking import MedianRanking
-from mediane.distances.ScoringScheme import ScoringScheme
 from mediane.distances.enumeration import GENERALIZED_KENDALL_TAU_DISTANCE, GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE, \
     PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE
-from numpy import ndarray, array, shape, zeros, count_nonzero, vdot
+from numpy import ndarray, array, shape, zeros, count_nonzero, vdot, asarray
 from operator import itemgetter
 import cplex
 
 
 class ExactAlgorithm(MedianRanking):
-    def __init__(self, scoring_scheme=ScoringScheme()):
-        self.scoring_scheme = scoring_scheme
 
     def compute_median_rankings(
             self,
@@ -30,8 +27,6 @@ class ExactAlgorithm(MedianRanking):
         :raise DistanceNotHandledException when the algorithm cannot compute the consensus following the distance given
         as parameter
         """
-        for ranking in rankings:
-            print("r = ", ranking)
         res = []
         elem_id = {}
         id_elements = {}
@@ -49,8 +44,7 @@ class ExactAlgorithm(MedianRanking):
             return [[]]
 
         positions = ExactAlgorithm.__positions(rankings, elem_id)
-        mat_score = self.__cost_matrix(positions)
-        print(mat_score)
+        mat_score = self.__cost_matrix(positions, asarray(distance.scoring_scheme))
 
         # DEBUT ROBIN
         map_elements_cplex = {}
@@ -330,8 +324,6 @@ class ExactAlgorithm(MedianRanking):
                     row = [[first_var, second_var, third_var], [2.0, 2.0, -1.0]]
                     rows.append(row)
 
-
-
         my_prob.linear_constraints.add(lin_expr=rows, senses=my_sense, rhs=my_rhs, names=my_rownames)
 
         my_prob.write("/home/pierre/Bureau/cplex_test.lp")
@@ -375,8 +367,8 @@ class ExactAlgorithm(MedianRanking):
         print("RES = ", res)
         return [res]
 
-    def __cost_matrix(self, positions: ndarray) -> ndarray:
-        matrix_scoring_scheme = self.scoring_scheme.matrix
+    @staticmethod
+    def __cost_matrix(positions: ndarray, matrix_scoring_scheme: ndarray) -> ndarray:
         cost_before = matrix_scoring_scheme[0]
         cost_tied = matrix_scoring_scheme[1]
         cost_after = array([cost_before[1], cost_before[0], cost_before[2], cost_before[4], cost_before[3],
@@ -433,5 +425,3 @@ class ExactAlgorithm(MedianRanking):
             GENERALIZED_KENDALL_TAU_DISTANCE, GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE,
             PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE
         )
-
-
