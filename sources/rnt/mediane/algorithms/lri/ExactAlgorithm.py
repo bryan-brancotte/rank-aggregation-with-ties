@@ -44,13 +44,18 @@ class ExactAlgorithm(MedianRanking):
             return [[]]
 
         positions = ExactAlgorithm.__positions(rankings, elem_id)
-        mat_score = self.__cost_matrix(positions, asarray(distance.scoring_scheme))
+        if distance is None:
+            scoring_scheme = [[0, 1.0, 1.0, 0, 0, 0], [[1.0, 1.0, 0, 0, 0, 0]]]
+        else:
+            scoring_scheme = distance.scoring_scheme
+        mat_score = self.__cost_matrix(positions, asarray(scoring_scheme))
 
         # DEBUT ROBIN
         map_elements_cplex = {}
         my_prob = cplex.Cplex()  # initiate
         my_prob.parameters.threads.set(1)
         my_prob.set_results_stream(None)  # mute
+        my_prob.parameters.mip.tolerances.mipgap.set(0.0)
 
         my_prob.objective.set_sense(my_prob.objective.sense.minimize)  # we want to minimize the objective function
 
@@ -348,7 +353,9 @@ class ExactAlgorithm(MedianRanking):
             count_after[i] = 0
 
         for var in range(numcols):
-            if x[var] == 1:
+            # if tple[0] == "t" and tple[1] == 5 and tple[2] == 7:
+            #     print(x[var])
+            if abs(x[var] - 1) < 0.001:
                 tple = map_elements_cplex[var]
                 if tple[0] == "x":
                     count_after[tple[2]] += 1
