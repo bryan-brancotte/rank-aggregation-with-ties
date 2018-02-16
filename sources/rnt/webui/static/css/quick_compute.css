@@ -13,6 +13,23 @@
     background-image: -o-linear-gradient(top,#f9f9f9 0,#f5f5f5 100%);
     background-image: linear-gradient(to bottom,#f9f9f9 0,#f5f5f5 100%);
 }
+.slider-host{
+    display: flex;
+}
+.slider-host>div>input{
+    width:50px;
+}
+.slider-host>*:last-child{
+    padding-right: 0px;
+}
+.slider-host>*{
+    padding-right: 15px;
+    padding-left: 0px;
+    flex: 0 auto;
+}
+.slider-host>.slider-parent{
+    flex: 1 1;
+}
 .param-indicator{
     display:none;
 }
@@ -21,4 +38,13 @@
     font-style: italic;
     color: #777;
     font-size: 0.8em;
+}
+.last-to-right{
+    display: flex;
+}
+.last-to-right>*{
+    flex: 1 1;
+}
+.last-to-right>*:last-child{
+    flex: 0 auto;
 }

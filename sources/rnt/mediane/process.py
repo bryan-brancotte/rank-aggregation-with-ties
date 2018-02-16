@@ -2,6 +2,7 @@ from django.utils import timezone
 from django.utils.translation import ugettext
 
 from mediane.algorithms.enumeration import get_name_from
+from mediane.algorithms.lri.BioConsert import BioConsert
 from mediane.algorithms.misc.borda_count import BordaCount
 from mediane.distances.KendallTauGeneralizedNSquare import KendallTauGeneralizedNSquare
 from mediane.distances.enumeration import GENERALIZED_KENDALL_TAU_DISTANCE
@@ -128,7 +129,15 @@ def evaluate_dataset_and_provide_stats(rankings_str):
     return evaluation
 
 
-def compute_consensus_settings_based_on_datasets(n, m, complete, rankings, user):
+def compute_consensus_settings_based_on_datasets(
+        n,
+        m,
+        complete,
+        rankings,
+        user,
+        dbdatasets=None,
+        algos=None,
+):
     """
 
     :param n:
@@ -137,13 +146,21 @@ def compute_consensus_settings_based_on_datasets(n, m, complete, rankings, user)
     :param rankings:
     :param user: the user for which we are find the best settings, should be used to
     not select an algorithm/distance/norm that is not visible by the user
+    :param dbdatasets:
+    :param algos:
     :return:
     """
+    dbdatasets = [] if dbdatasets is None else dbdatasets
+    algos = [] if algos is None else algos
     from mediane.models import Distance
     consensus_settings = {}
-    if n > 200 or True:
+    consensus_settings["algo"] = BioConsert().get_full_name()
+    consensus_settings["dist"] = Distance.objects.get(key_name=GENERALIZED_KENDALL_TAU_DISTANCE).pk
+    consensus_settings["norm"] = NONE if complete else UNIFICATION
+    if n > 100 or len(dbdatasets) * len(algos) > 20:
         consensus_settings["algo"] = BordaCount().get_full_name()
-        consensus_settings["dist"] = Distance.objects.get(key_name=GENERALIZED_KENDALL_TAU_DISTANCE).pk
-        consensus_settings["norm"] = NONE if complete else UNIFICATION
-    consensus_settings["auto-compute"] = n < 50
+    consensus_settings["auto_compute"] = n < 50 and len(dbdatasets) * len(algos) < 50
+    consensus_settings["bench"] = False
+    consensus_settings["extended_analysis"] = len(dbdatasets) * len(algos) > 50
+    print(consensus_settings)
     return consensus_settings

@@ -112,6 +112,18 @@ r4 := [[B],[C],[A,D,E]]""",
         label=_('bench'),
         required=False,
     )
+    auto_compute = forms.BooleanField(
+        initial=False,
+        label=_('auto_compute_label'),
+        help_text=_('auto_compute_help_text'),
+        required=False,
+    )
+    extended_analysis = forms.BooleanField(
+        initial=False,
+        label=_('extended_analysis_label'),
+        help_text=_('extended_analysis_help_text'),
+        required=False,
+    )
     ranking_source = forms.CharField(
         required=True,
         widget=HiddenInput

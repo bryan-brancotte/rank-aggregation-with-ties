@@ -3,17 +3,14 @@
     <div class="panel-group">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h4 class="panel-title">
-                    <div class="row">
+                <h4 class="panel-title last-to-right">
                         <a data-toggle="collapse" class="color-inherit" href="#collapse-{{param_name}}" aria-expanded="false">
-                            <div class="col-xs-9">
                                 <i class="fa fa-plus to-expand-icon"></i>
                                 <i class="fa fa-minus to-collapse-icon"></i>
                                 {{param_verbose_name}}
                                 <span class="param-indicator"></span>
-                            </div>
                         </a>
-                        <div class="col-xs-3 text-right">
+                        <div>
                                 <input type="checkbox"
                                        class="param-auto"
                     {% for field in full_form %}
@@ -23,7 +20,6 @@
                     {% endfor %} data-toggle="toggle" data-on="<i class='fa fa-magic'></i> Auto" data-off="<i class='fa fa-wrench'></i> Manual"
                                        data-onstyle="primary" data-offstyle="default" data-size="mini"
                                        id="id_{{param_name_auto}}" name="{{param_name_auto}}">
-                            </div>
                         </div>
                 </h4>
             </div>

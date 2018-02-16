@@ -12,7 +12,7 @@ from django.views.generic.list import ListView
 
 from mediane.algorithms.enumeration import get_from as get_algo_from
 from mediane.distances.enumeration import get_from as get_dist_from
-from mediane.models import DataSet, Distance
+from mediane.models import DataSet, Distance, ResultsToProduceDecorator
 from mediane.normalizations.enumeration import get_from as get_norm_from
 from mediane.process import execute_median_rankings_computation_from_rankings, \
     execute_median_rankings_computation_from_datasets, compute_consensus_settings_based_on_datasets
@@ -32,7 +32,7 @@ r4 := [[B],[C],[A,D,E]]"""
     return render(request, 'webui/quick_compute.html', context=context)
 
 
-def dataset_evaluate(request):
+def computation_evaluate(request):
     if request.method != 'POST':
         return HttpResponseBadRequest()
     form = ComputeConsensusForm(data=request.POST, user=request.user)
@@ -45,6 +45,8 @@ def dataset_evaluate(request):
             complete=form.evaluation['complete'],
             rankings=form.evaluation['rankings'],
             user=request.user,
+            dbdatasets=form.cleaned_data.get('dbdatasets', None),
+            algos=form.cleaned_data.get('algo', None),
         ),
         'dataset_html_errors': str(form['dataset'].errors),
     }
@@ -52,7 +54,7 @@ def dataset_evaluate(request):
     return JsonResponse(evaluation_and_settings)
 
 
-def dataset_compute(request):
+def computation_on_the_fly(request):
     if request.method != 'POST':
         return HttpResponseBadRequest()
     form = ComputeConsensusForm(data=request.POST, user=request.user)
@@ -60,7 +62,7 @@ def dataset_compute(request):
         print(form.errors)
         return HttpResponseBadRequest()
     if form.cleaned_data["ranking_source"] == "type":
-        print(form.cleaned_data["algo"])
+        print(form.cleaned_data)
         if not isinstance(form.cleaned_data["algo"], list):
             algorithms = [get_algo_from(form.cleaned_data["algo"])()]
         else:

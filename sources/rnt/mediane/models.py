@@ -2,12 +2,15 @@ from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.translation import ugettext_lazy as _, ugettext
+from rest_framework.compat import MinLengthValidator
 
 from mediane.algorithms.enumeration import get_from as get_algo_from
 from mediane.median_ranking_tools import parse_ranking_with_ties_of_str
 from mediane.validators import sound_dataset_validator
 
 import json
+import random
+import string
 
 
 class DataSet(models.Model):
@@ -217,6 +220,23 @@ class Job(models.Model):
         default=False,
         verbose_name=_('bench'),
     )
+    identifier = models.CharField(
+        max_length=32,
+        validators=[MinLengthValidator(32), ],
+    )
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        while self.identifier is None:
+            self.identifier = ''.join(random.choice(''.join((string.ascii_letters, string.digits))) for _ in range(32))
+            if Job.objects.filter(identifier=self.identifier):
+                self.identifier = None
+        super(Job, self).save(
+            force_insert=force_insert,
+            force_update=force_update,
+            using=using,
+            update_fields=update_fields,
+        )
 
     def get_task(self):
         pass
@@ -244,11 +264,31 @@ class Result(models.Model):
         blank=True,
         null=True,
     )
-    results = models.TextField(
-        help_text=_('the consensus(es) computed for the givent dataset and job\'s distance'),
+    consensuses = models.TextField(
+        help_text=_('the consensus(es) computed for the given dataset and job\'s distance'),
         blank=True,
         null=True,
     )
 
     # def get_absolute_url(self):
     #     return reverse('webui:result_view', args=[self.pk])
+
+
+class ResultsToProduceDecorator(models.Model):
+    result = models.ForeignKey(
+        Result,
+        on_delete=models.CASCADE,
+        help_text=_('The result to produce'),
+    )
+    status = models.IntegerField(choices=(
+        (1, _("Pending")),
+        (2, _("Taken for computation")),
+        (3, _("Being computed")),
+        (4, _("Done")),
+        (5, _("Error"))
+    ),
+        default=1)
+
+    @staticmethod
+    def get_a_task():
+        return ResultsToProduceDecorator.objects.filter(status=1).order_by('?').first()

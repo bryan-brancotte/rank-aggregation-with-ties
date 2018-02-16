@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-02-01 22:46+0000\n"
+"POT-Creation-Date: 2018-02-15 21:54+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,6 +18,9 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 msgid "Will be automatically set"
+msgstr ""
+
+msgid "_name"
 msgstr ""
 
 msgid "KTG_name"
@@ -36,6 +39,12 @@ msgid "KTGI_desc"
 msgstr ""
 
 msgid "PSEUDO_METRIC_KTGI_desc"
+msgstr ""
+
+msgid "KTGU_name"
+msgstr ""
+
+msgid "KTGU_desc"
 msgstr ""
 
 msgid "The number of rankings"
@@ -74,9 +83,6 @@ msgstr ""
 msgid "Doas looking at the scoring scheme have a meaning ?"
 msgstr ""
 
-msgid "_name"
-msgstr ""
-
 msgid "_desc"
 msgstr ""
 
@@ -92,7 +98,10 @@ msgstr ""
 msgid "bench"
 msgstr "Mesure de temps précise"
 
-msgid "the consensus(es) computed for the givent dataset and job's distance"
+msgid "the consensus(es) computed for the given dataset and job's distance"
+msgstr ""
+
+msgid "The result to produce"
 msgstr ""
 
 msgid "None"
@@ -137,6 +146,20 @@ msgstr ""
 
 #, python-format
 msgid "At line %(line)d: %(msg)s"
+msgstr ""
+
+msgid "auto_compute_label"
+msgstr "Recalculer automatiquement lors de changement"
+
+msgid "auto_compute_help_text"
+msgstr ""
+"Est-ce que le consensus doit être recalculé après chaque modification du "
+"dataset"
+
+msgid "extended_analysis_label"
+msgstr ""
+
+msgid "extended_analysis_help_text"
 msgstr ""
 
 msgid "Forbidden (403)"

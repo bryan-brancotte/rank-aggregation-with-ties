@@ -2,11 +2,20 @@ function refresh_settings_from_datasets_and_compute_when_possible(){
     refresh_settings_from_datasets(
         $('form'),
         function (){
-            if ($("#auto-compute-host").attr("data-value")){
+            if ($("#id_auto_compute").prop("checked")){
                 compute_consensus_from_dataset($('form'));
             }
         }
     );
+}
+function delayed_refresh_settings_from_datasets_and_compute_when_possible(){
+    return delayed_action(
+        refresh_settings_from_datasets_and_compute_when_possible,
+        function (){
+            $("#btn-compute").attr("disabled",true);
+            $("#future-update-indicator").fadeIn();
+        }
+    )
 }
 
 function refresh_settings_from_datasets(form_param, callback){
@@ -33,22 +42,26 @@ function refresh_settings_from_datasets(form_param, callback){
             $("#stats-invalid").toggle(data["invalid"]);
             $("#btn-compute").attr("disabled",data["invalid"]);
             $("#id_dataset").prop("readonly",false) ;
-            if($("#id_norm_auto").prop("checked")){
-                $("#id_norm_auto").attr("data-default-value",data["norm"])
-            }
-            if($("#id_dist_auto").prop("checked")){
-                $("#id_dist_auto").attr("data-default-value",data["dist"])
-            }
-            if($("#id_algo_auto").prop("checked")){
-                $("#id_algo_auto").attr("data-default-value",data["algo"])
-            }
+            //if($("#id_norm_auto").prop("checked")){
+            $("#id_norm_auto").attr("data-default-value",data["norm"])
+            //}
+            //if($("#id_dist_auto").prop("checked")){
+            $("#id_dist_auto").attr("data-default-value",data["dist"])
+            //}
+            //if($("#id_algo_auto").prop("checked")){
+            $("#id_algo_auto").attr("data-default-value",data["algo"])
+            //}
+            $("#id_compute_settings").attr("data-param-auto-bench",data["bench"]);
+            $("#id_compute_settings").attr("data-param-auto-auto_compute",data["auto_compute"]);
+            $("#id_compute_settings").attr("data-param-auto-extended_analysis",data["extended_analysis"]);
             $(".param-auto").change();
-            $("#auto-compute-host>.yes").toggle(data["auto-compute"]);
-            $("#auto-compute-host>.no").toggle(!data["auto-compute"]);
-            $("#auto-compute-host").attr("data-value", data["auto-compute"]);
+            //$("#auto-compute-host>.yes").toggle(data["auto-compute"]);
+            //$("#auto-compute-host>.no").toggle(!data["auto-compute"]);
+            //$("#auto-compute-host").attr("data-value", data["auto-compute"]);
             if (typeof callback != "undefined")
                 callback(data);
             $("#updating-stats-indicator").fadeOut();
+            update_param_indicator("#id_extended_analysis");
         },
         error: function (textStatus, xhr) {
             console.error(textStatus);
@@ -60,7 +73,7 @@ function refresh_settings_from_datasets(form_param, callback){
 
 //refresh_settings_from_datasets($('form'));
 //https://stackoverflow.com/a/6217551/2144569
-function delayed_onkeyup(action, instant_action){
+function delayed_action(action, instant_action){
     var callcount = 0;
     var action = action
     var delayAction = function(action, time){
@@ -84,15 +97,33 @@ function on_change_param_auto_checkbox(auto_checkbox){
     name=name.substring(0,name.lastIndexOf('_'));
     if($(auto_checkbox).prop("checked")){
         $("[name='"+name+"']").prop("checked",false);
-        $("[name='"+name+"'][value='"+$(auto_checkbox).attr("data-default-value")+"']").prop("checked",true).change()/**/;
+        $("[name='"+name+"'][value='"+$(auto_checkbox).attr("data-default-value")+"']").prop("checked",true).change();
+        $.each(
+            $(auto_checkbox).attrThatBeginWith("data-param-auto-"),
+            function(i,e){
+                $("#id_"+e.name.substring(16)).prop("checked",e.value=="true");
+            }
+        );
     }
 }
 
+function update_param_indicator(input){
+    var names=[];
+    $.each(
+        $(input).closest(".panel-group").find("[name="+$(input).attr("name")+"]:checked")
+            .add($(input).closest(".panel-group").find("#collapse-compute-settings").find("input:checked")),
+        function(i,e){
+            names.push($(e).parent().text().trim())
+        }
+    );
+    $(input).closest(".panel-group").find(".param-indicator").text("("+names.join(", ")+")");
+}
+
 function on_change_param_radio(input){
-    $(input).closest(".panel-group").find(".param-indicator").text("("+$(input).parent().text().trim()+")");
+    update_param_indicator(input);
     var name = $(input).attr("name");
-    var auto_checkbox=$("[name='"+name+"_auto']");
-    if ($(auto_checkbox).attr("data-default-value") != $(input).attr("value")){
+    var auto_checkbox=$(input).closest(".panel-group").find(".param-auto");
+    if ($(auto_checkbox).attr("data-default-value") != $(input).attr("value") || typeof $(auto_checkbox).attr("data-default-value") == "undefined"){
         auto_checkbox.prop("checked",false).change()
     }
 }
@@ -230,14 +261,23 @@ stack_onload(function () {
 
     //once typed in the text area, refresh the stats of the datasets
     $("#id_dataset").keyup(
-        delayed_onkeyup(
-            refresh_settings_from_datasets_and_compute_when_possible,
-            function (){
-                $("#btn-compute").attr("disabled",true);
-                $("#future-update-indicator").fadeIn();
-            }
-        )
+        delayed_refresh_settings_from_datasets_and_compute_when_possible()
     );
+    $("#id_auto_compute").click(function(){
+        if($("#id_auto_compute").prop("checked"))
+            $("#id_extended_analysis").prop("checked",false);
+
+    });
+    $("#id_extended_analysis").click(function(){
+        if($("#id_extended_analysis").prop("checked"))
+            $("#id_auto_compute").prop("checked",false);
+
+    });
+    $(".param-host")
+        .find('input[type="checkbox"]')
+        .click(
+            delayed_refresh_settings_from_datasets_and_compute_when_possible()
+        );
 
     $('#accordion').on('shown.bs.collapse',function(e){
         $("#is-complete").slider("refresh");
@@ -329,6 +369,11 @@ stack_onload(function () {
                     datasets_range_table.draw();
                 })
                 .change();
+
+            $('#datasets_range_table').find('input[type="checkbox"]')
+                .click(
+                    delayed_refresh_settings_from_datasets_and_compute_when_possible()
+                );
         },
         error: function (textStatus, xhr) {
             console.error(textStatus);
@@ -337,6 +382,7 @@ stack_onload(function () {
     });
 
     $("#range-host .uncheck").click(function(){
+        delayed_refresh_settings_from_datasets_and_compute_when_possible()();
         datasets_range_table.rows( { filter : 'applied'} ).data().each(
             function(row){
                 $('[name="dbdatasets"][value="'+row['pk']+'"]').prop("checked",false);
@@ -344,6 +390,7 @@ stack_onload(function () {
         );
     });
     $("#range-host .toggle-check").click(function(){
+        delayed_refresh_settings_from_datasets_and_compute_when_possible()();
         datasets_range_table.rows( { filter : 'applied'} ).data().each(
             function(row){
                 $('[name="dbdatasets"][value="'+row['pk']+'"]').prop("checked",!$('[name="dbdatasets"][value="'+row['pk']+'"]').prop("checked"));
@@ -351,6 +398,7 @@ stack_onload(function () {
         );
     });
     $("#range-host .check").click(function(){
+        delayed_refresh_settings_from_datasets_and_compute_when_possible()();
         datasets_range_table.rows( { filter : 'applied'} ).data().each(
             function(row){
                 $('[name="dbdatasets"][value="'+row['pk']+'"]').prop("checked",true);

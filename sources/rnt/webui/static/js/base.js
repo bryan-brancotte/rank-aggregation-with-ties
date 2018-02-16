@@ -63,3 +63,9 @@ function fade_background_to_and_back(target,color, color_org){
     .animate({backgroundColor: color}, 200 )
     .animate({backgroundColor: color_org}, 900 );
 }
+
+$.fn.attrThatBeginWith = function(begins){
+    return [].slice.call(this.get(0).attributes).filter(function(attr) {
+        return attr && attr.name && attr.name.indexOf(begins) === 0
+    });
+};

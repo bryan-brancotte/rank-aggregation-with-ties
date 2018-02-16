@@ -14,8 +14,9 @@ urlpatterns = [
     url(r'^accounts/logout/$', auth_views.logout, name='logout'),
     url(r'^accounts/password/$', views.change_password, name='change_password'),
     url(r'^$', views.index, name='home'),
-    url(r'^dataset/evaluate/$', views.dataset_evaluate, name='dataset_evaluate'),
-    url(r'^dataset/compute/$', views.dataset_compute, name='dataset_compute'),
+    url(r'^computation/evaluate/$', views.computation_evaluate, name='computation_evaluate'),
+    url(r'^computation/on_the_fly/$', views.computation_on_the_fly, name='computation_on_the_fly'),
+    #url(r'^computation/batch/$', views.computation_batch, name='computation_batch'),
 
     # Internationalization
     url(r'^jsi18n/$', javascript_catalog, {
