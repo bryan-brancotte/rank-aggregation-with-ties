@@ -1,22 +1,20 @@
 from mediane.algorithms.median_ranking import MedianRanking
-from mediane.distances.ScoringScheme import ScoringScheme
 from mediane.distances.enumeration import GENERALIZED_KENDALL_TAU_DISTANCE, GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE, \
     PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE
 from mediane.algorithms.lri.BioConsert import BioConsert
 
 from typing import List, Dict, Tuple
 from itertools import combinations
-from numpy import vdot, ndarray, count_nonzero, shape, array, zeros
+from numpy import vdot, ndarray, count_nonzero, shape, array, zeros, asarray
 from igraph import Graph
 
 
 class CondorcetPartitioning(MedianRanking):
-    def __init__(self, scoring_scheme=ScoringScheme(), algorithm_to_complete=None):
-        self.scoring_scheme = scoring_scheme
+    def __init__(self, algorithm_to_complete=None):
         if isinstance(algorithm_to_complete, MedianRanking):
             self.alg = algorithm_to_complete
         else:
-            self.alg = BioConsert(scoring_scheme=scoring_scheme, starting_algorithms=None)
+            self.alg = BioConsert(starting_algorithms=None)
 
     def compute_median_rankings(
             self,
@@ -52,7 +50,7 @@ class CondorcetPartitioning(MedianRanking):
         positions = CondorcetPartitioning.__positions(rankings, elem_id)
 
         # TYPE igraph.Graph
-        gr1, mat_score = self.__graph_of_elements(positions)
+        gr1, mat_score = self.__graph_of_elements(positions, asarray(distance.scoring_scheme))
 
         # TYPE igraph.clustering.VertexClustering
         scc = gr1.components()
@@ -87,9 +85,9 @@ class CondorcetPartitioning(MedianRanking):
 
         return [res]
 
-    def __graph_of_elements(self, positions: ndarray) -> Tuple[Graph, ndarray]:
+    @staticmethod
+    def __graph_of_elements(positions: ndarray, matrix_scoring_scheme: ndarray) -> Tuple[Graph, ndarray]:
         graph_of_elements = Graph(directed=True)
-        matrix_scoring_scheme = self.scoring_scheme.matrix
         cost_before = matrix_scoring_scheme[0]
         cost_tied = matrix_scoring_scheme[1]
         cost_after = array([cost_before[1], cost_before[0], cost_before[2], cost_before[4], cost_before[3],
