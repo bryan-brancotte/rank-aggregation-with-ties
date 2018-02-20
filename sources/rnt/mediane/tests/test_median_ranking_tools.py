@@ -32,6 +32,24 @@ class ParsingTestCase(TestCase):
             median_ranking_tools.parse_ranking_with_ties_of_int(self.ranking3)
 
 
+class DumpingTestCase(TestCase):
+    def setUp(self):
+        self.rankings_int = ["[[1],[2],[3]]", "[[1],[2],[3,6776576576]]"]
+        self.rankings_str = ["[[a,d],[b],[c]]", "[[a,d],[b,d],[c]]", "[[a],[b],[c]]"]
+
+    def test_int(self):
+        for r in self.rankings_int:
+            assert median_ranking_tools.dump_ranking_with_ties_to_str(
+                median_ranking_tools.parse_ranking_with_ties_of_int(r)
+            ) == r
+
+    def test_str(self):
+        for r in self.rankings_int:
+            assert median_ranking_tools.dump_ranking_with_ties_to_str(
+                median_ranking_tools.parse_ranking_with_ties_of_str(r)
+            ) == r
+
+
 class EvaluateDatasetAndProvideStatsTestCase(TestCase):
     def setUp(self):
         self.rankings_1 = [
@@ -88,11 +106,11 @@ class EvaluateDatasetAndProvideStatsTestCase(TestCase):
 
     def test_4(self):
         evaluation = evaluate_dataset_and_provide_stats(self.rankings_4)
-        assert  evaluation["invalid"]
+        assert evaluation["invalid"]
 
     def test_5(self):
         evaluation = evaluate_dataset_and_provide_stats(self.rankings_5)
-        assert  evaluation["invalid"]
+        assert evaluation["invalid"]
 
     def test_6(self):
         evaluation = evaluate_dataset_and_provide_stats(self.rankings_6)

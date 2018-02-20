@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _, ugettext
 from rest_framework.compat import MinLengthValidator
 
@@ -271,12 +272,20 @@ class Job(models.Model):
         self.task_count = self.result_set.count()
         self.save()
 
-    def get_task(self):
-        pass
-        #  task = self.task_set.order_by('?').first()
+    def update_status(self):
+        if self.status != 1:
+            return
+        has_error = False
+        for r in self.result_set.all():
+            if r.resultstoproducedecorator_set.filter(~Q(status=5)).count() > 0:
+                return
+            has_error = has_error or r.resultstoproducedecorator_set.filter(status=5).count() > 0
+        if has_error:
+            self.status = 5
+        self.status = 4
 
-    # def get_absolute_url(self):
-    #     return reverse('webui:job_view', args=[self.pk])
+    def get_absolute_url(self):
+        return reverse('webui:job-detail', args=[self.identifier])
 
     def __str__(self):
         return self.identifier

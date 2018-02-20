@@ -45,3 +45,7 @@ def parse_ranking_with_ties_of_int(ranking: str) -> List[List[int]]:
         ranking=ranking,
         converter=lambda x: int(x)
     )
+
+
+def dump_ranking_with_ties_to_str(ranking: List[List[int or str]]) -> str:
+    return '[' + ','.join(['[' + ','.join([str(e) for e in b]) + ']' for b in ranking]) + ']'

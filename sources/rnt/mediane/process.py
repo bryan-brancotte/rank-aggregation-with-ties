@@ -7,7 +7,7 @@ from mediane.algorithms.lri.BioConsert import BioConsert
 from mediane.algorithms.misc.borda_count import BordaCount
 from mediane.distances.KendallTauGeneralizedNSquare import KendallTauGeneralizedNSquare
 from mediane.distances.enumeration import GENERALIZED_KENDALL_TAU_DISTANCE
-from mediane.median_ranking_tools import parse_ranking_with_ties_of_str
+from mediane.median_ranking_tools import parse_ranking_with_ties_of_str, dump_ranking_with_ties_to_str
 from mediane.normalizations.enumeration import NONE, UNIFICATION
 
 MIN_MEASURE_DURATION = 3
@@ -120,6 +120,23 @@ def create_computation_job(
             r.mark_as_todo()
     job.update_task_count()
     return job
+
+
+
+def execute_median_rankings_computation_of_result(
+        result,
+):
+    submission_result = execute_median_rankings_computation_from_rankings(
+        rankings=result.dataset.rankings,
+        algorithm=result.algo.get_instance(),
+        normalization=result.job.norm,
+        distance=result.job.dist,
+        precise_time_measurement=result.job.bench,
+        dataset=result.dataset,
+    )
+    result.consensuses = '\n'.join([dump_ranking_with_ties_to_str(c) for c in submission_result["consensus"]])
+    result.distance_value = submission_result["distance"]
+    result.save()
 
 
 def evaluate_dataset_and_provide_stats(rankings_str):
