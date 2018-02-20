@@ -1,6 +1,7 @@
 from django.utils import timezone
 from django.utils.translation import ugettext
 
+from mediane import models
 from mediane.algorithms.enumeration import get_name_from
 from mediane.algorithms.lri.BioConsert import BioConsert
 from mediane.algorithms.misc.borda_count import BordaCount
@@ -93,6 +94,34 @@ def execute_median_rankings_computation_from_datasets(
     return submission_results
 
 
+def create_computation_job(
+        datasets,
+        normalization,
+        distance,
+        precise_time_measurement,
+        algorithms,
+        owner,
+):
+    job = models.Job.objects.create(
+        owner=owner,
+        dist=distance,
+        norm=normalization,
+        creation=timezone.now(),
+        bench=precise_time_measurement,
+        identifier=None,
+    )
+    for d in datasets:
+        for a in algorithms:
+            r = models.Result.objects.create(
+                algo=a,
+                dataset=d,
+                job=job,
+            )
+            r.mark_as_todo()
+    job.update_task_count()
+    return job
+
+
 def evaluate_dataset_and_provide_stats(rankings_str):
     evaluation = {}
     elements = None
@@ -152,13 +181,13 @@ def compute_consensus_settings_based_on_datasets(
     """
     dbdatasets = [] if dbdatasets is None else dbdatasets
     algos = [] if algos is None else algos
-    from mediane.models import Distance
+    from mediane.models import Distance, Normalization, Algorithm
     consensus_settings = {}
-    consensus_settings["algo"] = BioConsert().get_full_name()
+    consensus_settings["algo"] = Algorithm.objects.get(key_name=str(BioConsert().get_full_name())).pk
     consensus_settings["dist"] = Distance.objects.get(key_name=GENERALIZED_KENDALL_TAU_DISTANCE).pk
-    consensus_settings["norm"] = NONE if complete else UNIFICATION
+    consensus_settings["norm"] = Normalization.objects.get(key_name=NONE if complete else UNIFICATION).pk
     if n > 100 or len(dbdatasets) * len(algos) > 20:
-        consensus_settings["algo"] = BordaCount().get_full_name()
+        consensus_settings["algo"] = Algorithm.objects.get(key_name=str(BordaCount().get_full_name())).pk
     consensus_settings["auto_compute"] = n < 50 and len(dbdatasets) * len(algos) < 50
     consensus_settings["bench"] = False
     consensus_settings["extended_analysis"] = len(dbdatasets) * len(algos) > 50

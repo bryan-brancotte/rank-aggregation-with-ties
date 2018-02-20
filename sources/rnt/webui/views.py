@@ -4,6 +4,7 @@ from django.db.models.query_utils import Q
 from django.http.response import HttpResponseBadRequest, JsonResponse, HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.urls.base import reverse
+from django.utils import dateformat, timezone
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext
 from django.views.generic.detail import DetailView
@@ -15,7 +16,8 @@ from mediane.distances.enumeration import get_from as get_dist_from
 from mediane.models import DataSet, Distance, ResultsToProduceDecorator
 from mediane.normalizations.enumeration import get_from as get_norm_from
 from mediane.process import execute_median_rankings_computation_from_rankings, \
-    execute_median_rankings_computation_from_datasets, compute_consensus_settings_based_on_datasets
+    execute_median_rankings_computation_from_datasets, compute_consensus_settings_based_on_datasets, \
+    create_computation_job
 from webui.decorators import ownership_required
 from webui.forms import ComputeConsensusForm, DataSetModelForm
 from webui.views_generic import AjaxableResponseMixin
@@ -59,14 +61,12 @@ def computation_on_the_fly(request):
         return HttpResponseBadRequest()
     form = ComputeConsensusForm(data=request.POST, user=request.user)
     if not form.is_valid():
+        print(form.cleaned_data)
         print(form.errors)
         return HttpResponseBadRequest()
     if form.cleaned_data["ranking_source"] == "type":
         print(form.cleaned_data)
-        if not isinstance(form.cleaned_data["algo"], list):
-            algorithms = [get_algo_from(form.cleaned_data["algo"])()]
-        else:
-            algorithms = [get_algo_from(a)() for a in form.cleaned_data["algo"]]
+        algorithms = [a.get_instance() for a in form.cleaned_data["algo"]]
         submission_results = execute_median_rankings_computation_from_rankings(
             rankings=form.cleaned_data["rankings"],
             algorithm=None,
@@ -76,10 +76,7 @@ def computation_on_the_fly(request):
             precise_time_measurement=form.cleaned_data["bench"],
         )
     elif form.cleaned_data["ranking_source"] == "range":
-        if not isinstance(form.cleaned_data["algo"], list):
-            algorithms = [get_algo_from(form.cleaned_data["algo"])()]
-        else:
-            algorithms = [get_algo_from(a)() for a in form.cleaned_data["algo"]]
+        algorithms = [a.get_instance() for a in form.cleaned_data["algo"]]
         submission_results = execute_median_rankings_computation_from_datasets(
             datasets=form.cleaned_data["dbdatasets"],
             algorithm=None,
@@ -94,13 +91,48 @@ def computation_on_the_fly(request):
     return JsonResponse(dict(
         results=submission_results,
         dist=dict(
-            id=form.cleaned_data["dist"].key_name,
-            name=get_dist_from(form.cleaned_data["dist"]),
+            id=form.cleaned_data["dist"].pk,
+            name=form.cleaned_data["dist"].name,
         ),
         norm=dict(
-            id=form.cleaned_data["norm"],
-            name=get_norm_from(form.cleaned_data["norm"]),
+            id=form.cleaned_data["norm"].pk,
+            name=form.cleaned_data["norm"].name,
         ),
+    ))
+
+
+def computation_batch(request):
+    if request.method != 'POST':
+        return HttpResponseBadRequest()
+    form = ComputeConsensusForm(data=request.POST, user=request.user)
+    if not form.is_valid():
+        print(form.cleaned_data)
+        print(form.errors)
+        return HttpResponseBadRequest()
+    if form.cleaned_data["ranking_source"] == "type":
+        dataset = DataSet.objects.create(
+            content=form.cleaned_data["dataset"],
+            transient=True,
+            owner=request.user,
+            public=False,
+            name=ugettext("Typed dataset (on %s)") % dateformat.format(timezone.now(), 'Y-m-d H:i:s')
+        )
+        datasets = [dataset, ]
+    elif form.cleaned_data["ranking_source"] == "range":
+        datasets = form.cleaned_data["dbdatasets"]
+    else:
+        datasets = []
+    job = create_computation_job(
+        datasets=datasets,
+        algorithms=form.cleaned_data["algo"],
+        distance=form.cleaned_data["dist"],
+        normalization=form.cleaned_data["norm"],
+        precise_time_measurement=form.cleaned_data["bench"],
+        owner=request.user,
+    )
+    return JsonResponse(dict(
+        job_id=job.identifier,
+        job_url=reverse('webui:job-detail', args=[job.identifier,]),
     ))
 
 

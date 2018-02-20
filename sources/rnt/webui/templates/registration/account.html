@@ -1,10 +1,19 @@
 {% extends 'base.html' %}
 {% load bootstrap %}
 {% load static %}
+{% load sstatic %}
 {% load i18n %}
 
 {% block title %}Account{% endblock %}
 {% block page_title %}Account{% endblock %}
+
+{% block extra_js %}
+<script type="text/javascript">
+function get_jobs_url(){return '{% url 'webapi:job-list' %}'};
+function get_job_url(s){return '{% url 'webui:job-detail' 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' %}'.replace('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',s)};
+</script>
+<script src="{% sstatic '/js/account.js' %}"></script>
+{% endblock %}
 
 {% block content %}
 <div class="col-xs-12 col-md-8 col-lg-9 col-xl-10">
@@ -12,8 +21,8 @@
         <div class="panel-heading">
             <h3 class="panel-title">Jobs</h3>
         </div>
-        <div class="panel-body">
-            <i>Soon</i>
+        <div class="panel-body animate">
+            <table id="results_table"></table>
         </div>
     </div>
 

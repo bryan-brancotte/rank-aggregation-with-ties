@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-02-15 21:54+0000\n"
+"POT-Creation-Date: 2018-02-20 20:27+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -112,19 +112,46 @@ msgstr ""
 msgid "bench"
 msgstr "Precise time measurement"
 
+msgid "task_count"
+msgstr ""
+
+msgid "Number of results associated to it"
+msgstr ""
+
+msgid "Active"
+msgstr ""
+
+msgid "Done"
+msgstr ""
+
+msgid "Error"
+msgstr ""
+
+msgid "Canceled"
+msgstr ""
+
 msgid "the consensus(es) computed for the given dataset and job's distance"
 msgstr ""
 
 msgid "The result to produce"
 msgstr ""
 
-msgid "None"
+msgid "Pending"
+msgstr ""
+
+msgid "Taken for computation"
+msgstr ""
+
+msgid "Being computed"
+msgstr ""
+
+msgid "None_name"
 msgstr "None"
 
-msgid "UNIF"
+msgid "UNIF_name"
 msgstr "Unification"
 
-msgid "PROJ"
+msgid "PROJ_name"
 msgstr "Projection"
 
 msgid "None_desc"
@@ -167,8 +194,8 @@ msgstr "Automatically recompute on change"
 
 msgid "auto_compute_help_text"
 msgstr ""
-"Whether consensus should be computed as each modification in the selection of datasets, algorithms, distance, normalisation or the typed "
-"dataset"
+"Whether consensus should be computed as each modification in the selection "
+"of datasets, algorithms, distance, normalisation or the typed dataset"
 
 msgid "extended_analysis_label"
 msgstr "In database results and extended analysis"
@@ -246,18 +273,6 @@ msgstr ""
 msgid "Computation settings"
 msgstr ""
 
-msgid "Auto compute allowed explanation"
-msgstr ""
-"Based on the dataset you provided and the settings you entered, the auto-"
-"compute is allowed: at each modification of your dataset, the consensus will "
-"automatically be recomputed"
-
-msgid "Auto compute disallowed explanation"
-msgstr ""
-"Based on the dataset you provided and the settings you entered, the auto-"
-"compute is <b>not</b> allowed: you will have to manually click on `Compute` "
-"to compute the consensus of the provided dataset."
-
 msgid "Compute"
 msgstr ""
 
@@ -267,11 +282,27 @@ msgstr ""
 msgid "Press Compute"
 msgstr ""
 
+#, python-format
+msgid "Typed dataset (on %s)"
+msgstr ""
+
 msgid "Change password"
 msgstr ""
 
 msgid "Save changes"
 msgstr ""
+
+#~ msgid "Auto compute allowed explanation"
+#~ msgstr ""
+#~ "Based on the dataset you provided and the settings you entered, the auto-"
+#~ "compute is allowed: at each modification of your dataset, the consensus "
+#~ "will automatically be recomputed"
+
+#~ msgid "Auto compute disallowed explanation"
+#~ msgstr ""
+#~ "Based on the dataset you provided and the settings you entered, the auto-"
+#~ "compute is <b>not</b> allowed: you will have to manually click on "
+#~ "`Compute` to compute the consensus of the provided dataset."
 
 #, fuzzy
 #~| msgid "KTGI_name"

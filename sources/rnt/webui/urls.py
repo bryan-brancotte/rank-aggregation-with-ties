@@ -4,6 +4,7 @@ from django.contrib.auth import views as auth_views
 from django.views.generic import TemplateView
 from django.views.i18n import javascript_catalog
 
+from webui import views_job
 from webui.views import DataSetCreate, DataSetUpdate, DataSetDelete
 from . import views
 
@@ -16,7 +17,7 @@ urlpatterns = [
     url(r'^$', views.index, name='home'),
     url(r'^computation/evaluate/$', views.computation_evaluate, name='computation_evaluate'),
     url(r'^computation/on_the_fly/$', views.computation_on_the_fly, name='computation_on_the_fly'),
-    #url(r'^computation/batch/$', views.computation_batch, name='computation_batch'),
+    url(r'^computation/batch/$', views.computation_batch, name='computation_batch'),
 
     # Internationalization
     url(r'^jsi18n/$', javascript_catalog, {
@@ -34,4 +35,7 @@ urlpatterns = [
 
     url(r'^distances/$', views.DistanceListView.as_view(), name='distance-list'),
     url(r'^distances/(?P<pk>\d+)/$', views.DistanceDetailView.as_view(), name='distance_view'),
+
+    # url(r'^jobs/$', views_job.JobListView.as_view(), name='job-list'),
+    url(r'^jobs/(?P<identifier>[0-9A-Za-z]{32,32})/$', views_job.JobDetailView.as_view(), name='job-detail'),
 ]

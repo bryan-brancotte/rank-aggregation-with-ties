@@ -1,5 +1,6 @@
 from django.http.response import JsonResponse
 from django.views.generic.detail import SingleObjectTemplateResponseMixin, BaseDetailView
+from django.views.generic.list import MultipleObjectTemplateResponseMixin, BaseListView
 
 
 class JSONResponseMixin:
@@ -29,8 +30,15 @@ class JSONResponseMixin:
 
 class HybridDetailView(JSONResponseMixin, SingleObjectTemplateResponseMixin, BaseDetailView):
     def render_to_response(self, context, **response_kwargs):
-        # Look for a 'format=json' GET argument
-        if self.request.GET.get('format') == 'json':
+        if self.request.GET.get('format') == 'json' or str(self.request.content_type).endswith("json"):
+            return self.render_to_json_response(context, **response_kwargs)
+        else:
+            return super().render_to_response(context)
+
+
+class HybridListView(JSONResponseMixin, MultipleObjectTemplateResponseMixin, BaseListView):
+    def render_to_response(self, context, **response_kwargs):
+        if self.request.GET.get('format') == 'json' or str(self.request.content_type).endswith("json"):
             return self.render_to_json_response(context, **response_kwargs)
         else:
             return super().render_to_response(context)

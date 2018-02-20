@@ -140,11 +140,24 @@ function compute_consensus_from_dataset(form, callback){
     $("#btn-compute").attr("disabled",true);
     $("#id_dataset").prop("readonly",true) ;
     form.find('input').prop("disabled",true);
+    var extended_analysis = $("#id_extended_analysis").prop("checked");
     $.ajax({
         type: form.attr('method'),
-        url:form.attr('data-submit-url'),
+        url:  extended_analysis ? form.attr('data-batch-url') : form.attr('data-submit-url'),
         data: data,
         success: function (data, textStatus, xhr) {
+            if(extended_analysis){
+                console.log(data);
+                if (typeof callback != "undefined")
+                    callback(data);
+                $("#computing-indicator").fadeOut();
+                $("#btn-compute").attr("disabled",false);
+                $("#id_dataset").prop("readonly",false) ;
+                fade_background_to_and_back($("#results-host").parent(),"#f5fff5", "white");
+                form.find('input').prop("disabled",false);
+                window.location = data.job_url;
+                return;
+            }
             if (typeof results_table != "undefined"){
                 results_table.destroy();
             }

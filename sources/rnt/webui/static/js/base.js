@@ -69,3 +69,15 @@ $.fn.attrThatBeginWith = function(begins){
         return attr && attr.name && attr.name.indexOf(begins) === 0
     });
 };
+
+function format_uuid(data){
+    return data.substring(0,8) +
+    data.substring(8,12) + '-' +
+    data.substring(12,16) + '-' +
+    data.substring(16,20) + '-' +
+    data.substring(20);
+}
+
+function short_uuid(data, reduced){
+    return '<span title="'+format_uuid(data,false)+'">'+data.substring(0,8) +'</span>';
+}

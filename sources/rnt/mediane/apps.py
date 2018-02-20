@@ -12,6 +12,8 @@ class MedianeConfig(AppConfig):
         self.create_instances(algorithms.enumeration.as_tuple_list(), Algorithm)
         self.create_instances(normalizations.enumeration.as_tuple_list(), Normalization)
         self.update_ordering(Distance)
+        self.update_ordering(Normalization)
+        self.update_ordering(Algorithm)
 
     def create_instances(self, tuple_list, klass, has_owner=False):
         try:

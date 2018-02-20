@@ -79,10 +79,11 @@ r4 := [[B],[C],[A,D,E]]""",
         queryset=DataSet.objects.all(),
         required=False,
     )
-    norm = forms.ChoiceField(
-        choices=enum_norm.as_tuple_list(),
+    norm = forms.ModelChoiceField(
+        queryset=Normalization.objects.filter(~Q(pk__isnull=True)),
         widget=forms.RadioSelect,
         label='',
+        empty_label=None,
     )
     dist = forms.ModelChoiceField(
         queryset=Distance.objects.filter(~Q(pk__isnull=True)),
@@ -90,8 +91,8 @@ r4 := [[B],[C],[A,D,E]]""",
         label='',
         empty_label=None,
     )
-    algo = forms.MultipleChoiceField(
-        choices=[],
+    algo = forms.ModelMultipleChoiceField(
+        queryset=Algorithm.objects.filter(~Q(pk__isnull=True)),
         widget=forms.CheckboxSelectMultiple,
         label='',
     )
@@ -136,15 +137,9 @@ r4 := [[B],[C],[A,D,E]]""",
             q = ~Q(pk=None)
         else:
             q = Q(public=True)
-        self.fields['algo'].choices = [
-            (k, _(k)) for k in
-            Algorithm.objects.filter(q).values_list('key_name', flat=True)
-            ]
+        self.fields['algo'].queryset = Algorithm.objects.filter(q).order_by("id_order")
         self.fields['dist'].queryset = Distance.objects.filter(q).order_by("id_order")
-        self.fields['norm'].choices = [
-            (k, _(k)) for k in
-            Normalization.objects.filter(q).values_list('key_name', flat=True)
-            ]
+        self.fields['norm'].queryset = Normalization.objects.filter(q).order_by("id_order")
 
     def clean(self):
         cleaned_data = super(ComputeConsensusForm, self).clean()

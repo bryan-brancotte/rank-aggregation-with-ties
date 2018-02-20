@@ -156,13 +156,16 @@ class Normalization(models.Model):
         help_text=_('Can it be seen by everyone?'),
         default=False,
     )
+    id_order = models.IntegerField(
+        default=0
+    )
 
     def __str__(self):
-        return self.key_name
+        return self.name
 
     @property
     def name(self):
-        return ugettext(self.key_name)
+        return ugettext(self.key_name + "_name")
 
     @property
     def desc(self):
@@ -181,9 +184,12 @@ class Algorithm(models.Model):
         help_text=_('Can it be seen by everyone?'),
         default=False,
     )
+    id_order = models.IntegerField(
+        default=0
+    )
 
     def __str__(self):
-        return self.key_name
+        return self.name
 
     @property
     def name(self):
@@ -194,7 +200,7 @@ class Algorithm(models.Model):
         return ugettext(self.key_name + "_desc")
 
     def get_instance(self):
-        return get_algo_from(self.key_name)
+        return get_algo_from(self.key_name)()
 
 
 class Job(models.Model):
@@ -224,13 +230,36 @@ class Job(models.Model):
         max_length=32,
         validators=[MinLengthValidator(32), ],
     )
+    task_count = models.IntegerField(
+        verbose_name=_('task_count'),
+        help_text=_('Number of results associated to it'),
+        default=0,
+    )
+    status = models.IntegerField(choices=(
+        (1, _("Active")),
+        (4, _("Done")),
+        (5, _("Error")),
+        (6, _("Canceled"))
+    ),
+        default=1)
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
+        # create the identifier
         while self.identifier is None:
             self.identifier = ''.join(random.choice(''.join((string.ascii_letters, string.digits))) for _ in range(32))
             if Job.objects.filter(identifier=self.identifier):
                 self.identifier = None
+
+        # if status changed, update related tasks
+        if self.pk and self.status != Job.objects.get(pk=self.pk).status:
+            if self.status == 1:
+                for r in self.result_set.filter(distance_value__isnull=True):
+                    r.mark_as_todo()
+            elif self.status == 6:
+                for r in self.result_set.all():
+                    r.resultstoproducedecorator_set.all().delete()
+
         super(Job, self).save(
             force_insert=force_insert,
             force_update=force_update,
@@ -238,12 +267,19 @@ class Job(models.Model):
             update_fields=update_fields,
         )
 
+    def update_task_count(self):
+        self.task_count = self.result_set.count()
+        self.save()
+
     def get_task(self):
         pass
         #  task = self.task_set.order_by('?').first()
 
     # def get_absolute_url(self):
     #     return reverse('webui:job_view', args=[self.pk])
+
+    def __str__(self):
+        return self.identifier
 
 
 class Result(models.Model):
@@ -269,6 +305,17 @@ class Result(models.Model):
         blank=True,
         null=True,
     )
+
+    def __str__(self):
+        return "R%i: %s, %s, %s" % (self.pk, str(self.algo), str(self.dataset), str(self.job))
+
+    def mark_as_todo(self):
+        ResultsToProduceDecorator.objects.update_or_create(
+            result=self,
+            defaults=dict(
+                status=1,
+            ),
+        )
 
     # def get_absolute_url(self):
     #     return reverse('webui:result_view', args=[self.pk])

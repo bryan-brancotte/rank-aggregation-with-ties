@@ -18,9 +18,9 @@ def get_from(id_enum):
     return None
 
 def __dummy_method_to_have_translations():
-    _('None')
-    _('UNIF')
-    _('PROJ')
+    _('None_name')
+    _('UNIF_name')
+    _('PROJ_name')
     _('None_desc')
     _('UNIF_desc')
     _('PROJ_desc')

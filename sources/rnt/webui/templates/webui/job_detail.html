@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% load bootstrap %}
+{% load static %}
+{% load i18n %}
+{% load webui_tags %}
+{% block title %}Dataset '{{ object.name }}'{% endblock %}
+{% block page_title %}Job '{{ object.identifier }}'{% endblock %}
+{% block container-class %}container{% endblock %}
+{% block content%}
+{{object}}
+{% endblock %}

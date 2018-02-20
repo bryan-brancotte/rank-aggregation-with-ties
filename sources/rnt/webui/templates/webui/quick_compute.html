@@ -21,7 +21,8 @@ webapi_dataset_list='{% url 'webapi:dataset-list' %}';
 {% block container-class %} container-fluid{% endblock %}
 {% block content %}
 <div class="col-xs-12 col-xxxl-7"><div class="row">
-<form method="post" data-check-url="{%url 'webui:computation_evaluate'%}" data-submit-url="{%url 'webui:computation_on_the_fly'%}">
+<form method="post" data-check-url="{%url 'webui:computation_evaluate'%}" data-submit-url="{%url 'webui:computation_on_the_fly'%}"
+    data-batch-url="{%url 'webui:computation_batch'%}">
     {% csrf_token %}
     <div class="col-xs-12 col-lg-8">
         <div class="panel-group" id="accordion">
