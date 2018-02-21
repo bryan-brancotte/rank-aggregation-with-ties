@@ -118,7 +118,7 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 LANGUAGES = [
   ('en', ugettext_lazy('English')),
-  ('fr', ugettext_lazy('French')),
+  # ('fr', ugettext_lazy('French')),
 ]
 
 USE_L10N = True

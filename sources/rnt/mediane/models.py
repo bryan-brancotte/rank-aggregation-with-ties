@@ -3,6 +3,7 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _, ugettext
+from django_pandas.managers import DataFrameManager
 from rest_framework.compat import MinLengthValidator
 
 from mediane import tasks
@@ -27,9 +28,11 @@ class DataSet(models.Model):
     )
     m = models.IntegerField(
         help_text=_('The number of rankings'),
+        default=0,
     )
     n = models.IntegerField(
         help_text=_('The number of elements'),
+        default=0,
     )
     complete = models.BooleanField(
         help_text=_('Are every elements present in each rankings of the dataset'),
@@ -51,6 +54,7 @@ class DataSet(models.Model):
         help_text=_('Can it be seen by everyone?'),
         default=False,
     )
+    objects = DataFrameManager()
 
     def get_absolute_url(self):
         return reverse('webui:dataset_view', args=[self.pk])
@@ -190,6 +194,7 @@ class Algorithm(models.Model):
     id_order = models.IntegerField(
         default=0
     )
+    objects = DataFrameManager()
 
     def __str__(self):
         return self.name
@@ -320,11 +325,17 @@ class Result(models.Model):
         blank=True,
         null=True,
     )
+    duration = models.FloatField(
+        help_text=_('the duration expressed in ms'),
+        blank=True,
+        null=True,
+    )
     consensuses = models.TextField(
         help_text=_('the consensus(es) computed for the given dataset and job\'s distance'),
         blank=True,
         null=True,
     )
+    objects = DataFrameManager()
 
     def __str__(self):
         return "R%i: %s, %s, %s" % (self.pk, str(self.algo), str(self.dataset), str(self.job))

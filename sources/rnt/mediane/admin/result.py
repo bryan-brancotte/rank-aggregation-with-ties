@@ -9,6 +9,13 @@ def compute_results(modeladmin, request, queryset):
         o.compute()
 
 
+def reset_results(modeladmin, request, queryset):
+    for o in queryset:
+        o.distance_value = None
+        o.duration = None
+        o.save()
+
+
 class ResultAdmin(admin.ModelAdmin):
     list_display = ('job', 'algo', 'dataset', 'distance_value')
     list_filter = ('job', 'algo', 'dataset')
@@ -20,6 +27,7 @@ class ResultAdmin(admin.ModelAdmin):
         'job__norm__key_name',
     ]
     actions = [
+        reset_results,
         compute_results,
     ]
 

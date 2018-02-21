@@ -11,3 +11,4 @@ Pygments==2.2.0
 django-extensions
 pygraphviz
 python-igraph
+django-pandas

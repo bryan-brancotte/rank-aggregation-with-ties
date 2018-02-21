@@ -136,6 +136,7 @@ def execute_median_rankings_computation_of_result(
     )
     result.consensuses = '\n'.join([dump_ranking_with_ties_to_str(c) for c in submission_result["consensus"]])
     result.distance_value = submission_result["distance"]
+    result.duration = submission_result["duration"]
     result.save()
 
 

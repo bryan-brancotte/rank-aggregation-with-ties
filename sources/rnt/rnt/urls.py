@@ -28,5 +28,5 @@ urlpatterns = [
     url(r'^api/', include('webapi.urls')),
     url(r'^api-doc/', include_docs_urls(title="Rank-n-ties API")),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    url(r'^schema/$', schema_view),
+    url(r'^api-schema/$', schema_view),
 ]
