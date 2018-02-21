@@ -16,10 +16,12 @@ function get_job_aggregated_results_url(){return '{% url 'webapi:job-aggregated-
 function get_job_results_url(){return '{% url 'webapi:job-results' object.identifier %}'};
 </script>
 <script src="{% sstatic '/js/job_detail.js' %}"></script>
-<script src="{% sstatic '/js/scaterplot.js' %}"></script>
+<script src="{% sstatic '/js/scatter_plot.js' %}"></script>
+<script src="{% sstatic '/js/multiline_plot.js' %}"></script>
 {% endblock %}
 
 {% block container-class %}container{% endblock %}
 {% block content%}
 <div id="scatter" class="col-xs-12 col-lg-12"></div>
+<div id="multiline" class="col-xs-12 col-lg-12"></div>
 {% endblock %}

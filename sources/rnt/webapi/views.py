@@ -120,16 +120,19 @@ class JobViewSet(mixins.RetrieveModelMixin,
         af = Algorithm.objects.all().to_dataframe(verbose=False, fieldnames=["id", "key_name"])
 
         # join to have n and m of datasets
-        joined = rf.set_index('dataset').join(df.set_index('id'), lsuffix='_res', rsuffix='_ds')
-        # join to have algo name
-        joined = joined.set_index('algo').join(af, rsuffix='_algo')
+        joined = rf.join(df.set_index('id'), on='dataset')
+        # join to have algo name,
+        joined = joined.join(af.set_index('id'), on='algo')
+        print(joined)
 
         # drop id result
         joined = joined.drop('id', 1)
         # drop job id
         joined = joined.drop('job', 1)
-        # drop id algo
-        joined = joined.drop('id_algo', 1)
+        # drop algo
+        joined = joined.drop('algo', 1)
+        # drop dataset
+        joined = joined.drop('dataset', 1)
 
         # drop columns marked as to be removed in url
         for k in request.GET.keys():
@@ -154,6 +157,7 @@ class JobViewSet(mixins.RetrieveModelMixin,
             groupby_name.append("m")
         except:
             pass
+
 
         json_desc = {}
         # if we still have one column to aggregate and thus describe

@@ -11,6 +11,10 @@ function scatter_plot() {
         debug=false,
         legendRectSize = 18,
         legendSpacing = 4,
+        xScale,
+        yScale,
+        xAxis,
+        yAxis,
         color = d3.scaleOrdinal(d3.schemeCategory10);
     function chart(selection){
         selection.each(function() {
@@ -19,8 +23,8 @@ function scatter_plot() {
             width = $(target_selector).width()
             var inner_width = width - margin.left - margin.right;
             var inner_height = height - margin.top - margin.bottom;
-            var xScale = d3.scaleLinear().range([0, inner_width]);
-            var yScale = d3.scaleLog().range([inner_height, 0]);
+            xScale = d3.scaleLinear().range([0, inner_width]);
+            yScale = d3.scaleLog().range([inner_height, 0]);
 
             svg = d3.select(target_selector).append("svg")
                         .attr("width", inner_width + margin.left + margin.right)

@@ -1,9 +1,13 @@
-var plot;
+var scatter,
+    multiline;
 
 stack_onload(function () {
-    plot=scaterplot();
-    d3.select("#scatter").call(plot);
-    build_scaterplot();
+    scatter=scatter_plot();
+    d3.select("#scatter").call(scatter);
+//    build_scatter_plot();
+    multiline=multiline_plot();
+    d3.select("#multiline").call(multiline);
+//    build_multiline_plot();
     $.ajax({
         headers: {
             'X-CSRFToken':getCookie('csrftoken'),
@@ -16,11 +20,12 @@ stack_onload(function () {
         dataType:'json',
         success: function (data, textStatus, xhr) {
             console.log("ee");
-            build_scaterplot();
+            build_scatter_plot();
+            build_multiline_plot();
         }
     });
 });
-function build_scaterplot() {
+function build_scatter_plot() {
     $.ajax({
         headers: {
             'X-CSRFToken':getCookie('csrftoken'),
@@ -30,7 +35,21 @@ function build_scaterplot() {
         type:"GET",
         dataType:'json',
         success: function (data, textStatus, xhr) {
-            plot.data(data)
+            scatter.data(data)
+        }
+    });
+}
+function build_multiline_plot() {
+    $.ajax({
+        headers: {
+            'X-CSRFToken':getCookie('csrftoken'),
+        },
+        data:{'format': 'json','m':'False','distance_value':'False'},
+        url:get_job_aggregated_results_url(),
+        type:"GET",
+        dataType:'json',
+        success: function (data, textStatus, xhr) {
+            multiline.data(data)
         }
     });
 }
