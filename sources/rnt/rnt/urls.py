@@ -16,6 +16,9 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from rest_framework.documentation import include_docs_urls
+from rest_framework.schemas import get_schema_view
+
+schema_view = get_schema_view(title='Rank-n-ties API')
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -24,5 +27,6 @@ urlpatterns = [
 
     url(r'^api/', include('webapi.urls')),
     url(r'^api-doc/', include_docs_urls(title="Rank-n-ties API")),
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^schema/$', schema_view),
 ]

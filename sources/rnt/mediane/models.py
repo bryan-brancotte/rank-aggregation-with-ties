@@ -5,8 +5,10 @@ from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _, ugettext
 from rest_framework.compat import MinLengthValidator
 
+from mediane import tasks
 from mediane.algorithms.enumeration import get_from as get_algo_from
 from mediane.median_ranking_tools import parse_ranking_with_ties_of_str
+from mediane.process import execute_median_rankings_computation_of_result
 from mediane.validators import sound_dataset_validator
 
 import json
@@ -237,7 +239,8 @@ class Job(models.Model):
         default=0,
     )
     status = models.IntegerField(choices=(
-        (1, _("Active")),
+        (1, _("Pending")),
+        (2, _("Running")),
         (4, _("Done")),
         (5, _("Error")),
         (6, _("Canceled"))
@@ -253,10 +256,13 @@ class Job(models.Model):
                 self.identifier = None
 
         # if status changed, update related tasks
+        compute_on_this_thread = False
         if self.pk and self.status != Job.objects.get(pk=self.pk).status:
             if self.status == 1:
                 for r in self.result_set.filter(distance_value__isnull=True):
                     r.mark_as_todo()
+            elif self.status == 2:
+                compute_on_this_thread = True
             elif self.status == 6:
                 for r in self.result_set.all():
                     r.resultstoproducedecorator_set.all().delete()
@@ -267,13 +273,16 @@ class Job(models.Model):
             using=using,
             update_fields=update_fields,
         )
+        if compute_on_this_thread:
+            for r in ResultsToProduceDecorator.objects.filter(result__job__pk=self.pk).only('pk'):
+                tasks.compute_result(r.pk)
 
     def update_task_count(self):
         self.task_count = self.result_set.count()
         self.save()
 
-    def update_status(self):
-        if self.status != 1:
+    def update_status(self, save=True):
+        if self.status != 1 and self.status != 2:
             return
         has_error = False
         for r in self.result_set.all():
@@ -283,6 +292,8 @@ class Job(models.Model):
         if has_error:
             self.status = 5
         self.status = 4
+        if save:
+            self.save()
 
     def get_absolute_url(self):
         return reverse('webui:job-detail', args=[self.identifier])
@@ -326,8 +337,8 @@ class Result(models.Model):
             ),
         )
 
-    # def get_absolute_url(self):
-    #     return reverse('webui:result_view', args=[self.pk])
+    def compute(self):
+        execute_median_rankings_computation_of_result(self)
 
 
 class ResultsToProduceDecorator(models.Model):

@@ -6,12 +6,19 @@ from mediane.tasks import compute_result
 
 def compute_results(modeladmin, request, queryset):
     for o in queryset:
-        execute_median_rankings_computation_of_result(o)
+        o.compute()
 
 
 class ResultAdmin(admin.ModelAdmin):
     list_display = ('job', 'algo', 'dataset', 'distance_value')
     list_filter = ('job', 'algo', 'dataset')
+    search_fields = [
+        'job__identifier',
+        'dataset__name',
+        'algo__key_name',
+        'job__dist__key_name',
+        'job__norm__key_name',
+    ]
     actions = [
         compute_results,
     ]

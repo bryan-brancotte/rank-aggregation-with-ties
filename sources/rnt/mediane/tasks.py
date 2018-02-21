@@ -1,10 +1,10 @@
 from mediane import process
-from mediane.models import ResultsToProduceDecorator
+from mediane  import models
 
 
 def compute_result(pk):
     try:
-        task = ResultsToProduceDecorator.objects.get(pk=pk)
+        task = models.ResultsToProduceDecorator.objects.get(pk=pk)
     except:
         return
     if task.status != 1:
@@ -12,7 +12,7 @@ def compute_result(pk):
     task.status = 2
     task.save()
     result = task.result
-    task = ResultsToProduceDecorator.objects.get(pk=pk)
+    task = models.ResultsToProduceDecorator.objects.get(pk=pk)
     if task.status != 2:
         return
     task.status = 3
@@ -21,7 +21,6 @@ def compute_result(pk):
         process.execute_median_rankings_computation_of_result(result)
         task.delete()
         result.job.update_status()
-        result.job.save()
     except Exception as e:
         print(e)
         task.status = 5

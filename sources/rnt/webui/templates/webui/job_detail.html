@@ -1,10 +1,19 @@
 {% extends "base.html" %}
 {% load bootstrap %}
+{% load sstatic %}
 {% load static %}
 {% load i18n %}
 {% load webui_tags %}
 {% block title %}Dataset '{{ object.name }}'{% endblock %}
 {% block page_title %}Job '{{ object.identifier }}'{% endblock %}
+
+{% block extra_js %}
+<script type="text/javascript">
+function get_api_job_url(){return '{% url 'webapi:job-detail' object.identifier %}'};
+</script>
+<script src="{% sstatic '/js/job_detail.js' %}"></script>
+{% endblock %}
+
 {% block container-class %}container{% endblock %}
 {% block content%}
 {{object}}

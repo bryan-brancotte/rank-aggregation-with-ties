@@ -59,6 +59,6 @@ class JobViewSet(mixins.RetrieveModelMixin,
         instance = self.get_object()
         if instance.owner != request.user and not request.user.is_superuser:
             return Response(status=status.HTTP_403_FORBIDDEN)
-        if int(str(request.data["status"])) not in [1, 6]:
+        if int(str(request.data["status"])) not in [1, 2, 6]:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         return super().update(request=request, *args, **kwargs)
