@@ -6,6 +6,7 @@ from mediane.algorithms.enumeration import get_name_from
 from mediane.algorithms.lri.BioConsert import BioConsert
 from mediane.algorithms.misc.borda_count import BordaCount
 from mediane.distances.KendallTauGeneralizedNSquare import KendallTauGeneralizedNSquare
+from mediane.distances.KendallTauGeneralizedNlogN import KendallTauGeneralizedNlogN
 from mediane.distances.enumeration import GENERALIZED_KENDALL_TAU_DISTANCE
 from mediane.median_ranking_tools import parse_ranking_with_ties_of_str, dump_ranking_with_ties_to_str
 from mediane.normalizations.enumeration import NONE, UNIFICATION
@@ -54,10 +55,10 @@ def execute_median_rankings_computation_from_rankings(
             name=str(dataset),
         ),
         consensus=c,
-        distance=KendallTauGeneralizedNSquare().get_distance_to_a_set_of_rankings(
+        distance=KendallTauGeneralizedNlogN(distance).get_distance_to_a_set_of_rankings(
             c[0],
             rankings=rankings,
-        )[GENERALIZED_KENDALL_TAU_DISTANCE],
+        )[distance.id_order],
         duration=(int(duration / iteration * 1000.0 * 1000.0 * 1000.0)) / 1000.0 / 1000.0,
         algo=dict(
             id=algorithm.get_full_name(),
