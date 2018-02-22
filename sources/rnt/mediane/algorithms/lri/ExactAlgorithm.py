@@ -424,7 +424,6 @@ class ExactAlgorithm(MedianRanking):
 
     def get_handled_distances(self):
         """
-
         :return: a list of distances from distance_enumeration
         """
         return (

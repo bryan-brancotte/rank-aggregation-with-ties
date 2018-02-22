@@ -1,4 +1,4 @@
-from mediane.algorithms.median_ranking import MedianRanking
+from mediane.algorithms.median_ranking import MedianRanking, DistanceNotHandledException
 
 from typing import List
 from numpy import ndarray, asarray
@@ -24,10 +24,11 @@ class KwikSortAbs(MedianRanking):
         :raise DistanceNotHandledException when the algorithm cannot compute the consensus following the distance given
         as parameter
         """
-
+        scoring_scheme = asarray(distance.scoring_scheme)
+        if scoring_scheme[1][0] != scoring_scheme[1][1] or scoring_scheme[1][3] != scoring_scheme[1][4]:
+            raise DistanceNotHandledException
         consensus = []
         elements_translated_target = []
-        scoring_scheme = asarray(distance.scoring_scheme)
         var = self.prepare_internal_vars(elements_translated_target, rankings)
         self.kwik_sort(consensus, elements_translated_target, var, scoring_scheme)
         return [consensus]

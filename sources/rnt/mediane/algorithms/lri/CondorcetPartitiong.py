@@ -1,4 +1,4 @@
-from mediane.algorithms.median_ranking import MedianRanking
+from mediane.algorithms.median_ranking import MedianRanking, DistanceNotHandledException
 from mediane.distances.enumeration import GENERALIZED_KENDALL_TAU_DISTANCE, GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE, \
     PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE
 from mediane.algorithms.lri.BioConsert import BioConsert
@@ -34,6 +34,9 @@ class CondorcetPartitioning(MedianRanking):
         :raise DistanceNotHandledException when the algorithm cannot compute the consensus following the distance given
         as parameter
         """
+        scoring_scheme = asarray(distance.scoring_scheme)
+        if scoring_scheme[1][0] != scoring_scheme[1][1] or scoring_scheme[1][3] != scoring_scheme[1][4]:
+            raise DistanceNotHandledException
         res = []
         elem_id = {}
         id_elements = {}
@@ -50,7 +53,7 @@ class CondorcetPartitioning(MedianRanking):
         positions = CondorcetPartitioning.__positions(rankings, elem_id)
 
         # TYPE igraph.Graph
-        gr1, mat_score = self.__graph_of_elements(positions, asarray(distance.scoring_scheme))
+        gr1, mat_score = self.__graph_of_elements(positions, scoring_scheme)
 
         # TYPE igraph.clustering.VertexClustering
         scc = gr1.components()
