@@ -26,6 +26,8 @@ function reusabled_plot() {
         x_accessor = function(d) {return d.x;},
         y_accessor = function(d) {return d.y;},
         y_ticks_formatter = ticksDefault,
+        x_label = "",
+        y_label = "",
         tooltip_builder = function(d){
             return "<table class='table table-condensed' style='margin-bottom:0px;'><tbody>"+
                 "<tr><th>x</th><td>"+plot.x_accessor()(d)+"</td></tr>"+
@@ -72,6 +74,13 @@ function reusabled_plot() {
                 .attr("class", "x axis")
                 .call(xAxis)
                 .attr("opacity",0);
+            svg.append("g")
+                .attr("transform", "translate("+inner_width/2+"," + (inner_height+margin.bottom/2) + ")")
+                .append("text")
+                .attr("class", "x axis label")
+                .attr("opacity",0)
+                .attr('text-anchor','end')
+                .text(typeof(x_label) === 'function'?x_label():x_label);
 
             // Add the Y Axis
             yAxis = d3.axisLeft(yScale);
@@ -85,6 +94,14 @@ function reusabled_plot() {
                 .attr("class", "y axis")
                 .call(yAxis)
                 .attr("opacity",0);
+            svg.append("g")
+                .attr("transform", "translate(" + -margin.right + ',' + inner_height/2 + ")")
+                .append("text")
+                .attr("class", "y axis label")
+                .attr("transform", "rotate(-90)")
+                .attr("opacity",0)
+                .attr('text-anchor','end')
+                .text(typeof(y_label) === 'function'?y_label():y_label);
 
             update = function(){
                 data=row_data.filter(data_filter);
@@ -155,13 +172,15 @@ function reusabled_plot() {
                         .attr('stroke-width', 2);
 
                 svg.select(".x.axis") // change the x axis
-                    .call(xAxis)
+                    .call(xAxis);
+                svg.selectAll(".x.axis")
                     .transition()
                     .duration(duration)
                     .attr("opacity",1);
 
                 svg.select(".y.axis") // change the y axis
-                    .call(yAxis)
+                    .call(yAxis);
+                svg.selectAll(".y.axis")
                     .transition()
                     .duration(duration)
                     .attr("opacity",1);
@@ -210,15 +229,11 @@ function reusabled_plot() {
                     })
                     .on("mouseover", function(d){
                         d3.selectAll("[data-series='"+d+"']")
-                            .transition()
-                            .duration(duration)
                             .attr("r",8)
                             .attr('stroke-width', 5);
                     })
                     .on("mouseout", function(d){
                         d3.selectAll("[data-series='"+d+"']")
-                            .transition()
-                            .duration(duration)
                             .attr("r",5)
                             .attr('stroke-width', 2);
                     });
@@ -317,6 +332,16 @@ function reusabled_plot() {
     chart.y_accessor = function(value) {
         if (!arguments.length) return y_accessor;
         y_accessor = value;
+        return chart;
+    };
+    chart.x_label = function(value) {
+        if (!arguments.length) return x_label;
+        x_label = value;
+        return chart;
+    };
+    chart.y_label = function(value) {
+        if (!arguments.length) return y_label;
+        y_label = value;
         return chart;
     };
     chart.tooltip_builder = function(value) {

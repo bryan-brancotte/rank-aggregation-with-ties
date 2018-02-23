@@ -98,6 +98,8 @@ function build_scatter_plot(target) {
         .data_identifier(function(d){return d.algo.id+"-"+d.dataset})
         .x_accessor(function(d){return d.distance_value})
         .y_accessor(function(d){return d.duration})
+        .x_label("Distance")
+        .y_label("Computation time")
         .series_accessor(function(d){return d.algo.key_name})
         .tooltip_builder(function(d){
             return '<table class="table table-condensed" style="margin-bottom:0px;"><tbody>'+
@@ -135,6 +137,8 @@ function build_multiline_plot(target, abscissa, ordinate) {
         .x_accessor(function(d){return d[abscissa]})
         .y_accessor(function(d){return d.mean})
         .y_scale_is_duration(true)
+        .x_label("n: #elements")
+        .y_label("Computation time")
         .series_accessor(function(d){return d.algo})
         .tooltip_builder(function(d){
             return "<table class='table table-condensed' style='margin-bottom:0px;'><tbody>"+
