@@ -1,9 +1,10 @@
 from typing import List, Dict
 import collections
-from mediane.algorithms.median_ranking import MedianRanking
+from mediane.algorithms.median_ranking import MedianRanking, DistanceNotHandledException
 from mediane.distances.enumeration import GENERALIZED_KENDALL_TAU_DISTANCE, GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE, \
-    PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE
-from numpy import zeros, count_nonzero, vdot, array, ndarray, shape, amax, where, nditer, argmax, sum as np_sum, cumsum
+    PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE, GENERALIZED_KENDALL_TAU_DISTANCE_WITH_UNIFICATION
+from numpy import zeros, count_nonzero, vdot, array, ndarray, shape, amax, where, nditer, argmax, sum as np_sum, \
+    cumsum, asarray
 
 
 class BioConsert(MedianRanking):
@@ -38,6 +39,9 @@ class BioConsert(MedianRanking):
         :raise DistanceNotHandledException when the algorithm cannot compute the consensus following the distance given
         as parameter
         """
+        scoring_scheme = asarray(distance.scoring_scheme)
+        if scoring_scheme[1][0] != scoring_scheme[1][1] or scoring_scheme[1][3] != scoring_scheme[1][4]:
+            raise DistanceNotHandledException
         res = []
         # kem = KemenyComputingFactory(scoring_scheme=self.scoring_scheme)
         # kem = KendallTauGeneralizedNlogN()
@@ -383,5 +387,6 @@ class BioConsert(MedianRanking):
         return (
             GENERALIZED_KENDALL_TAU_DISTANCE,
             GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE,
-            PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE
+            PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE,
+            GENERALIZED_KENDALL_TAU_DISTANCE_WITH_UNIFICATION
         )

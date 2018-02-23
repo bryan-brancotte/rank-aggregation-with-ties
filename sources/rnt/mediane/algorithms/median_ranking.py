@@ -5,6 +5,10 @@ class DistanceNotHandledException(Exception):
     pass
 
 
+class IncompleteRankingsNotHandledException(Exception):
+    pass
+
+
 class MedianRanking:
     def compute_median_rankings(
             self,
@@ -25,6 +29,8 @@ class MedianRanking:
         In all scenario, the algorithm returns an array of consensus
         :raise DistanceNotHandledException when the algorithm cannot compute the consensus following the distance given
         as parameter
+        :raise IncompleteRankingsNotHandledException when the lagorithm cannot compute the consensus because the
+        algorithm makes no sense with incomplete rankings
         """
         raise NotImplementedError("The method not implemented")
 

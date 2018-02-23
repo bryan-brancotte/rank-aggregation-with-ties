@@ -1,6 +1,10 @@
-from mediane.distances.enumeration import GENERALIZED_KENDALL_TAU_DISTANCE, GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE
-from mediane.algorithms.median_ranking import MedianRanking
+from mediane.distances.enumeration import GENERALIZED_KENDALL_TAU_DISTANCE, GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE, \
+    GENERALIZED_KENDALL_TAU_DISTANCE_WITH_UNIFICATION
+from mediane.algorithms.median_ranking import MedianRanking, DistanceNotHandledException
+from mediane.normalizations.unification import Unification
 from typing import List
+
+from numpy import array_equal, asarray, array
 
 
 class BordaCount(MedianRanking):
@@ -25,8 +29,23 @@ class BordaCount(MedianRanking):
         :raise DistanceNotHandledException when the algorithm cannot compute the consensus following the distance given
         as parameter
         """
+        scoring_scheme = asarray(distance.scoring_scheme)
+        if array_equal(scoring_scheme, array([[0, 1, 1, 0, 1, 1], [1, 1, 0, 1, 1, 0]])):
+            dst = 0
+        elif array_equal(scoring_scheme, array([[0, 1, 1, 1, 1, 1], [1, 1, 0, 1, 1, 1]])):
+            dst = 1
+        elif array_equal(scoring_scheme, array([[0, 1, 1, 0, 0, 0], [1, 1, 0, 0, 0, 0]])):
+            dst = 2
+        else:
+            raise DistanceNotHandledException
+
+        if dst == 0:
+            rankings_to_use = Unification.rankings_to_rankings(rankings)
+        else:
+            rankings_to_use = rankings
+
         points = {}
-        for ranking in rankings:
+        for ranking in rankings_to_use:
             id_bucket = 1
             for bucket in ranking:
                 for elem in bucket:
@@ -71,5 +90,6 @@ class BordaCount(MedianRanking):
         :return: a list of distances from distance_enumeration
         """
         return (
-            GENERALIZED_KENDALL_TAU_DISTANCE, GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE
+            GENERALIZED_KENDALL_TAU_DISTANCE, GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE,
+            GENERALIZED_KENDALL_TAU_DISTANCE_WITH_UNIFICATION
         )
