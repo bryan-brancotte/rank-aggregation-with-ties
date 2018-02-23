@@ -75,7 +75,7 @@ function get_dataset_url(pk){return '{% url 'webui:dataset-detail' 0 %}'.replace
                         <th>{%trans 'task_count'%}</th>
                         <td>{{object.task_count}}</td>
                     </tr>
-                    <tr>
+                    <tr id="progress-host" style="display:none">
                         <th>{%trans 'Progression'%}</th>
                         <td>
                             <div class="progress job" data-refresh="100">

@@ -35,6 +35,8 @@ function refresh_progression(){
         type:"GET",
         dataType:'json',
         success: function (data, textStatus, xhr) {
+            if(data.todo > 0)
+                $("#progress-host").show();
             var refresh = parseInt($(".progress.job").attr("data-refresh"));
             console.log(refresh);
             var todo = Math.round(data.todo/data.total*100);
