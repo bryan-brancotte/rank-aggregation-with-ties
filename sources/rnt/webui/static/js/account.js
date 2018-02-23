@@ -8,7 +8,7 @@ stack_onload(function () {
         contentType: "application/json;charset=utf-8",
         success: function (data, textStatus, xhr) {
             $('#results_table').DataTable( {
-                aaSorting: [[1,'asc']],
+                aaSorting: [[4,'asc']],
                 data: data,
                 columns: [
                     {

@@ -20,6 +20,7 @@ function get_api_job_progress_url(){return '{% url 'webapi:job-progress' object.
 function get_job_aggregated_results_url(){return '{% url 'webapi:job-aggregated-results' object.identifier %}'};
 function get_job_results_url(){return '{% url 'webapi:job-results' object.identifier %}'};
 function get_dataset_url(pk){return '{% url 'webui:dataset-detail' 0 %}'.replace("0",pk);};
+
 </script>
 <script src="{% sstatic '/js/reusabled_plot.js' %}"></script>
 <script src="{% sstatic '/js/job_detail.js' %}"></script>
@@ -32,7 +33,13 @@ function get_dataset_url(pk){return '{% url 'webui:dataset-detail' 0 %}'.replace
 
 {% block container-class %} container-fluid{% endblock %}
 {% block content%}
-<div id="scatter" class="col-xs-12 col-lg-6"></div>
+<div class="col-xs-12 col-lg-6">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div id="scatter"></div>
+        </div>
+    </div>
+</div>
 <div id="job-detail" class="col-xs-12 col-lg-6">
     <div class="panel panel-default">
         <div class="panel-heading">
@@ -65,6 +72,24 @@ function get_dataset_url(pk){return '{% url 'webui:dataset-detail' 0 %}'.replace
                     <th>{%trans 'task_count'%}</th>
                     <td>{{object.task_count}}</td>
                 </tr>
+                <tr>
+                    <th>{%trans 'Downloadable materials'%}</th>
+                    <td>
+                        Results
+                        <a href="{% url 'webapi:job-results-detailed-with-consensus' object.identifier %}?format=json"
+                           download="results-with-consensus-{{object.identifier}}.json">
+                             with consensus
+                        </a> or
+                        <a href="{% url 'webapi:job-results-detailed' object.identifier %}?format=json"
+                           download="results-without-consensus-{{object.identifier}}.json">
+                            without consensus
+                        </a>,
+                        <a href="{% url 'webapi:dataset-list' %}?format=json&job_id={{object.identifier}}&rankings=true"
+                           download="datasets-{{object.identifier}}.json">
+                            datasets used
+                        </a>
+                    </td>
+                </tr>
                 <tr id="progress-host" style="display:none">
                     <th>{%trans 'Progression'%}</th>
                     <td>
@@ -89,6 +114,32 @@ function get_dataset_url(pk){return '{% url 'webui:dataset-detail' 0 %}'.replace
         </div>
     </div>
 </div>
-<div id="multiline-n-duration" class="col-xs-12 col-lg-12"></div>
-<div id="multiline-m-duration" class="col-xs-12 col-lg-12"></div>
+<div class="col-xs-12 col-lg-12">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div id="multiline-n-duration"></div>
+        </div>
+    </div>
+</div>
+<div class="col-xs-12 col-lg-12">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div id="multiline-m-duration"></div>
+        </div>
+    </div>
+</div>
+<div class="col-xs-12 col-lg-12">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div id="multiline-n-distance"></div>
+        </div>
+    </div>
+</div>
+<div class="col-xs-12 col-lg-12">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div id="multiline-m-distance"></div>
+        </div>
+    </div>
+</div>
 {% endblock %}
