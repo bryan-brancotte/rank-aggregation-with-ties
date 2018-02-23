@@ -14,6 +14,8 @@ stack_onload(function () {
             build_scatter_plot("#scatter");
             build_multiline_plot("#multiline-n-duration","n","duration");
             build_multiline_plot("#multiline-m-duration","m","duration");
+            build_multiline_plot("#multiline-n-distance","n","distance_value");
+            build_multiline_plot("#multiline-m-distance","m","distance_value");
         }
     });
     $("#job_name").keyup(delayed_save_name());
@@ -136,9 +138,9 @@ function build_multiline_plot(target, abscissa, ordinate) {
         .data_identifier(function(d){return d.algo.id+"-"+d.dataset})
         .x_accessor(function(d){return d[abscissa]})
         .y_accessor(function(d){return d.mean})
-        .y_scale_is_duration(true)
-        .x_label("n: #elements")
-        .y_label("Computation time")
+        .y_scale_is_duration(ordinate==="duration")
+        .x_label(abscissa==="n"?"n: #elements":"m: #rankings")
+        .y_label(ordinate==="duration"?"Computation time":"Distance")
         .series_accessor(function(d){return d.algo})
         .tooltip_builder(function(d){
             return "<table class='table table-condensed' style='margin-bottom:0px;'><tbody>"+
