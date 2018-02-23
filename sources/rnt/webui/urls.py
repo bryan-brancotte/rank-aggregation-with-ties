@@ -28,7 +28,7 @@ urlpatterns = [
     url(r'^i18n/', include('django.conf.urls.i18n')),
 
     url(r'^datasets/$', views.DataSetListView.as_view(), name='dataset-list'),
-    url(r'^datasets/(?P<pk>\d+)/$', views.DataSetDetailView.as_view(), name='dataset_view'),
+    url(r'^datasets/(?P<pk>\d+)/$', views.DataSetDetailView.as_view(), name='dataset-detail'),
     url(r'^datasets/add/$', DataSetCreate.as_view(), name='dataset_add'),
     url(r'^datasets/(?P<pk>\d+)/edit/$', DataSetUpdate.as_view(), name='dataset_edit'),
     url(r'^datasets/(?P<pk>\d+)/delete/$', DataSetDelete.as_view(), name='dataset_delete'),

@@ -111,7 +111,7 @@ msgid "bench"
 msgstr "Precise time measurement"
 
 msgid "task_count"
-msgstr ""
+msgstr "Task count"
 
 msgid "Number of results associated to it"
 msgstr ""

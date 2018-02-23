@@ -25,7 +25,7 @@ stack_onload(function () {
         {% for d in object_list %}
         <tr>
             <td>
-                <a href="{%url 'webui:dataset_view' pk=d.pk %}">{{ d.name }}</a>
+                <a href="{%url 'webui:dataset-detail' pk=d.pk %}">{{ d.name }}</a>
             </td>
             <td>{{d.n}}</td>
             <td>{{d.m}}</td>

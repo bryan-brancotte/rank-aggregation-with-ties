@@ -19,6 +19,10 @@ stack_onload(function () {
                         },
                     },
                     {
+                        data: "name",
+                        title: "Name",
+                    },
+                    {
                         data: "dist",
                         title: "Distance",
                     },

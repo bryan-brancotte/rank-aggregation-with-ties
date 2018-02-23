@@ -45,7 +45,7 @@ class JobSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Job
-        fields = ('identifier', 'dist', 'norm', 'owner', 'creation', 'bench', 'task_count', 'status',)
+        fields = ('identifier', 'dist', 'norm', 'owner', 'creation', 'bench', 'task_count', 'status', 'name',)
         lookup_field = 'identifier'
         extra_kwargs = {
             'url': {'lookup_field': 'identifier'}

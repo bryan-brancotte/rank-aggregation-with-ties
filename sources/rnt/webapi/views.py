@@ -72,12 +72,12 @@ class JobViewSet(mixins.RetrieveModelMixin,
         instance = self.get_object()
         if instance.owner != request.user and not request.user.is_superuser:
             return Response(status=status.HTTP_403_FORBIDDEN)
-        if int(str(request.data["status"])) not in [1, 2, 6]:
+        if int(str(request.data.get("status", -1))) not in [-1, 1, 2, 6]:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         return super().update(request=request, *args, **kwargs)
 
     @detail_route(methods=['get', ], url_path='progress')
-    def results(self, request, identifier=None):
+    def progress(self, request, identifier=None):
         job = self.get_queryset().get(identifier=identifier)
         tasks = ResultsToProduceDecorator.objects.filter(result__job__pk=job.pk)
         return Response(dict(
@@ -123,7 +123,6 @@ class JobViewSet(mixins.RetrieveModelMixin,
         joined = rf.join(df.set_index('id'), on='dataset')
         # join to have algo name,
         joined = joined.join(af.set_index('id'), on='algo')
-        print(joined)
 
         # drop id result
         joined = joined.drop('id', 1)
@@ -158,39 +157,35 @@ class JobViewSet(mixins.RetrieveModelMixin,
         except:
             pass
 
-
-        json_desc = {}
-        # if we still have one column to aggregate and thus describe
-        if len(joined.columns) > len(groupby):
-            items = joined.groupby(groupby).describe().to_dict().items()
-            for (attr, stat), values in items:
-                values_dict = {}
-                attr_dict = json_desc.setdefault(attr, {})
-                attr_dict[stat] = values_dict
-                for aggregators, val in values.items():
-                    agg_dict = values_dict
-                    if isinstance(aggregators, str):
-                        # if only one aggregator we have a string, putting it back in an array
-                        aggregators = [aggregators, ]
-                    # all aggregator except the last one will be key of a dict
-                    for agg in aggregators[:-1]:
-                        agg_dict = agg_dict.setdefault(agg, {})
-                    # last aggregator is associated with val
-                    agg_dict[aggregators[-1]] = -1 if math.isnan(val) else val
-
+        # here we put the actual dict that will be return
         json_desc = []
+        # here we put in a dict the entry of json_desc following colName>(aggregator>)*json_desc_entry
+        index = {}
         # if we still have one column to aggregate and thus describe
         if len(joined.columns) > len(groupby):
             items = joined.groupby(groupby).describe().to_dict().items()
             for (attr, stat), values in items:
+                index_attr = index.setdefault(attr, {})
                 for aggregators, val in values.items():
-                    aggregated_dict = dict(field=attr)
-                    json_desc.append(aggregated_dict)
                     if isinstance(aggregators, str):
                         # if only one aggregator we have a string, putting it back in an array
                         aggregators = [aggregators, ]
-                    for k, v in zip(groupby_name, aggregators):
-                        aggregated_dict[k] = v
-                    aggregated_dict['descriptor'] = stat
-                    aggregated_dict['value'] = -1 if math.isnan(val) else val
+
+                    # We dive in the index toward the entry, and creating missing steps and entry if needed
+                    aggregated_dict = index_attr
+                    for agg in aggregators:
+                        aggregated_dict = aggregated_dict.setdefault(agg, {})
+
+                    # If the entry is empty it is a new one
+                    if 'field' not in aggregated_dict:
+                        # putting it to the array to be returned
+                        json_desc.append(aggregated_dict)
+                        # defining which field it is
+                        aggregated_dict['field'] = attr
+                        # defining aggregator name and value
+                        for k, v in zip(groupby_name, aggregators):
+                            aggregated_dict[k] = v
+                    # putting the descriptor in the entry
+                    aggregated_dict[stat] = -1 if math.isnan(val) else val
+
         return Response(json_desc)

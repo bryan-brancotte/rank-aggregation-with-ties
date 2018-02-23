@@ -95,3 +95,21 @@ a[aria-expanded=false] .to-collapse-icon {
 .nav a{
     font-size: 1.2em !important;
 }
+.last-to-right{
+    display: flex;
+}
+.last-to-right>*{
+    flex: 1 1;
+}
+.last-to-right>*:last-child{
+    flex: 0 auto;
+}
+.last-to-fill{
+    display: flex;
+}
+.last-to-fill>*{
+    flex: 0 auto;
+}
+.last-to-fill>*:last-child{
+    flex: 1 1;
+}

@@ -81,3 +81,23 @@ function format_uuid(data){
 function short_uuid(data, reduced){
     return '<span title="'+format_uuid(data,false)+'">'+data.substring(0,8) +'</span>';
 }
+
+//https://stackoverflow.com/a/6217551/2144569
+function delayed_action(action, instant_action){
+    var callcount = 0;
+    var action = action
+    var delayAction = function(action, time){
+        var expectcallcount = callcount;
+        var delay = function(){
+            if(callcount == expectcallcount){
+                action();
+            }
+        }
+        setTimeout(delay, time);
+    }
+    return function(eventtrigger){
+        ++callcount;
+        instant_action(eventtrigger);
+        delayAction(action, 1200);
+    }
+}

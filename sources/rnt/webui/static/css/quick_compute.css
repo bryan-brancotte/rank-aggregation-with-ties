@@ -39,12 +39,3 @@
     color: #777;
     font-size: 0.8em;
 }
-.last-to-right{
-    display: flex;
-}
-.last-to-right>*{
-    flex: 1 1;
-}
-.last-to-right>*:last-child{
-    flex: 0 auto;
-}

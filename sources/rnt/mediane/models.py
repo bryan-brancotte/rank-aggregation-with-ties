@@ -57,7 +57,7 @@ class DataSet(models.Model):
     objects = DataFrameManager()
 
     def get_absolute_url(self):
-        return reverse('webui:dataset_view', args=[self.pk])
+        return reverse('webui:dataset-detail', args=[self.pk])
 
     @property
     def rankings(self):
@@ -251,6 +251,11 @@ class Job(models.Model):
         (6, _("Canceled"))
     ),
         default=1)
+    name = models.CharField(
+        max_length=256,
+        null=True,
+        blank=True,
+    )
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
@@ -272,19 +277,29 @@ class Job(models.Model):
                 for r in self.result_set.all():
                     r.resultstoproducedecorator_set.all().delete()
 
+        tasks_to_do = None
+        if compute_on_this_thread:
+            tasks_to_do = ResultsToProduceDecorator.objects.filter(result__job__pk=self.pk)
+            if tasks_to_do.count() == 0:
+                self.status = 4
+
         super(Job, self).save(
             force_insert=force_insert,
             force_update=force_update,
             using=using,
             update_fields=update_fields,
         )
-        if compute_on_this_thread:
-            for r in ResultsToProduceDecorator.objects.filter(result__job__pk=self.pk).only('pk'):
+
+        if compute_on_this_thread and self.status == 2:
+            for r in tasks_to_do.only('pk'):
                 tasks.compute_result(r.pk)
 
     def update_task_count(self):
         self.task_count = self.result_set.count()
         self.save()
+
+    def get_name(self):
+        return self.name or self.identifier
 
     def update_status(self, save=True):
         if self.status != 1 and self.status != 2:

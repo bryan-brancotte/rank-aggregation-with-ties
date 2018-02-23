@@ -72,25 +72,6 @@ function refresh_settings_from_datasets(form_param, callback){
 }
 
 //refresh_settings_from_datasets($('form'));
-//https://stackoverflow.com/a/6217551/2144569
-function delayed_action(action, instant_action){
-    var callcount = 0;
-    var action = action
-    var delayAction = function(action, time){
-        var expectcallcount = callcount;
-        var delay = function(){
-            if(callcount == expectcallcount){
-                action();
-            }
-        }
-        setTimeout(delay, time);
-    }
-    return function(eventtrigger){
-        ++callcount;
-        instant_action(eventtrigger);
-        delayAction(action, 1200);
-    }
-}
 
 function on_change_param_auto_checkbox(auto_checkbox){
     var name = $(auto_checkbox).attr("name");

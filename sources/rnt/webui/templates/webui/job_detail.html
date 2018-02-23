@@ -5,23 +5,100 @@
 {% load i18n %}
 {% load webui_tags %}
 {% block title %}Dataset '{{ object.name }}'{% endblock %}
-{% block page_title %}Job '{{ object.identifier }}'{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static '/css/d3-tip.css' %}"/>
+{% endblock %}
 
 {% block extra_js %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.13.0/d3.min.js"
         integrity="sha256-hYXbQJK4qdJiAeDVjjQ9G0D6A0xLnDQ4eJI9dkm7Fpk=" crossorigin="anonymous"></script>
+<script src="{% static '/js/d3-tip.js' %}"></script>
 <script type="text/javascript">
 function get_api_job_url(){return '{% url 'webapi:job-detail' object.identifier %}'};
+function get_api_job_progress_url(){return '{% url 'webapi:job-progress' object.identifier %}'};
 function get_job_aggregated_results_url(){return '{% url 'webapi:job-aggregated-results' object.identifier %}'};
 function get_job_results_url(){return '{% url 'webapi:job-results' object.identifier %}'};
+function get_dataset_url(pk){return '{% url 'webui:dataset-detail' 0 %}'.replace("0",pk);};
+
+
+
+
 </script>
+<script src="{% sstatic '/js/reusabled_plot.js' %}"></script>
 <script src="{% sstatic '/js/job_detail.js' %}"></script>
-<script src="{% sstatic '/js/scatter_plot.js' %}"></script>
-<script src="{% sstatic '/js/multiline_plot.js' %}"></script>
 {% endblock %}
 
-{% block container-class %}container{% endblock %}
+{% block content_page_title %}
+<div class="container">
+    <div class="col-xs-12">
+        <h1>
+            <span>Job&nbsp;</span>
+            <span class="job_name">{{ object.get_name }}</span>
+        </h1>
+    </div>
+</div>
+{% endblock %}
+
+{% block container-class %} container-fluid{% endblock %}
 {% block content%}
-<div id="scatter" class="col-xs-12 col-lg-12"></div>
-<div id="multiline" class="col-xs-12 col-lg-12"></div>
+<div id="scatter" class="col-xs-12 col-lg-6"></div>
+<div id="job-detail" class="col-xs-12 col-lg-6">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Jobs details</h3>
+        </div>
+        <div class="panel-body">
+            <table id="results_table" style="width:100%">
+                <tbody>
+                    <tr>
+                        <th>{%trans 'Name'%}</th>
+                        <td><input id="job_name" value="{{ object.get_name }}" class="form-control"></td>
+                    </tr>
+                    <tr>
+                        <th>{%trans 'Identifier'%}</th>
+                        <td>{{object.identifier}}</td>
+                    </tr>
+                    <tr>
+                        <th>{%trans 'Distance'%}</th>
+                        <td>{{object.dist}}</td>
+                    </tr>
+                    <tr>
+                        <th>{%trans 'Creation date'%}</th>
+                        <td>{{object.creation}}</td>
+                    </tr>
+                    <tr>
+                        <th>{%trans 'bench'%}</th>
+                        <td>{{object.bench}}</td>
+                    </tr>
+                    <tr>
+                        <th>{%trans 'task_count'%}</th>
+                        <td>{{object.task_count}}</td>
+                    </tr>
+                    <tr>
+                        <th>{%trans 'Progression'%}</th>
+                        <td>
+                            <div class="progress job" data-refresh="100">
+                                <div class="progress-bar progress-bar-success done" role="progressbar" style="width:25%">
+                                    Done
+                                </div>
+                                <div class="progress-bar progress-bar-primary running" role="progressbar" style="width:25%">
+                                    Running
+                                </div>
+                                <div class="progress-bar progress-bar-danger error" role="progressbar" style="width:25%">
+                                    Error
+                                </div>
+                                <div class="progress-bar progress-bar-info todo" role="progressbar" style="width:25%">
+                                    To do
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div id="multiline-n-duration" class="col-xs-12 col-lg-12"></div>
+<div id="multiline-m-duration" class="col-xs-12 col-lg-12"></div>
 {% endblock %}
