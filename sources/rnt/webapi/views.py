@@ -10,7 +10,7 @@ from rest_framework.response import Response
 
 from mediane.models import DataSet, Job, ResultsToProduceDecorator, Result, Algorithm
 # ViewSets define the view behavior.
-from webapi.serializer import DataSetSerializer, DataSetSerializerNoContent, JobSerializer, ResultSerializerNoContent, \
+from webapi.serializer import DataSetSerializer, JobSerializer, \
     ResultSerializer
 
 
@@ -23,7 +23,20 @@ class DataSetViewSet(mixins.CreateModelMixin,
     serializer_class = DataSetSerializer
 
     def list(self, request, *args, **kwargs):
-        serializer = DataSetSerializerNoContent(self.get_queryset(), many=True)
+        qs = self.get_queryset()
+        if "job_id" in self.request.GET.keys():
+            try:
+                Job.objects.filter(owner=self.request.user).get(identifier=self.request.GET["job_id"])
+                qs = qs.filter(result__job__identifier=self.request.GET["job_id"])
+            except:
+                qs = DataSet.objects.filter(pk=-1)
+        serializer = DataSetSerializer(
+            qs,
+            many=True,
+            include_content=self.request.GET.get("rankings", "false").lower() == "true",
+            include_public=False,
+            include_transient=False,
+        )
         return Response(serializer.data)
 
     def get_queryset(self):
@@ -90,13 +103,25 @@ class JobViewSet(mixins.RetrieveModelMixin,
     @detail_route(methods=['get', ], url_path='results')
     def results(self, request, identifier=None):
         job = self.get_queryset().get(identifier=identifier)
-        serializer = ResultSerializerNoContent(job.result_set, many=True)
+        serializer = ResultSerializer(job.result_set, many=True)
         return Response(serializer.data)
 
     @detail_route(methods=['get', ], url_path='results_with_consensus')
     def results_with_consensus(self, request, identifier=None):
         job = self.get_queryset().get(identifier=identifier)
-        serializer = ResultSerializer(job.result_set, many=True)
+        serializer = ResultSerializer(job.result_set, many=True, include_consensuses=True)
+        return Response(serializer.data)
+
+    @detail_route(methods=['get', ], url_path='results_detailed')
+    def results_detailed(self, request, identifier=None):
+        job = self.get_queryset().get(identifier=identifier)
+        serializer = ResultSerializer(job.result_set, many=True, detailed_dataset=True)
+        return Response(serializer.data)
+
+    @detail_route(methods=['get', ], url_path='results_detailed_with_consensus')
+    def results_detailed_with_consensus(self, request, identifier=None):
+        job = self.get_queryset().get(identifier=identifier)
+        serializer = ResultSerializer(job.result_set, many=True, include_consensuses=True, detailed_dataset=True)
         return Response(serializer.data)
 
     @detail_route(methods=['get', ], url_path='aggregated_results')

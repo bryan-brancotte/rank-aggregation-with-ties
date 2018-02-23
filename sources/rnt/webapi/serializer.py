@@ -19,22 +19,26 @@ class DataSetSerializer(serializers.HyperlinkedModelSerializer):
             'public',
         )
 
+    def __init__(
+            self,
+            instance=None,
+            include_content=True,
+            include_transient=True,
+            include_public=True,
+            *args,
+            **kwargs
+    ):
+        if not include_content:
+            del self.fields["content"]
+        if not include_transient:
+            del self.fields["transient"]
+        if not include_public:
+            del self.fields["public"]
+        super(DataSetSerializer, self).__init__(instance, *args, **kwargs)
+
     def create(self, validated_data):
         validated_data["owner"] = self.context["request"].user
-        return super().create(validated_data)
-
-
-class DataSetSerializerNoContent(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = DataSet
-        fields = (
-            'pk',
-            'name',
-            'm',
-            'n',
-            'complete',
-            'step',
-        )
+        return super(DataSetSerializer, self).create(validated_data)
 
 
 class JobSerializer(serializers.HyperlinkedModelSerializer):
@@ -62,6 +66,18 @@ class SimpleAlgorithmSerializer(serializers.ModelSerializer):
         )
 
 
+class SimpleDataSetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DataSet
+        fields = (
+            'id',
+            'name',
+            'n',
+            'm',
+            'step',
+        )
+
+
 class ResultSerializer(serializers.ModelSerializer):
     job = serializers.SlugRelatedField(
         many=False,
@@ -69,6 +85,13 @@ class ResultSerializer(serializers.ModelSerializer):
         slug_field='identifier'
     )
     algo = SimpleAlgorithmSerializer(many=False)
+
+    def __init__(self, instance=None, include_consensuses=False, detailed_dataset=False, *args, **kwargs):
+        if detailed_dataset:
+            self.fields["dataset"] = SimpleDataSetSerializer()
+        if not include_consensuses:
+            del self.fields["consensuses"]
+        super(ResultSerializer, self).__init__(instance, *args, **kwargs)
 
     class Meta:
         model = Result
@@ -79,23 +102,4 @@ class ResultSerializer(serializers.ModelSerializer):
             'distance_value',
             'duration',
             'consensuses',
-        )
-
-
-class ResultSerializerNoContent(serializers.ModelSerializer):
-    job = serializers.SlugRelatedField(
-        many=False,
-        read_only=True,
-        slug_field='identifier'
-    )
-    algo = SimpleAlgorithmSerializer(many=False)
-
-    class Meta:
-        model = Result
-        fields = (
-            'algo',
-            'dataset',
-            'job',
-            'distance_value',
-            'duration',
         )
