@@ -79,7 +79,7 @@ function reusabled_plot() {
                 .append("text")
                 .attr("class", "x axis label")
                 .attr("opacity",0)
-                .attr('text-anchor','end')
+                .attr('text-anchor','middle')
                 .text(typeof(x_label) === 'function'?x_label():x_label);
 
             // Add the Y Axis
@@ -100,7 +100,7 @@ function reusabled_plot() {
                 .attr("class", "y axis label")
                 .attr("transform", "rotate(-90)")
                 .attr("opacity",0)
-                .attr('text-anchor','end')
+                .attr('text-anchor','middle')
                 .text(typeof(y_label) === 'function'?y_label():y_label);
 
             update = function(){
