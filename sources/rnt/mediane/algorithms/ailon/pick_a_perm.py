@@ -63,7 +63,7 @@ class PickAPerm(MedianRanking):
         return False
 
     def get_full_name(self):
-        return "Pick a Perm"
+        return "Pick-a-Perm"
 
     def get_handled_distances(self):
         """

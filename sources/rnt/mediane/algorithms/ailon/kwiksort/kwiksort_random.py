@@ -68,7 +68,7 @@ class KwikSortRandom(KwikSortAbs):
         return True
 
     def get_full_name(self):
-        return "KwikSortRandomized"
+        return "KwikSort"
 
     def get_handled_distances(self):
         """
