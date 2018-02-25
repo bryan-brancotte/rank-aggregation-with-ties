@@ -53,7 +53,7 @@ msgstr ""
 msgid "The number of elements"
 msgstr ""
 
-msgid "Are every elements present in each rankings of the dataset"
+msgid "Is each element to rank present in each ranking of the dataset?"
 msgstr ""
 
 msgid "The number of steps used to generate the dataset, if pertinent"
@@ -218,7 +218,7 @@ msgstr ""
 msgid "Select from database"
 msgstr ""
 
-msgid "Normalisation"
+msgid "Normalization"
 msgstr ""
 
 msgid "Distance"

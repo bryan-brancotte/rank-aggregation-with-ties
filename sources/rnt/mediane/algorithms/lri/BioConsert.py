@@ -1,8 +1,10 @@
 from typing import List, Dict
 import collections
+
 from mediane.algorithms.median_ranking import MedianRanking, DistanceNotHandledException
 from mediane.distances.enumeration import GENERALIZED_KENDALL_TAU_DISTANCE, GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE, \
     PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE, GENERALIZED_KENDALL_TAU_DISTANCE_WITH_UNIFICATION
+from mediane.normalizations.unification import Unification
 from numpy import zeros, count_nonzero, vdot, array, ndarray, shape, amax, where, nditer, argmax, sum as np_sum, \
     cumsum, asarray
 
@@ -60,7 +62,7 @@ class BioConsert(MedianRanking):
         if nb_elements == 0:
             return [[]]
 
-        departure = self.__departure_rankings(rankings, elem_id)
+        departure = self.__departure_rankings(rankings, elem_id, distance)
 
         if len(self.starting_algorithms) == 0:
             matrix = self.__cost_matrix(departure[:, :-1], distance)
@@ -315,7 +317,7 @@ class BioConsert(MedianRanking):
                 ranking[ranking >= new_pos] += 1
                 ranking[element] = new_pos
 
-    def __departure_rankings(self, rankings: List[List[List[int]]], elements_id: Dict) -> ndarray:
+    def __departure_rankings(self, rankings: List[List[List[int]]], elements_id: Dict, distance) -> ndarray:
         if len(self.starting_algorithms) == 0:
             m = len(rankings)
             n = len(elements_id)
@@ -335,8 +337,12 @@ class BioConsert(MedianRanking):
             departure = zeros((n, m))
             id_ranking = 0
             for algo in self.starting_algorithms:
+                try:
+                    cons = algo.compute_median_rankings(rankings, distance, True)[0]
+                except DistanceNotHandledException:
+                    cons = algo.compute_median_rankings(Unification.rankings_to_rankings(rankings), distance, True)[0]
                 id_bucket = 0
-                for bucket in algo.compute_median_rankings(rankings, True)[0]:
+                for bucket in cons:
                     for element in bucket:
                         departure[elements_id.get(element)][id_ranking] = id_bucket
                     id_bucket += 1

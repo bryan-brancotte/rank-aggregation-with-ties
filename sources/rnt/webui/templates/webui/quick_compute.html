@@ -3,7 +3,7 @@
 {% load static %}
 {% load sstatic %}
 {% load i18n %}
-{% block page_title %}Compute a consensus{% endblock %}
+{% block page_title %}Consensus Ranking Computation{% endblock %}
 {% block title %}Compute a consensus{% endblock %}
 
 {% block extra_css %}
@@ -68,7 +68,7 @@ webapi_dataset_list='{% url 'webapi:dataset-list' %}';
                                         </tr>
                                         <tr>
                                             <th
-                                                title="{%trans 'Are every elements present in each rankings of the dataset'%}"
+                                                title="{%trans 'Is each element present in each ranking of the dataset?'%}"
                                                 id="stats-complet"
                                                 colspan="2"
                                             >
@@ -162,7 +162,7 @@ webapi_dataset_list='{% url 'webapi:dataset-list' %}';
     </div>
     <div class="col-xs-12 col-lg-4">
         <div class="row">
-            {%trans 'Normalisation' as norm_verbose%}
+            {%trans 'Normalization' as norm_verbose%}
             {% include "webui/quick_compute_param_panel.html" with full_form=full_form param_name='norm' param_name_auto='norm_auto' param_verbose_name=norm_verbose %}
             {%trans 'Distance' as dist_verbose%}
             {% include "webui/quick_compute_param_panel.html" with full_form=full_form param_name='dist' param_name_auto='dist_auto' param_verbose_name=dist_verbose %}

@@ -5,12 +5,12 @@ from mediane import models
 from mediane.algorithms.enumeration import get_name_from
 from mediane.algorithms.lri.BioConsert import BioConsert
 from mediane.algorithms.misc.borda_count import BordaCount
-from mediane.distances.KendallTauGeneralizedNSquare import KendallTauGeneralizedNSquare
 from mediane.distances.KendallTauGeneralizedNlogN import KendallTauGeneralizedNlogN
-from mediane.distances.enumeration import GENERALIZED_KENDALL_TAU_DISTANCE
+from mediane.distances.enumeration import GENERALIZED_KENDALL_TAU_DISTANCE_WITH_UNIFICATION
 from mediane.median_ranking_tools import parse_ranking_with_ties_of_str, dump_ranking_with_ties_to_str
-from mediane.normalizations.enumeration import NONE, UNIFICATION
-
+from mediane.normalizations.enumeration import NONE, UNIFICATION, PROJECTION
+from mediane.normalizations.unification import Unification
+from mediane.normalizations.projection import Projection
 MIN_MEASURE_DURATION = 3
 
 
@@ -23,9 +23,15 @@ def execute_median_rankings_computation_from_rankings(
         dataset=None,
         algorithms=None,
 ):
+    if str(normalization) == "Unification":
+        rankings_real = Unification.rankings_to_rankings(rankings)
+    elif str(normalization) == "Projection":
+        rankings_real = Projection.rankings_to_rankings(rankings)
+    else:
+        rankings_real = rankings
     if algorithms:
         return [execute_median_rankings_computation_from_rankings(
-            rankings=rankings,
+            rankings=rankings_real,
             algorithm=a,
             normalization=normalization,
             distance=distance,
@@ -34,7 +40,7 @@ def execute_median_rankings_computation_from_rankings(
         ) for a in algorithms]
     iteration = 1
     start_timezone = timezone.now()
-    c = algorithm.compute_median_rankings(rankings=rankings, distance=distance)
+    c = algorithm.compute_median_rankings(rankings=rankings_real, distance=distance)
     duration = (timezone.now() - start_timezone).total_seconds()
     while precise_time_measurement and duration < MIN_MEASURE_DURATION:
         # print(iteration, duration)
@@ -42,7 +48,7 @@ def execute_median_rankings_computation_from_rankings(
         rang_iter = range(2, iteration)
         start_timezone = timezone.now()
         for k in rang_iter:
-            algorithm.compute_median_rankings(rankings=rankings, distance=distance)
+            algorithm.compute_median_rankings(rankings=rankings_real, distance=distance)
         duration = (timezone.now() - start_timezone).total_seconds()
 
     return dict(
@@ -75,15 +81,25 @@ def execute_median_rankings_computation_from_datasets(
         precise_time_measurement,
         algorithms=None,
 ):
+
     submission_results = []
     algorithms = algorithms or []
     if algorithm is not None:
         algorithms.append(algorithm)
     for d in datasets:
+        if not d.complete:
+            if str(normalization) == "Unification":
+                rankings_real = Unification.rankings_to_rankings(d.rankings)
+            elif str(normalization) == "Projection":
+                rankings_real = Projection.rankings_to_rankings(d.rankings)
+            else:
+                rankings_real = d.rankings
+        else:
+            rankings_real = d.rankings
         for a in algorithms:
             submission_results.append(
                 execute_median_rankings_computation_from_rankings(
-                    rankings=d.rankings,
+                    rankings=rankings_real,
                     algorithm=a,
                     normalization=normalization,
                     distance=distance,
@@ -203,11 +219,13 @@ def compute_consensus_settings_based_on_datasets(
     from mediane.models import Distance, Normalization, Algorithm
     consensus_settings = {}
     consensus_settings["algo"] = Algorithm.objects.get(key_name=str(BioConsert().get_full_name())).pk
-    consensus_settings["dist"] = Distance.objects.get(key_name=GENERALIZED_KENDALL_TAU_DISTANCE).pk
+    consensus_settings["dist"] = Distance.objects.get(key_name=GENERALIZED_KENDALL_TAU_DISTANCE_WITH_UNIFICATION).pk
     consensus_settings["norm"] = Normalization.objects.get(key_name=NONE if complete else UNIFICATION).pk
     if n > 100 or len(dbdatasets) * len(algos) > 20:
         consensus_settings["algo"] = Algorithm.objects.get(key_name=str(BordaCount().get_full_name())).pk
-    consensus_settings["auto_compute"] = n < 50 and len(dbdatasets) * len(algos) < 50
+    # consensus_settings["auto_compute"] = n < 50 and len(dbdatasets) * len(algos) < 50
+    consensus_settings["auto_compute"] = False
+
     consensus_settings["bench"] = False
     consensus_settings["extended_analysis"] = len(dbdatasets) * len(algos) > 50
     print(consensus_settings)

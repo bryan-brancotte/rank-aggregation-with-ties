@@ -35,7 +35,7 @@ class DataSet(models.Model):
         default=0,
     )
     complete = models.BooleanField(
-        help_text=_('Are every elements present in each rankings of the dataset'),
+        help_text=_('Is each element present in each ranking of the dataset?'),
     )
     step = models.IntegerField(
         help_text=_('The number of steps used to generate the dataset, if pertinent'),
@@ -51,7 +51,7 @@ class DataSet(models.Model):
         help_text=_('The user who can see, edit and delete it'),
     )
     public = models.BooleanField(
-        help_text=_('Can it be seen by everyone?'),
+        help_text=_('Can the dataset appear in the public database?'),
         default=False,
     )
     objects = DataFrameManager()

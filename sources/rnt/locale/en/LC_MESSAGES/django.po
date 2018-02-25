@@ -23,13 +23,13 @@ msgid "_name"
 msgstr ""
 
 msgid "KTG_name"
-msgstr "Generalized kendall tau distance"
+msgstr "Generalized Kendall-tau distance"
 
 msgid "KTGI_name"
-msgstr "Induced generalized kendall tau distance"
+msgstr "Generalized induced Kendall-tau measure"
 
 msgid "PSEUDO_METRIC_KTGI_name"
-msgstr "Pseudo metric for truncated datasets"
+msgstr "Generalized Kendall-tau pseudo-distance (for truncated datasets)"
 
 msgid "KTG_desc"
 msgstr ""
@@ -37,24 +37,22 @@ msgstr ""
 "Boulakia et al 2011]."
 
 msgid "KTGI_desc"
-msgstr ""
-"The induced kendall tau distance [Dwork et al 2001] only consider "
-"disagreements when the two elements are present. Here its generalization "
+msgstr "Select this measure if the missing elements should not be compared to present elments in a ranking"
+"The induced Kendall-tau measure [Dwork et al 2001] only consider "
+"disagreements when the two elements are present. Here it is generalization "
 "[Brancotte, 2015] follows this principle to encompass ties."
 
 msgid "PSEUDO_METRIC_KTGI_desc"
 msgstr ""
-"Pseudo metric based on generalized induced kendall tau distance. This pseudo "
+"Pseudo metric based on Generalized Kendall-tau distance. This pseudo "
 "metric was used in ConQur-Bio [Brancotte et al., 2014] and is made for "
-"reducing the biais introduce when the dataset is truncated, meaning where "
-"elements in the tail of the dataset's rankings may have been removed to "
-"reduce the length of rankings."
+"reducing the biais introduced by unification process, especially when the original dataset has been truncated"
 
 msgid "KTGU_name"
-msgstr "Generalized kendall tau distance with unification"
+msgstr "Generalized Kendall-tau unifying pseudo-distance"
 
 msgid "KTGU_desc"
-msgstr ""
+msgstr "Equivalent to Kendall- tau distance on the unified dataset (virtually apply unification process)"
 "The generalized kendall tau distance following [Fagin et al 2006, Cohen-"
 "Boulakia et al 2011] where the dataset is seen as being unified [Brancotte "
 "et al 2015]."
@@ -65,10 +63,10 @@ msgstr ""
 msgid "The number of elements"
 msgstr ""
 
-msgid "Are every elements present in each rankings of the dataset"
+msgid "Is each element to rank present in each ranking of the dataset?"
 msgstr ""
 
-msgid "The number of steps used to generate the dataset, if pertinent"
+msgid "The number of steps used to generate the dataset, if pertinent (synthetic datasets generated with Markov chains)"
 msgstr ""
 
 msgid "Should the dataset be deleted when the associated job is removed?"
@@ -77,7 +75,7 @@ msgstr ""
 msgid "The user who can see, edit and delete it"
 msgstr ""
 
-msgid "Can it be seen by everyone?"
+msgid "Add your dataset in the public database"
 msgstr ""
 
 msgid "step"
@@ -92,7 +90,7 @@ msgstr ""
 msgid "is_scoring_scheme_relevant"
 msgstr ""
 
-msgid "Doas looking at the scoring scheme have a meaning ?"
+msgid "Does the scoring scheme have a meaning ?"
 msgstr ""
 
 msgid "_desc"
@@ -108,7 +106,7 @@ msgid "Creation time"
 msgstr ""
 
 msgid "bench"
-msgstr "Precise time measurement"
+msgstr "Accurate time measurement"
 
 msgid "task_count"
 msgstr "Task count"
@@ -259,7 +257,7 @@ msgstr ""
 msgid "Select from database"
 msgstr ""
 
-msgid "Normalisation"
+msgid "Normalization"
 msgstr ""
 
 msgid "Distance"

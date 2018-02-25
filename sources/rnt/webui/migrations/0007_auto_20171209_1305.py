@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='dataset',
             name='complete',
-            field=models.BooleanField(default=True, help_text='Are every elements present in each rankings of the dataset'),
+            field=models.BooleanField(default=True, help_text='Is each element present in each ranking of the dataset?'),
             preserve_default=False,
         ),
         migrations.AlterField(

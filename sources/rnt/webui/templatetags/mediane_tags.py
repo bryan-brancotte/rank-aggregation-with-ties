@@ -10,8 +10,8 @@ def before_or_equals_cost_as_table(tab, elementsInR1):
 <table class="table">
 <tbody>
 <tr>
-<td>Ranking r1</td>
-<td>Ranking r2</td>
+<td>consensus</td>
+<td>Ranking r</td>
 <td>cost</td>
 </tr>
 <tr>

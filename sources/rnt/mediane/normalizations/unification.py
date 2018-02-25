@@ -23,8 +23,7 @@ class Unification(Normalization):
                 for element in bucket:
                     elem_ranking.remove(element)
             if len(elem_ranking) > 0:
-                copy_rankings.append(list(elem_ranking))
-
+                ranking.append(list(elem_ranking))
         return copy_rankings
 
     def rankings_to_dataset(rankings: List[List[List[int]]]) -> Dataset:
