@@ -190,15 +190,15 @@ msgstr "Automatically recompute on change"
 
 msgid "auto_compute_help_text"
 msgstr ""
-"Whether consensus should be computed as each modification in the selection "
-"of datasets, algorithms, distance, normalisation or the typed dataset"
+"re-compute consensus at each modification "
+"of datasets, algorithms, distance or normalisation"
 
 msgid "extended_analysis_label"
 msgstr "In database results and extended analysis"
 
 msgid "extended_analysis_help_text"
 msgstr ""
-"Result will be stored in database, allowing a deeper analysis of the results "
+"Result will be stored in database, providing a deeper analysis of the results "
 "on a dedicated page."
 
 msgid "Forbidden (403)"
