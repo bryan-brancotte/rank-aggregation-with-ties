@@ -1,4 +1,7 @@
+var scatter, ml_n_duration,  ml_n_duration,  ml_m_distance, ml_m_distance;
+
 stack_onload(function () {
+    build_plots();
     $.ajax({
         headers: {
             'X-CSRFToken':getCookie('csrftoken'),
@@ -11,11 +14,7 @@ stack_onload(function () {
         dataType:'json',
         success: function (data, textStatus, xhr) {
             refresh_progression();
-            build_scatter_plot("#scatter");
-            build_multiline_plot("#multiline-n-duration","n","duration");
-            build_multiline_plot("#multiline-m-duration","m","duration");
-            build_multiline_plot("#multiline-n-distance","n","distance_value");
-            build_multiline_plot("#multiline-m-distance","m","distance_value");
+            update_plots();
         }
     });
     $("#job_name").keyup(delayed_save_name());
@@ -51,6 +50,7 @@ function refresh_progression(){
             $(".progress.job .done").css("width",done+"%");
             refresh = Math.min(refresh*2,5000);
             $(".progress.job").attr("data-refresh", refresh);
+            update_plots();
             if (todo>0){
                 setTimeout(refresh_progression,refresh);
             }
@@ -91,6 +91,22 @@ function delayed_save_name(){
     )
 }
 
+function build_plots(){
+    scatter = build_scatter_plot("#scatter");
+    ml_n_duration = build_multiline_plot("#multiline-n-duration","n","duration");
+    ml_m_duration = build_multiline_plot("#multiline-m-duration","m","duration");
+    ml_n_distance = build_multiline_plot("#multiline-n-distance","n","distance_value");
+    ml_m_distance = build_multiline_plot("#multiline-m-distance","m","distance_value");
+}
+
+function update_plots(){
+    update_scatter_plot(scatter, "#scatter");
+    update_multiline_plot(ml_n_duration, "#multiline-n-duration","n","duration");
+    update_multiline_plot(ml_m_duration, "#multiline-m-duration","m","duration");
+    update_multiline_plot(ml_n_distance, "#multiline-n-distance","n","distance_value");
+    update_multiline_plot(ml_m_distance, "#multiline-m-distance","m","distance_value");
+}
+
 function build_scatter_plot(target) {
     var plot=reusabled_plot()
         .is_scatterplot(true)
@@ -118,6 +134,10 @@ function build_scatter_plot(target) {
         })
     ;
     d3.select(target).call(plot);
+    return plot;
+}
+
+function update_scatter_plot(plot, target) {
     $.ajax({
         headers: {
             'X-CSRFToken':getCookie('csrftoken'),
@@ -158,6 +178,10 @@ function build_multiline_plot(target, abscissa, ordinate) {
         })
         ;
     d3.select(target).call(plot);
+    return plot;
+}
+
+function update_multiline_plot(plot, target, abscissa, ordinate) {
     $.ajax({
         headers: {
             'X-CSRFToken':getCookie('csrftoken'),
