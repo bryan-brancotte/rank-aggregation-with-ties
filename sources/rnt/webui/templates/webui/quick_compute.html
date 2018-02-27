@@ -3,7 +3,7 @@
 {% load static %}
 {% load sstatic %}
 {% load i18n %}
-{% block page_title %}Consensus Ranking Computation{% endblock %}
+{% block page_title %}CoRankCo : Consensus Ranking Computation{% endblock %}
 {% block title %}Compute a consensus{% endblock %}
 
 {% block extra_css %}
@@ -30,7 +30,7 @@ webapi_dataset_list='{% url 'webapi:dataset-list' %}';
                 <div class="panel-heading">
                     <h4 class="panel-title">
                         <a data-toggle="collapse" data-parent="#accordion" href="#collapse-type">
-                            {%trans 'Type your dataset'%}
+                            {%trans 'Dataset (type your dataset)'%}
                         </a>
                     </h4>
                 </div>

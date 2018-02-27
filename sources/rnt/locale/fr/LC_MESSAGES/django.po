@@ -203,7 +203,7 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-msgid "Type your dataset"
+msgid "Dataset (type your dataset)"
 msgstr ""
 
 msgid "Complete"
