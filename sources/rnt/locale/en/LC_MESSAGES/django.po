@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-02-21 20:53+0000\n"
+"POT-Creation-Date: 2018-03-01 13:52+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,158 +16,227 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: sources/rnt/mediane/admin/dataset.py:19
+#: sources/rnt/mediane/admin/dataset.py:22
+#: sources/rnt/mediane/admin/dataset.py:25
 msgid "Will be automatically set"
 msgstr ""
 
+#: sources/rnt/mediane/distances/enumeration.py:11
+#: sources/rnt/mediane/distances/enumeration.py:15
+#: sources/rnt/mediane/distances/enumeration.py:19
+#: sources/rnt/mediane/distances/enumeration.py:23
+#: sources/rnt/mediane/models.py:129 sources/rnt/mediane/models.py:175
 msgid "_name"
 msgstr ""
 
+#: sources/rnt/mediane/distances/enumeration.py:40
 msgid "KTG_name"
 msgstr "Generalized Kendall-tau distance"
 
+#: sources/rnt/mediane/distances/enumeration.py:41
 msgid "KTGI_name"
 msgstr "Generalized induced Kendall-tau measure"
 
+#: sources/rnt/mediane/distances/enumeration.py:42
 msgid "PSEUDO_METRIC_KTGI_name"
 msgstr "Generalized Kendall-tau pseudo-distance (for truncated datasets)"
 
+#: sources/rnt/mediane/distances/enumeration.py:43
 msgid "KTG_desc"
 msgstr ""
 "The generalized kendall tau distance following [Fagin et al 2006, Cohen-"
 "Boulakia et al 2011]."
 
+#: sources/rnt/mediane/distances/enumeration.py:44
 msgid "KTGI_desc"
-msgstr "Select this measure if the missing elements should not be compared to present elments in a ranking"
-"The induced Kendall-tau measure [Dwork et al 2001] only consider "
-"disagreements when the two elements are present. Here it is generalization "
-"[Brancotte, 2015] follows this principle to encompass ties."
+msgstr ""
+"Select this measure if the missing elements should not be compared to "
+"present elments in a rankingThe induced Kendall-tau measure [Dwork et al "
+"2001] only consider disagreements when the two elements are present. Here it "
+"is generalization [Brancotte, 2015] follows this principle to encompass ties."
 
+#: sources/rnt/mediane/distances/enumeration.py:45
 msgid "PSEUDO_METRIC_KTGI_desc"
 msgstr ""
-"Pseudo metric based on Generalized Kendall-tau distance. This pseudo "
-"metric was used in ConQur-Bio [Brancotte et al., 2014] and is made for "
-"reducing the biais introduced by unification process, especially when the original dataset has been truncated"
+"Pseudo metric based on Generalized Kendall-tau distance. This pseudo metric "
+"was used in ConQur-Bio [Brancotte et al., 2014] and is made for reducing the "
+"biais introduced by unification process, especially when the original "
+"dataset has been truncated"
 
+#: sources/rnt/mediane/distances/enumeration.py:46
 msgid "KTGU_name"
 msgstr "Generalized Kendall-tau unifying pseudo-distance"
 
+#: sources/rnt/mediane/distances/enumeration.py:47
 msgid "KTGU_desc"
-msgstr "Equivalent to Kendall- tau distance on the unified dataset (virtually apply unification process)"
-"The generalized kendall tau distance following [Fagin et al 2006, Cohen-"
-"Boulakia et al 2011] where the dataset is seen as being unified [Brancotte "
-"et al 2015]."
+msgstr ""
+"Equivalent to Kendall- tau distance on the unified dataset (virtually apply "
+"unification process)The generalized kendall tau distance following [Fagin et "
+"al 2006, Cohen-Boulakia et al 2011] where the dataset is seen as being "
+"unified [Brancotte et al 2015]."
 
+#: sources/rnt/mediane/models.py:30
 msgid "The number of rankings"
 msgstr ""
 
+#: sources/rnt/mediane/models.py:34
 msgid "The number of elements"
 msgstr ""
 
-msgid "Is each element to rank present in each ranking of the dataset?"
+#: sources/rnt/mediane/models.py:38
+#: sources/rnt/webui/templates/webui/quick_compute.html:71
+msgid "Is each element present in each ranking of the dataset?"
 msgstr ""
 
-msgid "The number of steps used to generate the dataset, if pertinent (synthetic datasets generated with Markov chains)"
+#: sources/rnt/mediane/models.py:41
+msgid "The number of steps used to generate the dataset, if pertinent"
 msgstr ""
 
+#: sources/rnt/mediane/models.py:46
+#: sources/rnt/webui/templates/webui/dataset_detail.html:54
 msgid "Should the dataset be deleted when the associated job is removed?"
 msgstr ""
 
+#: sources/rnt/mediane/models.py:51 sources/rnt/mediane/models.py:103
 msgid "The user who can see, edit and delete it"
 msgstr ""
 
-msgid "Add your dataset in the public database"
+#: sources/rnt/mediane/models.py:54
+msgid "Can the dataset appear in the public database?"
 msgstr ""
 
+#: sources/rnt/mediane/models.py:72
+#: sources/rnt/webui/templates/webui/dataset_detail.html:40
 msgid "step"
 msgstr ""
 
+#: sources/rnt/mediane/models.py:106 sources/rnt/mediane/models.py:163
+#: sources/rnt/mediane/models.py:191
+msgid "Can it be seen by everyone?"
+msgstr ""
+
+#: sources/rnt/mediane/models.py:110
 msgid "scoring_scheme"
 msgstr ""
 
+#: sources/rnt/mediane/models.py:111
 msgid "The scoring scheme in a json compatible format"
 msgstr ""
 
+#: sources/rnt/mediane/models.py:116
 msgid "is_scoring_scheme_relevant"
 msgstr ""
 
-msgid "Does the scoring scheme have a meaning ?"
+#: sources/rnt/mediane/models.py:117
+msgid "Doas looking at the scoring scheme have a meaning ?"
 msgstr ""
 
+#: sources/rnt/mediane/models.py:133 sources/rnt/mediane/models.py:179
+#: sources/rnt/mediane/models.py:208
 msgid "_desc"
 msgstr ""
 
+#: sources/rnt/mediane/models.py:218
 msgid "User who created this job"
 msgstr ""
 
+#: sources/rnt/mediane/models.py:223 sources/rnt/mediane/models.py:228
+#: sources/rnt/mediane/models.py:329
 msgid "The distance used for this job"
 msgstr ""
 
+#: sources/rnt/mediane/models.py:231
 msgid "Creation time"
 msgstr ""
 
+#: sources/rnt/mediane/models.py:235 sources/rnt/webui/forms.py:113
+#: sources/rnt/webui/templates/webui/job_detail.html:68
 msgid "bench"
 msgstr "Accurate time measurement"
 
+#: sources/rnt/mediane/models.py:242
+#: sources/rnt/webui/templates/webui/job_detail.html:72
 msgid "task_count"
 msgstr "Task count"
 
+#: sources/rnt/mediane/models.py:243
 msgid "Number of results associated to it"
 msgstr ""
 
+#: sources/rnt/mediane/models.py:247 sources/rnt/mediane/models.py:377
 msgid "Pending"
 msgstr ""
 
+#: sources/rnt/mediane/models.py:248
 msgid "Running"
 msgstr ""
 
+#: sources/rnt/mediane/models.py:249 sources/rnt/mediane/models.py:380
 msgid "Done"
 msgstr ""
 
+#: sources/rnt/mediane/models.py:250 sources/rnt/mediane/models.py:381
 msgid "Error"
 msgstr ""
 
+#: sources/rnt/mediane/models.py:251
 msgid "Canceled"
 msgstr ""
 
+#: sources/rnt/mediane/models.py:344
 msgid "the duration expressed in ms"
 msgstr ""
 
+#: sources/rnt/mediane/models.py:349
 msgid "the consensus(es) computed for the given dataset and job's distance"
 msgstr ""
 
+#: sources/rnt/mediane/models.py:374
 msgid "The result to produce"
 msgstr ""
 
+#: sources/rnt/mediane/models.py:378
 msgid "Taken for computation"
 msgstr ""
 
+#: sources/rnt/mediane/models.py:379
 msgid "Being computed"
 msgstr ""
 
+#: sources/rnt/mediane/normalizations/enumeration.py:21
 msgid "None_name"
 msgstr "None"
 
+#: sources/rnt/mediane/normalizations/enumeration.py:22
 msgid "UNIF_name"
 msgstr "Unification"
 
+#: sources/rnt/mediane/normalizations/enumeration.py:23
 msgid "PROJ_name"
 msgstr "Projection"
 
+#: sources/rnt/mediane/normalizations/enumeration.py:24
 msgid "None_desc"
 msgstr ""
 
+#: sources/rnt/mediane/normalizations/enumeration.py:25
 msgid "UNIF_desc"
 msgstr ""
 
+#: sources/rnt/mediane/normalizations/enumeration.py:26
 msgid "PROJ_desc"
 msgstr ""
 
+#: sources/rnt/mediane/process.py:57
 msgid "typed"
 msgstr ""
 
+#: sources/rnt/rnt/settings.py:120
 msgid "English"
 msgstr ""
 
+#: sources/rnt/webui/forms.py:32 sources/rnt/webui/forms.py:72
 msgid "dataset_format_help_text"
 msgstr ""
 "<u><b>Format:</b></u><br/>\n"
@@ -178,112 +247,177 @@ msgstr ""
 "BUCKET must have the structure [element, ..., element] (the elements of the "
 "bucket should not contain [, ] and ,)"
 
+#: sources/rnt/webui/forms.py:36
 msgid "DataSet"
 msgstr ""
 
+#: sources/rnt/webui/forms.py:50
 #, python-format
 msgid "At line %(line)d: %(msg)s"
 msgstr ""
 
+#: sources/rnt/webui/forms.py:118
 msgid "auto_compute_label"
 msgstr "Automatically recompute on change"
 
+#: sources/rnt/webui/forms.py:119
 msgid "auto_compute_help_text"
 msgstr ""
 "Whether consensus should be computed as each modification in the selection "
 "of datasets, algorithms, distance, normalisation or the typed dataset"
 
+#: sources/rnt/webui/forms.py:124
 msgid "extended_analysis_label"
 msgstr "In database results and extended analysis"
 
+#: sources/rnt/webui/forms.py:125
 msgid "extended_analysis_help_text"
 msgstr ""
 "Result will be stored in database, allowing a deeper analysis of the results "
 "on a dedicated page."
 
+#: sources/rnt/webui/templates/403.html:4
+#: sources/rnt/webui/templates/403.html:5
 msgid "Forbidden (403)"
 msgstr ""
 
+#: sources/rnt/webui/templates/403.html:7
 msgid "You are not authorized to view this page."
 msgstr ""
 
+#: sources/rnt/webui/templates/404.html:4
+#: sources/rnt/webui/templates/404.html:5
 msgid "Page not found (404)"
 msgstr ""
 
+#: sources/rnt/webui/templates/404.html:7
 msgid "We're sorry, but the requested page could not be found."
 msgstr ""
 
+#: sources/rnt/webui/templates/500.html:4
+#: sources/rnt/webui/templates/500.html:5
 msgid "Server error (500)"
 msgstr ""
 
+#: sources/rnt/webui/templates/500.html:7
 msgid ""
 "There's been an error. It's been reported to the site administrators via "
 "email and should be fixed shortly. Thanks for your patience."
 msgstr ""
 
+#: sources/rnt/webui/templates/webui/dataset_detail.html:27
+#: sources/rnt/webui/templates/webui/quick_compute.html:53
 msgid "Stats"
 msgstr ""
 
+#: sources/rnt/webui/templates/webui/dataset_detail.html:32
+#: sources/rnt/webui/templates/webui/quick_compute.html:62
 msgid "The number of elements in the dataset"
 msgstr ""
 
+#: sources/rnt/webui/templates/webui/dataset_detail.html:36
+#: sources/rnt/webui/templates/webui/quick_compute.html:66
 msgid "The number of rankings in the dataset"
 msgstr ""
 
+#: sources/rnt/webui/templates/webui/dataset_detail.html:40
 msgid "The number of steps used"
 msgstr ""
 
+#: sources/rnt/webui/templates/webui/dataset_detail.html:44
+msgid "Is each element present in each ranking of the dataset"
+msgstr ""
+
+#: sources/rnt/webui/templates/webui/dataset_detail.html:44
 msgid "complete"
 msgstr ""
 
+#: sources/rnt/webui/templates/webui/dataset_detail.html:54
 msgid "transient"
 msgstr ""
 
+#: sources/rnt/webui/templates/webui/form_host.html:18
 msgid "Save"
 msgstr ""
 
-msgid "Type your dataset"
+#: sources/rnt/webui/templates/webui/job_detail.html:52
+msgid "Name"
 msgstr ""
 
-msgid "Complete"
+#: sources/rnt/webui/templates/webui/job_detail.html:56
+msgid "Identifier"
 msgstr ""
 
-msgid "Not complete"
-msgstr ""
-
-msgid "Invalid"
-msgstr ""
-
-msgid "Select from database"
-msgstr ""
-
-msgid "Normalization"
-msgstr ""
-
+#: sources/rnt/webui/templates/webui/job_detail.html:60
+#: sources/rnt/webui/templates/webui/quick_compute.html:167
 msgid "Distance"
 msgstr ""
 
+#: sources/rnt/webui/templates/webui/job_detail.html:64
+msgid "Creation date"
+msgstr ""
+
+#: sources/rnt/webui/templates/webui/job_detail.html:76
+msgid "Downloadable materials"
+msgstr ""
+
+#: sources/rnt/webui/templates/webui/job_detail.html:94
+msgid "Progression"
+msgstr ""
+
+#: sources/rnt/webui/templates/webui/quick_compute.html:33
+msgid "Type your dataset"
+msgstr ""
+
+#: sources/rnt/webui/templates/webui/quick_compute.html:75
+msgid "Complete"
+msgstr ""
+
+#: sources/rnt/webui/templates/webui/quick_compute.html:76
+msgid "Not complete"
+msgstr ""
+
+#: sources/rnt/webui/templates/webui/quick_compute.html:80
+msgid "Invalid"
+msgstr ""
+
+#: sources/rnt/webui/templates/webui/quick_compute.html:94
+msgid "Select from database"
+msgstr ""
+
+#: sources/rnt/webui/templates/webui/quick_compute.html:165
+msgid "Normalization"
+msgstr ""
+
+#: sources/rnt/webui/templates/webui/quick_compute.html:169
 msgid "Algorithms"
 msgstr ""
 
+#: sources/rnt/webui/templates/webui/quick_compute.html:180
 msgid "Computation settings"
 msgstr ""
 
+#: sources/rnt/webui/templates/webui/quick_compute.html:231
 msgid "Compute"
 msgstr ""
 
+#: sources/rnt/webui/templates/webui/quick_compute.html:242
 msgid "Results"
 msgstr ""
 
+#: sources/rnt/webui/templates/webui/quick_compute.html:244
 msgid "Press Compute"
 msgstr ""
 
+#: sources/rnt/webui/views.py:118
 #, python-format
 msgid "Typed dataset (on %s)"
 msgstr ""
 
+#: sources/rnt/webui/views.py:234
 msgid "Change password"
 msgstr ""
 
+#: sources/rnt/webui/views.py:235
 msgid "Save changes"
 msgstr ""
