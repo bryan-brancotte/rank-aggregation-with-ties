@@ -17,7 +17,9 @@ class Projection(Normalization):
                         elements[element] += 1
                     else:
                         elements[element] = 1
+        cpt = 0
         for ranking in rankings:
+            cpt += 1
             new_ranking = []
             projected_rankings.append(new_ranking)
             for bucket in ranking:
@@ -27,7 +29,7 @@ class Projection(Normalization):
                         new_bucket.append(element)
                 if len(new_bucket) > 0:
                     new_ranking.append(new_bucket)
-        return projected_rankings
+        return [projected_rankings]
 
     def rankings_to_dataset(rankings: List[List[List[int]]]) -> Dataset:
         return Dataset(Projection.rankings_to_rankings(rankings))
