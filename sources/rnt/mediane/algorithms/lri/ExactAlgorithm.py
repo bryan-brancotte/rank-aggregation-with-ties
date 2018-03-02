@@ -331,7 +331,7 @@ class ExactAlgorithm(MedianRanking):
 
         my_prob.linear_constraints.add(lin_expr=rows, senses=my_sense, rhs=my_rhs, names=my_rownames)
 
-        my_prob.write("/home/pierre/Bureau/cplex_test.lp")
+        # my_prob.write("/home/pierre/Bureau/cplex_test.lp")
 
         # start = my_prob.get_dettime()
         my_prob.solve()  # solve
@@ -353,8 +353,6 @@ class ExactAlgorithm(MedianRanking):
             count_after[i] = 0
 
         for var in range(numcols):
-            # if tple[0] == "t" and tple[1] == 5 and tple[2] == 7:
-            #     print(x[var])
             if abs(x[var] - 1) < 0.001:
                 tple = map_elements_cplex[var]
                 if tple[0] == "x":
