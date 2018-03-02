@@ -5,7 +5,7 @@ from mediane.distances.enumeration import GENERALIZED_INDUCED_KENDALL_TAU_DISTAN
 
 class BioCo(BioConsert):
     def __init__(self):
-        super().__init__(starting_algorithms=[BordaCount])
+        super().__init__(starting_algorithms=[BordaCount()])
 
     def get_full_name(self):
         return "BioCo"
@@ -19,3 +19,10 @@ class BioCo(BioConsert):
             GENERALIZED_KENDALL_TAU_DISTANCE,
             GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE,
         )
+
+
+from mediane.median_ranking_tools import get_rankings_from_file
+
+ranki = get_rankings_from_file("/home/pierre/Bureau/breastCancer")
+# print(ranki)
+print(BioCo().compute_median_rankings(ranki, None, True))

@@ -5,6 +5,7 @@ from mediane.algorithms.median_ranking import MedianRanking, DistanceNotHandledE
 from mediane.distances.enumeration import GENERALIZED_KENDALL_TAU_DISTANCE, GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE, \
     PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE, GENERALIZED_KENDALL_TAU_DISTANCE_WITH_UNIFICATION
 from mediane.normalizations.unification import Unification
+from mediane.distances.ScoringScheme import ScoringScheme
 from numpy import zeros, count_nonzero, vdot, array, ndarray, shape, amax, where, nditer, argmax, sum as np_sum, \
     cumsum, asarray
 
@@ -41,7 +42,11 @@ class BioConsert(MedianRanking):
         :raise DistanceNotHandledException when the algorithm cannot compute the consensus following the distance given
         as parameter
         """
-        scoring_scheme = asarray(distance.scoring_scheme)
+        if distance is None:
+            scoring_scheme = ScoringScheme([[0., 1., .5, 0., 1., 0.], [0.5, 0.5, 0, 0.5, 0.5, 0.]]).matrix
+        else:
+            scoring_scheme = asarray(distance.scoring_scheme)
+
         if scoring_scheme[1][0] != scoring_scheme[1][1] or scoring_scheme[1][3] != scoring_scheme[1][4]:
             raise DistanceNotHandledException
         res = []
@@ -65,9 +70,9 @@ class BioConsert(MedianRanking):
         departure = self.__departure_rankings(rankings, elem_id, distance)
 
         if len(self.starting_algorithms) == 0:
-            matrix = self.__cost_matrix(departure[:, :-1], distance)
+            matrix = self.__cost_matrix(departure[:, :-1], scoring_scheme)
         else:
-            matrix = self.__cost_matrix(departure, distance)
+            matrix = self.__cost_matrix(departure, scoring_scheme)
 
         result = set()
         dst_min = float('inf')
@@ -75,7 +80,7 @@ class BioConsert(MedianRanking):
         memoi = set()
         id_ranking = 0
 
-        while id_ranking < len(rankings) + 1:
+        while id_ranking < shape(departure)[1]:
             ranking_array = departure[:, id_ranking]
             ranking_string = str(ranking_array)
             if ranking_string not in memoi:
@@ -136,6 +141,7 @@ class BioConsert(MedianRanking):
         improvement = True
         dst = sum_before + sum_tied / 2
         while improvement:
+            # print(ranking)
             improvement = False
             for element in range(n):
                 cha = zeros(max_id_bucket + 2, dtype=float)
@@ -148,6 +154,7 @@ class BioConsert(MedianRanking):
                     improvement = True
                     # change
                     dst += diff
+                    # print("dst = ", dst)
                     BioConsert._change_bucket(ranking, element, bucket_elem, to, alone)
                     if alone:
                         max_id_bucket -= 1
@@ -161,6 +168,7 @@ class BioConsert(MedianRanking):
 
                         improvement = True
                         dst += diff
+                        # print("dst = ", dst)
 
                         BioConsert._add_bucket(ranking, element, bucket_elem, to, alone)
                         if not alone:
@@ -334,7 +342,7 @@ class BioConsert(MedianRanking):
         else:
             m = len(self.starting_algorithms)
             n = len(elements_id)
-            departure = zeros((n, m))
+            departure = zeros((n, m), dtype=int) - 1
             id_ranking = 0
             for algo in self.starting_algorithms:
                 try:
@@ -350,8 +358,7 @@ class BioConsert(MedianRanking):
         return departure
 
     @staticmethod
-    def __cost_matrix(positions: ndarray, distance) -> ndarray:
-        matrix_scoring_scheme = distance.scoring_scheme
+    def __cost_matrix(positions: ndarray, matrix_scoring_scheme: ndarray) -> ndarray:
         cost_before = matrix_scoring_scheme[0]
         cost_tied = matrix_scoring_scheme[1]
         cost_after = array([cost_before[1], cost_before[0], cost_before[2], cost_before[4], cost_before[3],
@@ -396,3 +403,10 @@ class BioConsert(MedianRanking):
             PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE,
             GENERALIZED_KENDALL_TAU_DISTANCE_WITH_UNIFICATION
         )
+
+
+# from mediane.median_ranking_tools import get_rankings_from_file
+
+# ranki = get_rankings_from_file("/home/pierre/Bureau/breastCancer")
+# print(ranki)
+# BioConsert().compute_median_rankings(ranki, None, True)
