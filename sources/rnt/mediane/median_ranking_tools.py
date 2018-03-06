@@ -47,5 +47,14 @@ def parse_ranking_with_ties_of_int(ranking: str) -> List[List[int]]:
     )
 
 
+def get_rankings_from_file(file: str) -> List[List[List[int]]]:
+    rankings = []
+    file_rankings = open(file, "r")
+    for ligne in file_rankings.read().split("\n"):
+        if len(ligne) > 2:
+            rankings.append(parse_ranking_with_ties_of_int(ligne))
+    return rankings
+
+
 def dump_ranking_with_ties_to_str(ranking: List[List[int or str]]) -> str:
     return '[' + ','.join(['[' + ','.join([str(e) for e in b]) + ']' for b in ranking]) + ']'

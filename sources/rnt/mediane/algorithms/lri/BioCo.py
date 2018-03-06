@@ -5,7 +5,7 @@ from mediane.distances.enumeration import GENERALIZED_INDUCED_KENDALL_TAU_DISTAN
 
 class BioCo(BioConsert):
     def __init__(self):
-        super().__init__(starting_algorithms=[BordaCount])
+        super().__init__(starting_algorithms=[BordaCount()])
 
     def get_full_name(self):
         return "BioCo"

@@ -1,6 +1,7 @@
 from mediane.distances.enumeration import GENERALIZED_KENDALL_TAU_DISTANCE, GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE, \
     GENERALIZED_KENDALL_TAU_DISTANCE_WITH_UNIFICATION
 from mediane.algorithms.median_ranking import MedianRanking, DistanceNotHandledException
+from mediane.distances.ScoringScheme import ScoringScheme
 from mediane.normalizations.unification import Unification
 from typing import List
 
@@ -29,7 +30,10 @@ class BordaCount(MedianRanking):
         :raise DistanceNotHandledException when the algorithm cannot compute the consensus following the distance given
         as parameter
         """
-        scoring_scheme = asarray(distance.scoring_scheme)
+        if distance is None:
+            scoring_scheme = ScoringScheme().matrix
+        else:
+            scoring_scheme = asarray(distance.scoring_scheme)
         if array_equal(scoring_scheme, array([[0, 1, 1, 0, 1, 1], [1, 1, 0, 1, 1, 0]])):
             dst = 0
         elif array_equal(scoring_scheme, array([[0, 1, 1, 1, 1, 1], [1, 1, 0, 1, 1, 1]])):

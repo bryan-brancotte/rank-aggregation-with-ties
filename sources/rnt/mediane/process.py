@@ -4,6 +4,7 @@ from django.utils.translation import ugettext
 from mediane import models
 from mediane.algorithms.enumeration import get_name_from
 from mediane.algorithms.lri.BioConsert import BioConsert
+from mediane.algorithms.lri.ExactAlgorithm import ExactAlgorithm
 from mediane.algorithms.misc.borda_count import BordaCount
 from mediane.distances.KendallTauGeneralizedNlogN import KendallTauGeneralizedNlogN
 from mediane.distances.enumeration import GENERALIZED_KENDALL_TAU_DISTANCE_WITH_UNIFICATION
@@ -228,13 +229,16 @@ def compute_consensus_settings_based_on_datasets(
     consensus_settings = {}
     consensus_settings["algo"] = Algorithm.objects.get(key_name=str(BioConsert().get_full_name())).pk
     consensus_settings["dist"] = Distance.objects.get(key_name=GENERALIZED_KENDALL_TAU_DISTANCE_WITH_UNIFICATION).pk
-    consensus_settings["norm"] = Normalization.objects.get(key_name=NONE if complete else UNIFICATION).pk
-    if n > 100 or len(dbdatasets) * len(algos) > 20:
+    # consensus_settings["norm"] = Normalization.objects.get(key_name=NONE if complete else UNIFICATION).pk
+    consensus_settings["norm"] = Normalization.objects.get(key_name=NONE).pk
+    if n < 70:
+        consensus_settings["algo"] = Algorithm.objects.get(key_name=str(ExactAlgorithm().get_full_name())).pk
+    elif n > 100 or len(dbdatasets) * len(algos) > 20:
         consensus_settings["algo"] = Algorithm.objects.get(key_name=str(BordaCount().get_full_name())).pk
     # consensus_settings["auto_compute"] = n < 50 and len(dbdatasets) * len(algos) < 50
     consensus_settings["auto_compute"] = False
 
     consensus_settings["bench"] = False
     consensus_settings["extended_analysis"] = len(dbdatasets) * len(algos) > 50
-    print(consensus_settings)
+    # print(consensus_settings)
     return consensus_settings
