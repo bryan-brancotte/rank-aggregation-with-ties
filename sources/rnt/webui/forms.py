@@ -7,7 +7,7 @@ from django.utils.translation import ugettext as _
 from mediane.distances import enumeration as enum_dist
 from mediane.models import DataSet, Algorithm, Distance, Normalization
 from mediane.normalizations import enumeration as enum_norm
-from mediane.process import evaluate_dataset_and_provide_stats
+from mediane.process import evaluate_dataset_and_provide_stats, cleanup_dataset
 
 
 class DataSetModelForm(forms.ModelForm):
@@ -44,6 +44,7 @@ class DataSetModelForm(forms.ModelForm):
         #         self.fields[field_name].widget.attrs['readonly'] = True
 
     def clean(self):
+        self.cleaned_data["content"] = cleanup_dataset(self.cleaned_data.get("content"))
         self.evaluation = evaluate_dataset_and_provide_stats(self.cleaned_data["content"].split("\n"))
 
         for line, msg in self.evaluation["invalid_rankings_id"].items():
@@ -143,6 +144,7 @@ r4 := [[B],[C],[A,D,E]]""",
 
     def clean(self):
         cleaned_data = super(ComputeConsensusForm, self).clean()
+        cleaned_data["dataset"] = cleanup_dataset(cleaned_data.get("dataset"))
         self.evaluation = evaluate_dataset_and_provide_stats(cleaned_data.get("dataset").split("\n"))
         self.cleaned_data["rankings"] = self.evaluation["rankings"]
 

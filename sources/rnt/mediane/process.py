@@ -157,6 +157,14 @@ def execute_median_rankings_computation_of_result(
     result.save()
 
 
+def cleanup_dataset(rankings_as_one_str):
+    rankings_as_one_str = rankings_as_one_str.replace("\r", "")
+    rankings_as_one_str = rankings_as_one_str.replace("\\\n", "")
+    rankings_as_one_str = rankings_as_one_str.replace(":\n", "")
+    if rankings_as_one_str[-1] == ':':
+        rankings_as_one_str = rankings_as_one_str[:-1]
+    return rankings_as_one_str
+
 def evaluate_dataset_and_provide_stats(rankings_str):
     evaluation = {}
     elements = None

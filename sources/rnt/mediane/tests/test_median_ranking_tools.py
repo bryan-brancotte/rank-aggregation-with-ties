@@ -2,7 +2,7 @@ from django.test import TestCase
 
 # Create your tests here.
 from mediane import median_ranking_tools
-from mediane.process import evaluate_dataset_and_provide_stats
+from mediane.process import evaluate_dataset_and_provide_stats, cleanup_dataset
 
 
 class ParsingTestCase(TestCase):
@@ -83,6 +83,10 @@ class EvaluateDatasetAndProvideStatsTestCase(TestCase):
             "[[1]]",
         ]
 
+        self.rankings_8 = "[[1],[2]]\n[[1]]"
+
+        self.rankings_9 = "e:[[1],[2]]\n[[1\\\n]]:"
+
     def test_1(self):
         evaluation = evaluate_dataset_and_provide_stats(self.rankings_1)
         assert evaluation["n"] == 2
@@ -121,6 +125,20 @@ class EvaluateDatasetAndProvideStatsTestCase(TestCase):
 
     def test_7(self):
         evaluation = evaluate_dataset_and_provide_stats(self.rankings_7)
+        assert evaluation["n"] == 2
+        assert evaluation["m"] == 2
+        assert not evaluation["complete"]
+        assert not evaluation["invalid"]
+
+    def test_8(self):
+        evaluation = evaluate_dataset_and_provide_stats(cleanup_dataset(self.rankings_8).split("\n"))
+        assert evaluation["n"] == 2
+        assert evaluation["m"] == 2
+        assert not evaluation["complete"]
+        assert not evaluation["invalid"]
+
+    def test_9(self):
+        evaluation = evaluate_dataset_and_provide_stats(cleanup_dataset(self.rankings_9).split("\n"))
         assert evaluation["n"] == 2
         assert evaluation["m"] == 2
         assert not evaluation["complete"]

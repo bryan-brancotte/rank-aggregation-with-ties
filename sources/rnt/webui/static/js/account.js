@@ -38,6 +38,13 @@ stack_onload(function () {
                         data: "task_count",
                         title: "# results",
                     },
+                    {
+                        data: "identifier",
+                        title: "Action",
+                        render: function ( data, type, row ) {
+                            return '<a href="'+get_job_api_url(data)+'" role="button" class="btn btn-xs btn-danger"><i class="fa fa-trash"></i></a>';
+                        },
+                    },
                 ]
             } );
         }

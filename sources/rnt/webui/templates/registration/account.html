@@ -11,6 +11,7 @@
 <script type="text/javascript">
 function get_jobs_url(){return '{% url 'webapi:job-list' %}'};
 function get_job_url(s){return '{% url 'webui:job-detail' 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' %}'.replace('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',s)};
+function get_job_api_url(s){return '{% url 'webapi:job-detail' 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' %}'.replace('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',s)};
 </script>
 <script src="{% sstatic '/js/account.js' %}"></script>
 {% endblock %}
