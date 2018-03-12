@@ -232,7 +232,11 @@ def compute_consensus_settings_based_on_datasets(
     # consensus_settings["norm"] = Normalization.objects.get(key_name=NONE if complete else UNIFICATION).pk
     consensus_settings["norm"] = Normalization.objects.get(key_name=NONE).pk
     if n < 70:
-        consensus_settings["algo"] = Algorithm.objects.get(key_name=str(ExactAlgorithm().get_full_name())).pk
+        try:
+            import cplex
+            consensus_settings["algo"] = Algorithm.objects.get(key_name=str(ExactAlgorithm().get_full_name())).pk
+        except:
+            pass
     elif n > 100 or len(dbdatasets) * len(algos) > 20:
         consensus_settings["algo"] = Algorithm.objects.get(key_name=str(BordaCount().get_full_name())).pk
     # consensus_settings["auto_compute"] = n < 50 and len(dbdatasets) * len(algos) < 50
