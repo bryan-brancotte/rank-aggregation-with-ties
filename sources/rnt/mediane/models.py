@@ -194,6 +194,10 @@ class Algorithm(models.Model):
     id_order = models.IntegerField(
         default=0
     )
+    can_be_executed = models.BooleanField(
+        help_text=_('Is the algorithm can be executed on this computer'),
+        default=True,
+    )
     objects = DataFrameManager()
 
     def __str__(self):

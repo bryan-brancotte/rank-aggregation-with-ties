@@ -43,6 +43,12 @@ class MedianRanking:
     def get_full_name(self) -> str:
         raise NotImplementedError("The method not implemented")
 
+    def can_be_executed(self) -> bool:
+        """
+        :return true if the algorithm can be run without any risk of missing lib such as cplex
+        """
+        return True
+
     def get_handled_distances(self) -> List[int]:
         """
 

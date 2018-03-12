@@ -231,12 +231,8 @@ def compute_consensus_settings_based_on_datasets(
     consensus_settings["dist"] = Distance.objects.get(key_name=GENERALIZED_KENDALL_TAU_DISTANCE_WITH_UNIFICATION).pk
     # consensus_settings["norm"] = Normalization.objects.get(key_name=NONE if complete else UNIFICATION).pk
     consensus_settings["norm"] = Normalization.objects.get(key_name=NONE).pk
-    if n < 70:
-        try:
-            import cplex
-            consensus_settings["algo"] = Algorithm.objects.get(key_name=str(ExactAlgorithm().get_full_name())).pk
-        except:
-            pass
+    if n < 70 and ExactAlgorithm().can_be_executed():
+        consensus_settings["algo"] = Algorithm.objects.get(key_name=str(ExactAlgorithm().get_full_name())).pk
     elif n > 100 or len(dbdatasets) * len(algos) > 20:
         consensus_settings["algo"] = Algorithm.objects.get(key_name=str(BordaCount().get_full_name())).pk
     # consensus_settings["auto_compute"] = n < 50 and len(dbdatasets) * len(algos) < 50

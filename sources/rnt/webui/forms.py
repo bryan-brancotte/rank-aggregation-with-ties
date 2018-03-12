@@ -102,7 +102,7 @@ r4 := [[B],[C],[A,D,E]]""",
         empty_label=None,
     )
     algo = forms.ModelMultipleChoiceField(
-        queryset=Algorithm.objects.filter(~Q(pk__isnull=True)),
+        queryset=None,
         widget=forms.CheckboxSelectMultiple,
         label='',
     )
@@ -147,7 +147,7 @@ r4 := [[B],[C],[A,D,E]]""",
             q = ~Q(pk=None)
         else:
             q = Q(public=True)
-        self.fields['algo'].queryset = Algorithm.objects.filter(q).order_by("id_order")
+        self.fields['algo'].queryset = Algorithm.objects.filter(can_be_executed=True).filter(q).order_by("id_order")
         self.fields['dist'].queryset = Distance.objects.filter(q).order_by("id_order")
         self.fields['norm'].queryset = Normalization.objects.filter(q).order_by("id_order")
 

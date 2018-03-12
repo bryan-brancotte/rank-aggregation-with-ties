@@ -428,3 +428,11 @@ class ExactAlgorithm(MedianRanking):
             GENERALIZED_KENDALL_TAU_DISTANCE, GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE,
             PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE
         )
+
+    def can_be_executed(self) -> bool:
+        try:
+            import cplex
+            return True
+        except:
+            return False
+

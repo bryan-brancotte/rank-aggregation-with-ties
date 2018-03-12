@@ -14,6 +14,7 @@ class MedianeConfig(AppConfig):
         self.update_ordering(Distance)
         self.update_ordering(Normalization)
         self.update_ordering(Algorithm)
+        self.update_can_be_executed(algorithms.enumeration.as_tuple_list(), Algorithm)
 
     def create_instances(self, tuple_list, klass, has_owner=False):
         try:
@@ -33,7 +34,6 @@ class MedianeConfig(AppConfig):
             print(e)
             pass
 
-
     def update_ordering(self, klass):
         try:
             elements = []
@@ -46,6 +46,16 @@ class MedianeConfig(AppConfig):
                     o.id_order = i
                     o.save()
                 i += 1
+        except Exception as e:
+            print(e)
+            pass
+
+    def update_can_be_executed(self, tuple_list, klass):
+        try:
+            for k, v in tuple_list:
+                o = klass.objects.get(key_name=k)
+                o.can_be_executed = o.get_instance().can_be_executed()
+                o.save()
         except Exception as e:
             print(e)
             pass
