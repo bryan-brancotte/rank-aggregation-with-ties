@@ -10,6 +10,15 @@ from mediane.normalizations import enumeration as enum_norm
 from mediane.process import evaluate_dataset_and_provide_stats, cleanup_dataset
 
 
+class DataSetForUploadModelForm(forms.ModelForm):
+    class Meta:
+        model = DataSet
+        fields = [
+            'step',
+            'public',
+        ]
+
+
 class DataSetModelForm(forms.ModelForm):
     class Meta:
         model = DataSet

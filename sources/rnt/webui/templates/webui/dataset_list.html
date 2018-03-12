@@ -37,6 +37,7 @@ stack_onload(function () {
         {% endfor %}
         </tbody>
     </table>
-    <a role="button" href="{%url 'webui:dataset_add'%}" class="btn btn-primary pull-right">Add</a>
+    <a role="button" href="{%url 'webui:dataset_add'%}" class="btn btn-primary pull-right">Type a new one</a>
+    <a role="button" href="{%url 'webui:dataset-upload'%}" class="btn btn-primary pull-right">Upload Datasets</a>
 </div>
 {% endblock%}

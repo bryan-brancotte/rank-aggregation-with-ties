@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load bootstrap %}
+{% load static %}
+{% load sstatic %}
+{% load i18n %}
+{% block title %}Upload datasets{% endblock %}
+{% block page_title %}Upload datasets{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static '/css/dataset_upload.css' %}"/>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% sstatic '/js/dataset_upload.js' %}"></script>
+<script type="text/javascript">
+webapi_dataset_list='{% url 'webapi:dataset-list' %}';
+dataset_evaluate='{%url 'webui:dataset-evaluate'%}';
+var dataset_table;
+var datasets={};
+
+</script>
+{% endblock %}
+
+{% block container-class %}container-fluid{% endblock %}
+{% block content%}
+<div class="col-xs-12 col-sm-6 col-md-8"><div
+     id="drop_zone" ondrop="handleFileSelect(event);" ondragover="handleDragOver(event);">
+    Drop files here
+</div></div>
+<div class="col-xs-12 col-sm-6 col-md-4">
+    {% for field in form %}
+        {% if field.is_hidden %}
+            {{ field }}
+        {% else %}
+            {{ field|bootstrap }}
+        {% endif %}
+    {% endfor %}
+</div>
+<div class="col-xs-12">
+    <table id="dataset_table" class="compact table"></table>
+    <button role="button" class="btn btn-primary pull-right" onclick="upload_datasets()">Upload selected datasets</button>
+</div>
+{% endblock%}

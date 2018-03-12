@@ -5,7 +5,6 @@ from django.views.generic import TemplateView
 from django.views.i18n import javascript_catalog
 
 from webui import views_job
-from webui.views import DataSetCreate, DataSetUpdate, DataSetDelete
 from . import views
 
 app_name = 'webui'
@@ -29,9 +28,11 @@ urlpatterns = [
 
     url(r'^datasets/$', views.DataSetListView.as_view(), name='dataset-list'),
     url(r'^datasets/(?P<pk>\d+)/$', views.DataSetDetailView.as_view(), name='dataset-detail'),
-    url(r'^datasets/add/$', DataSetCreate.as_view(), name='dataset_add'),
-    url(r'^datasets/(?P<pk>\d+)/edit/$', DataSetUpdate.as_view(), name='dataset_edit'),
-    url(r'^datasets/(?P<pk>\d+)/delete/$', DataSetDelete.as_view(), name='dataset_delete'),
+    url(r'^datasets/add/$', views.DataSetCreate.as_view(), name='dataset_add'),
+    url(r'^datasets/upload/$', views.dataset_upload, name='dataset-upload'),
+    url(r'^datasets/evaluate/$', views.dataset_evaluate, name='dataset-evaluate'),
+    url(r'^datasets/(?P<pk>\d+)/edit/$', views.DataSetUpdate.as_view(), name='dataset_edit'),
+    url(r'^datasets/(?P<pk>\d+)/delete/$', views.DataSetDelete.as_view(), name='dataset_delete'),
 
     url(r'^distances/$', views.DistanceListView.as_view(), name='distance-list'),
     url(r'^distances/(?P<pk>\d+)/$', views.DistanceDetailView.as_view(), name='distance_view'),

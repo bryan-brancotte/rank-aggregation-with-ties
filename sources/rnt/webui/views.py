@@ -17,9 +17,9 @@ from mediane.models import DataSet, Distance, ResultsToProduceDecorator
 from mediane.normalizations.enumeration import get_from as get_norm_from
 from mediane.process import execute_median_rankings_computation_from_rankings, \
     execute_median_rankings_computation_from_datasets, compute_consensus_settings_based_on_datasets, \
-    create_computation_job
+    create_computation_job, evaluate_dataset_and_provide_stats
 from webui.decorators import ownership_required
-from webui.forms import ComputeConsensusForm, DataSetModelForm
+from webui.forms import ComputeConsensusForm, DataSetModelForm, DataSetForUploadModelForm
 from webui.views_generic import AjaxableResponseMixin
 
 
@@ -54,6 +54,17 @@ def computation_evaluate(request):
     }
     del evaluation_and_settings['rankings']
     return JsonResponse(evaluation_and_settings)
+
+
+def dataset_evaluate(request):
+    if request.method != 'POST':
+        return HttpResponseBadRequest()
+    dataset_evaluation = evaluate_dataset_and_provide_stats(request.POST.get("dataset").split("\n"))
+    dataset_evaluation["has_homonym"] = DataSet.objects \
+        .filter(Q(owner=request.user) | Q(public=True)) \
+        .filter(name=request.POST.get("name")) \
+        .exists()
+    return JsonResponse(dataset_evaluation)
 
 
 def computation_on_the_fly(request):
@@ -132,7 +143,7 @@ def computation_batch(request):
     )
     return JsonResponse(dict(
         job_id=job.identifier,
-        job_url=reverse('webui:job-detail', args=[job.identifier,]),
+        job_url=reverse('webui:job-detail', args=[job.identifier, ]),
     ))
 
 
@@ -209,6 +220,14 @@ class DistanceDetailView(DetailView):
         if obj.public or self.request.user.id == obj.owner.id:
             return super(DistanceDetailView, self).dispatch(*args, **kwargs)
         return redirect('%s?next=%s' % (reverse('webui:login'), self.request.path))
+
+
+@login_required
+def dataset_upload(request):
+    context = dict(
+        form=DataSetForUploadModelForm(),
+    )
+    return render(request, 'webui/dataset_upload.html', context=context)
 
 
 from django.contrib import messages

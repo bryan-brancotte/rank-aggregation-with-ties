@@ -113,3 +113,6 @@ a[aria-expanded=false] .to-collapse-icon {
 .last-to-fill>*:last-child{
     flex: 1 1;
 }
+[role="button"].pull-right + [role="button"].pull-right {
+    margin-right: 5px;
+}

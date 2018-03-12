@@ -78,16 +78,13 @@ function get_dataset_url(pk){return '{% url 'webui:dataset-detail' 0 %}'.replace
                         Results
                         <a href="{% url 'webapi:job-results-detailed-with-consensus' object.identifier %}?format=json"
                            download="results-with-consensus-{{object.identifier}}.json">
-                             with consensus
-                        </a> or
+                             with consensus</a> or
                         <a href="{% url 'webapi:job-results-detailed' object.identifier %}?format=json"
                            download="results-without-consensus-{{object.identifier}}.json">
-                            without consensus
-                        </a>,
+                            without consensus</a>,
                         <a href="{% url 'webapi:dataset-list' %}?format=json&job_id={{object.identifier}}&rankings=true"
                            download="datasets-{{object.identifier}}.json">
-                            datasets used
-                        </a>
+                            datasets used</a>
                     </td>
                 </tr>
                 <tr id="progress-host" style="display:none">
