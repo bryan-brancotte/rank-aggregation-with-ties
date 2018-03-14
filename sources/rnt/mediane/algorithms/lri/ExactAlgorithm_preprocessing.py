@@ -10,10 +10,4 @@ class ExactAlgorithmPreprocessing(CondorcetPartitioning):
         return "ExactAlgorithm_preprocessing"
 
     def can_be_executed(self) -> bool:
-        return ExactAlgorithm().can_be_executed() and CondorcetPartitioning.can_be_executed()
-
-
-
-
-
-
+        return ExactAlgorithm().can_be_executed() and CondorcetPartitioning().can_be_executed()
