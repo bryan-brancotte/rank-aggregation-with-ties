@@ -19,7 +19,8 @@ from mediane.process import execute_median_rankings_computation_from_rankings, \
     execute_median_rankings_computation_from_datasets, compute_consensus_settings_based_on_datasets, \
     create_computation_job, evaluate_dataset_and_provide_stats
 from webui.decorators import ownership_required
-from webui.forms import ComputeConsensusForm, DataSetModelForm, DataSetForUploadModelForm
+from webui.forms import ComputeConsensusForm, DataSetModelForm, DataSetForUploadModelForm, UserCreationFormWithMore, \
+    MyUserChangeForm, UserDeleteForm
 from webui.views_generic import AjaxableResponseMixin
 
 
@@ -231,8 +232,8 @@ def dataset_upload(request):
 
 
 from django.contrib import messages
-from django.contrib.auth import update_session_auth_hash
-from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash, authenticate, login, get_user_model
+from django.contrib.auth.forms import PasswordChangeForm, UserChangeForm
 from django.shortcuts import render, redirect
 
 
@@ -253,4 +254,66 @@ def change_password(request):
         'title': ugettext('Change password'),
         'submit_text': ugettext('Save changes'),
         'form': form
+    })
+
+
+def signup(request):
+    if request.method == 'POST':
+        form = UserCreationFormWithMore(request.POST)
+        if form.is_valid():
+            user = form.save()
+            if get_user_model().objects.count() == 1:
+                user.is_superuser = True
+                user.is_staff = True
+                user.save()
+            username = form.cleaned_data.get('username')
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=raw_password)
+
+            login(request, user)
+            return redirect('webui:home')
+    else:
+        form = UserCreationFormWithMore()
+    return render(request, 'registration/signup.html', {'form': form})
+
+
+def user_update(request):
+    if request.method == 'POST':
+        form = MyUserChangeForm(instance=request.user, data=request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # Important!
+            messages.success(request, 'Your account was successfully updated!')
+            return redirect('webui:account')
+        else:
+            messages.error(request, 'Please correct the error below.')
+    else:
+        form = MyUserChangeForm(instance=request.user)
+    return render(request, 'registration/small_form_host.html', {
+        'title': ugettext('Update account'),
+        'submit_text': ugettext('Save changes'),
+        'form': form,
+        'medium_width': True,
+    })
+
+
+def user_delete(request):
+    if request.method == 'POST':
+        form = UserDeleteForm(instance=request.user, data=request.POST)
+        if form.is_valid():
+            user = form.save()
+            user.delete()
+            update_session_auth_hash(request, user)  # Important!
+            messages.success(request, 'Your account was successfully deleted!')
+            return redirect('webui:home')
+        else:
+            messages.error(request, 'Please correct the error below.')
+    else:
+        form = UserDeleteForm(instance=request.user)
+    return render(request, 'registration/small_form_host.html', {
+        'title': ugettext('Account deletion'),
+        'submit_text': ugettext('Delete account and all related data'),
+        'form': form,
+        'medium_width': True,
+        'btn_classes':'btn-lg btn-danger'
     })

@@ -35,7 +35,8 @@ function get_job_api_url(s){return '{% url 'webapi:job-detail' 'xxxxxxxxxxxxxxxx
         </div>
         <div class="panel-body text-center">
             <a role="button" class="btn btn-default btn-block" href="{% url 'webui:change_password'%}">Change password</a>
-            <button role="button" class="btn btn-default btn-block" href="{% url 'webui:change_password'%}" aria-disabled="true" disabled="disabled">Delete your account</button>
+            <a role="button" class="btn btn-default btn-block" href="{% url 'webui:user-update'%}">Update account</a>
+            <a role="button" class="btn btn-default btn-block" href="{% url 'webui:user-delete'%}">Delete your account</a>
         </div>
     </div>
 </div>

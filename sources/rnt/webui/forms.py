@@ -1,5 +1,8 @@
 from django import forms
+from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import UserCreationForm, UsernameField, UserChangeForm
 from django.db.models.query_utils import Q
+from django.forms import ModelForm
 from django.forms.widgets import HiddenInput
 from django.utils.html import format_html
 from django.utils.translation import ugettext as _
@@ -160,3 +163,26 @@ r4 := [[B],[C],[A,D,E]]""",
         if self.evaluation["invalid"]:
             for line, msg in self.evaluation["invalid_rankings_id"].items():
                 self.add_error('dataset', "At line %d: %s" % (line, msg))
+
+
+class UserCreationFormWithMore(UserCreationForm):
+    class Meta:
+        model = get_user_model()
+        fields = ("username", "email", "first_name", "last_name")
+        field_classes = {'username': UsernameField}
+
+    def __init__(self, *args, **kwargs):
+        super(UserCreationFormWithMore, self).__init__(*args, **kwargs)
+        self.fields['email'].widget.attrs.update({'required': True})
+
+
+class MyUserChangeForm(UserChangeForm):
+    class Meta:
+        model = get_user_model()
+        fields = ("username", "email", "first_name", "last_name", "password")
+
+
+class UserDeleteForm(ModelForm):
+    class Meta:
+        model = get_user_model()
+        fields = ()

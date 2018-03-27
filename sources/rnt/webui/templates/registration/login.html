@@ -1,1 +1,20 @@
-{%include 'registration/small_form_host.html' with title='Login' submit_text='Login' form=form%}
+{% extends 'base.html' %}
+{% load bootstrap %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}Login{% endblock %}
+{% block page_title %}Login{% endblock %}
+
+{% block content %}
+<div class="col-xs-12 col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3 col-xl-4 col-xl-offset-4 col-xxl-2 col-xxl-offset-5">
+    <form method="post">
+        {% csrf_token %}
+        {{ form|bootstrap }}
+        <button class="btn btn-primary full-width" type="submit">Login</button>
+    </form>
+    <br/>
+    <hr/>
+    <a href="{% url 'webui:signup' %}" role="button" class="btn btn-default full-width">Create account</a>
+</div>
+{% endblock %}

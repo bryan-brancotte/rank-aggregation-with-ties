@@ -116,3 +116,8 @@ a[aria-expanded=false] .to-collapse-icon {
 [role="button"].pull-right + [role="button"].pull-right {
     margin-right: 5px;
 }
+[role=button].full-width,
+button.full-width{
+  width:100%;
+  //display:block; //only if you're having issues
+}
