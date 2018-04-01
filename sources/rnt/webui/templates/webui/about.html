@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}About{% endblock %}
+{% block page_title %}About{% endblock %}
+{% block container-class %}container{% endblock %}
+{% block content%}
+<div class="col-xs-12">
+    <table class="table">
+        <h2>Programmers</h2>
+        <thead>
+        <tr>
+            <th>Last name</th>
+            <th>First name</th>
+            <th>Contact</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>
+                ANDRIEU
+            </td>
+            <td>
+                Pierre
+            </td>
+            <td>
+                pierre.andrieu@lri.fr
+            </td>
+            <td>
+                Administrator
+            </td>
+        </tr>
+        <tr>
+            <td>
+                BRANCOTTE
+            </td>
+            <td>
+                Bryan
+            </td>
+            <td>
+                bryan.brancotte@gmail.com
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        </tbody>
+    </table>
+    <h2>References</h2>
+    <ul>
+        <li>
+            <span style="font-weight: bold; font-style: italic;">Submitted to VLDB 2018 : </span>
+            <span style="text-decoration: underline">Aggregate your rankings with CoRankCo</span>
+            (Pierre Andrieu, Bryan Brancotte, Sarah Cohen-Boulakia, Alain Denise, Robin Milosz, Adeline Pierrot, Stéphane Vialette)
+            <a href="https://transfert.u-psud.fr/i2azkuff">[pdf]</a>
+        </li>
+        <li><span style="font-style: italic;">Additional content : </span>
+            <span style="text-decoration: underline">Rank aggregation and Kemeny compatible functions</span>
+            (Pierre Andrieu)
+            <a href="https://transfert.u-psud.fr/yn7wp">[pdf]</a>
+        </li>
+    </ul>
+
+</div>
+{% endblock%}

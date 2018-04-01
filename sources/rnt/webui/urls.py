@@ -22,6 +22,7 @@ urlpatterns = [
     url(r'^computation/evaluate/$', views.computation_evaluate, name='computation_evaluate'),
     url(r'^computation/on_the_fly/$', views.computation_on_the_fly, name='computation_on_the_fly'),
     url(r'^computation/batch/$', views.computation_batch, name='computation_batch'),
+    url(r'^about/$', views.about_page, name='about_page'),
 
     # Internationalization
     url(r'^jsi18n/$', javascript_catalog, {

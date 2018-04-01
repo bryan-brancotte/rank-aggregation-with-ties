@@ -62,11 +62,10 @@
         </div>
         <div id="navbar" class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
-                <li class="{{ request|is_active:'webui:home' }}"><a href="{% url 'webui:home'%}">Home</a></li>
-                <li class="{{ request|is_active_or_desc:'webui:dataset-list' }}"><a
-                        href="{% url 'webui:dataset-list'%}">Datasets</a></li>
-                <li class="{{ request|is_active_or_desc:'webui:distance-list' }}"><a
-                        href="{% url 'webui:distance-list'%}">Distances</a></li>
+                <li class="{{ request|is_active:'webui:home'}}"><a href="{% url 'webui:home'%}">Home</a></li>
+                <li class="{{ request|is_active_or_desc:'webui:dataset-list'}}"><a href="{% url 'webui:dataset-list'%}">Datasets</a></li>
+                <li class="{{ request|is_active_or_desc:'webui:distance-list'}}"><a href="{% url 'webui:distance-list'%}">Distances</a></li>
+                <li class="{{ request|is_active_or_desc:'webui:about_page'}}"><a href="{% url 'webui:about_page'%}">About</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 {%if not request.user.is_authenticated %}

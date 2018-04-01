@@ -34,6 +34,9 @@ r4 := [[B],[C],[A,D,E]]"""
     # context['full_form_bis'] = context['full_form']
     return render(request, 'webui/quick_compute.html', context=context)
 
+def about_page(request):
+    context = {}
+    return render(request, 'webui/about.html')
 
 def computation_evaluate(request):
     if request.method != 'POST':
