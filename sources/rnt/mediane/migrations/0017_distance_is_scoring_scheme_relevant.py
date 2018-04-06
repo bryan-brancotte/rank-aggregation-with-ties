@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='distance',
             name='is_scoring_scheme_relevant',
-            field=models.BooleanField(default=True, help_text='Doas looking at the scoring scheme have a meaning ?', verbose_name='is_scoring_scheme_relevant'),
+            field=models.BooleanField(default=True, help_text='Does looking at the scoring scheme have a meaning ?', verbose_name='is_scoring_scheme_relevant'),
         ),
     ]

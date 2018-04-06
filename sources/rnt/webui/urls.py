@@ -41,7 +41,9 @@ urlpatterns = [
     url(r'^datasets/(?P<pk>\d+)/delete/$', views.DataSetDelete.as_view(), name='dataset_delete'),
 
     url(r'^distances/$', views.DistanceListView.as_view(), name='distance-list'),
-    url(r'^distances/(?P<pk>\d+)/$', views.DistanceDetailView.as_view(), name='distance_view'),
+    url(r'^distances/(?P<pk>\d+)/$', views.DistanceDetailView.as_view(), name='distance-detail'),
+    url(r'^distances/(?P<pk>\d+)/edit/$', views.DistanceUpdate.as_view(), name='distance-edit'),
+    # url(r'^distances/add/$', views.DistanceCreate.as_view(), name='distance-add'),
 
     # url(r'^jobs/$', views_job.JobListView.as_view(), name='job-list'),
     url(r'^jobs/(?P<identifier>[0-9A-Za-z]{32,32})/$', views_job.JobDetailView.as_view(), name='job-detail'),

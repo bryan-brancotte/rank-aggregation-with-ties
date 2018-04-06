@@ -1,3 +1,6 @@
+import itertools
+import json
+
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, UsernameField, UserChangeForm
@@ -186,3 +189,55 @@ class UserDeleteForm(ModelForm):
     class Meta:
         model = get_user_model()
         fields = ()
+
+
+class DistanceModelForm(ModelForm):
+    class Meta:
+        model = Distance
+        fields = [
+            'key_name',
+            'in_db_name',
+            'in_db_desc',
+            'public',
+            'is_scoring_scheme_relevant',
+        ]
+        widgets = {
+            'in_db_desc': forms.Textarea(attrs={'rows': 2}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(DistanceModelForm, self).__init__(*args, **kwargs)
+        instance = getattr(self, 'instance', None)
+        if instance and instance.key_name_is_read_only:
+            self.fields['key_name'].disabled = True
+            print(dir(self.fields['in_db_name']))
+            print(instance.name)
+            del self.fields['in_db_name']
+            del self.fields['in_db_desc']
+        if instance:
+            scoring_scheme = instance.scoring_scheme
+        else:
+            scoring_scheme = Distance.objects.get(key_name="KTG").scoring_scheme
+
+        for (prefix, i), coef in zip(
+                itertools.product(["before", "equal"], range(0, 6)),
+                itertools.chain(scoring_scheme[0], scoring_scheme[1])
+        ):
+            self.fields['id_{}_{}'.format(prefix, i)] = forms.CharField(
+                initial=coef,
+                widget=forms.NumberInput()
+            )
+
+    def clean(self):
+        scoring_scheme = [[], []]
+        for (prefix, pos), i in itertools.product([("before", 0), ("equal", 1)], range(0, 6)):
+            scoring_scheme[pos].append(self.cleaned_data['id_{}_{}'.format(prefix, i)])
+        self.scoring_scheme = scoring_scheme
+
+    def save(self, commit=True):
+        instance = super(DistanceModelForm, self).save(commit=False)
+        instance.scoring_scheme_str = json.dumps(self.scoring_scheme)
+
+        if commit:
+            instance.save()
+        return instance

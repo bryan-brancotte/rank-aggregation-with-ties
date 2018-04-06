@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load bootstrap %}
+{% load static %}
+{% load mediane_tags %}
+{% load i18n %}
+{% load webui_tags %}
+{% block title %}Distance edition{% endblock %}
+{% block page_title %}Distance edition{% endblock %}
+{% block container-class %}container{% endblock %}
+{% block content%}
+<form action="" method="post">{% csrf_token %}
+    <div class="col-xs-12">
+        {% for field in form %}
+        {% if field.is_hidden %}
+        {{ field }}
+        {% endif %}
+        {% endfor %}
+        {{form|get_field:'in_db_name'}}
+        {{form|get_field:'key_name'}}
+        {{form|get_field:'in_db_desc'}}
+        {{form|get_field:'public'}}
+        {{form|get_field:'is_scoring_scheme_relevant'}}
+        <table class="table">
+            <tr>
+                <th>Scoring&nbsp;scheme</th>
+                <td>
+                    {% if object.is_scoring_scheme_relevant %}
+                        <div class="col-xs-12 col-md-6">
+                            {{form|before_cost_as_table_from_form}}
+                        </div>
+                        <div class="col-xs-12 col-md-6">
+                            {{form|equal_cost_as_table_from_form}}
+                        </div>
+                    {%else%}
+                    <i class="fa fa-ban"></i>
+                    {%endif%}
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="col-xs-12">
+        <a href="{% url 'webui:distance-list' %}" role="button" class="btn btn-danger"><i class="fa fa-arrow-left"></i>
+            Back</a>
+        <input type="submit" class="btn btn-primary pull-right" value="{%trans 'Save'%}"/>
+    </div>
+</form>
+{% endblock%}

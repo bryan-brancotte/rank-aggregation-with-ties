@@ -1,3 +1,4 @@
+from bootstrapform.templatetags.bootstrap import bootstrap
 from django import template
 from django.urls.base import reverse
 from django.utils.safestring import mark_safe
@@ -63,3 +64,27 @@ def tags_to_bootstrap(tag):
     if tag == "":
         return "info"
     return tag
+
+
+@register.filter
+def get_value_from_dict(mydict, key):
+    return mydict.get(key, None)
+
+
+@register.filter
+def get_field(form, name):
+    for field in form:
+        if field.name == name:
+            return bootstrap(field)
+    return ""
+
+
+@register.filter
+def can_be_edited_by(obj, user):
+    # if user.is_superuser:
+    #     return True
+    try:
+        return obj.owner.pk == user.pk
+    except:
+        pass
+    return False
