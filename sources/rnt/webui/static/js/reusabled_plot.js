@@ -114,6 +114,9 @@ function reusabled_plot() {
                     .key(function(d) {
                         return d.grp;
                     })
+                    .sortValues(function(a,b) {
+                        return x_accessor(a) - x_accessor(b);
+                    })
                     .entries(data);
 
                 xScale.domain([

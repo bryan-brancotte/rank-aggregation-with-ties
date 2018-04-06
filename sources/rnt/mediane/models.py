@@ -6,7 +6,6 @@ from django.utils.translation import ugettext_lazy as _, ugettext
 from django_pandas.managers import DataFrameManager
 from rest_framework.compat import MinLengthValidator
 
-from mediane import tasks
 from mediane.algorithms.enumeration import get_from as get_algo_from
 from mediane.median_ranking_tools import parse_ranking_with_ties_of_str
 from mediane.process import execute_median_rankings_computation_of_result
@@ -15,6 +14,8 @@ from mediane.validators import sound_dataset_validator
 import json
 import random
 import string
+
+from rnt import settings
 
 
 class DataSet(models.Model):
@@ -270,19 +271,19 @@ class Job(models.Model):
                 self.identifier = None
 
         # if status changed, update related tasks
-        compute_on_this_thread = False
+        trigger_computation = False
         if self.pk and self.status != Job.objects.get(pk=self.pk).status:
             if self.status == 1:
                 for r in self.result_set.filter(distance_value__isnull=True):
                     r.mark_as_todo()
             elif self.status == 2:
-                compute_on_this_thread = True
+                trigger_computation = True
             elif self.status == 6:
                 for r in self.result_set.all():
                     r.resultstoproducedecorator_set.all().delete()
 
         tasks_to_do = None
-        if compute_on_this_thread:
+        if trigger_computation:
             tasks_to_do = ResultsToProduceDecorator.objects.filter(result__job__pk=self.pk)
             if tasks_to_do.count() == 0:
                 self.status = 4
@@ -294,9 +295,14 @@ class Job(models.Model):
             update_fields=update_fields,
         )
 
-        if compute_on_this_thread and self.status == 2:
-            for r in tasks_to_do.only('pk'):
-                tasks.compute_result(r.pk)
+        if trigger_computation and self.status == 2 :
+            from mediane import tasks
+            if settings.CELERY_ENABLED:
+                for r in tasks_to_do.only('pk'):
+                    tasks.compute_result.delay(pk=r.pk)
+            else:
+                for r in tasks_to_do.only('pk'):
+                    tasks.compute_result(r.pk)
 
     def update_task_count(self):
         self.task_count = self.result_set.count()

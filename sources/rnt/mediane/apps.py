@@ -6,15 +6,20 @@ class MedianeConfig(AppConfig):
     name = 'mediane'
 
     def ready(self):
-        from mediane import distances, algorithms, normalizations
-        from mediane.models import Distance, Algorithm, Normalization
-        self.create_instances(distances.enumeration.as_tuple_list(), Distance, has_owner=True)
-        self.create_instances(algorithms.enumeration.as_tuple_list(), Algorithm)
-        self.create_instances(normalizations.enumeration.as_tuple_list(), Normalization)
-        self.update_ordering(Distance)
-        self.update_ordering(Normalization)
-        self.update_ordering(Algorithm)
-        self.update_can_be_executed(algorithms.enumeration.as_tuple_list(), Algorithm)
+        try:
+            get_user_model().objects.get(id=1)
+            from mediane import distances, algorithms, normalizations
+            from mediane.models import Distance, Algorithm, Normalization
+            self.create_instances(distances.enumeration.as_tuple_list(), Distance, has_owner=True)
+            self.create_instances(algorithms.enumeration.as_tuple_list(), Algorithm)
+            self.create_instances(normalizations.enumeration.as_tuple_list(), Normalization)
+            self.update_ordering(Distance)
+            self.update_ordering(Normalization)
+            self.update_ordering(Algorithm)
+            self.update_can_be_executed(algorithms.enumeration.as_tuple_list(), Algorithm)
+        except:
+            #There is no user, we consider that no migration has been made.
+            pass
 
     def create_instances(self, tuple_list, klass, has_owner=False):
         try:

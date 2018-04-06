@@ -364,6 +364,17 @@ stack_onload(function () {
                 })
                 .change();
 
+            $(".slider-host .min").add(".slider-host .max")
+                .change(function(e){
+                    var tr = $(this).closest(".slider-host");
+                    if ($(tr).length==0)
+                        return;
+                    $(tr)
+                        .find("input.slider")
+                        .slider('setValue', [ +$(tr).find(".min").val(), +$(tr).find(".max").val()], true)
+                        .change();
+                });
+
             $('#datasets_range_table').find('input[type="checkbox"]')
                 .click(
                     delayed_refresh_settings_from_datasets_and_compute_when_possible()

@@ -43,9 +43,10 @@ def computation_evaluate(request):
         return HttpResponseBadRequest()
     form = ComputeConsensusForm(data=request.POST, user=request.user)
     form.is_valid()
-    evaluation_and_settings = {
-        **form.evaluation,
-        **compute_consensus_settings_based_on_datasets(
+    evaluation_and_settings = {}
+    evaluation_and_settings.update(form.evaluation)
+    evaluation_and_settings.update(
+        compute_consensus_settings_based_on_datasets(
             n=form.evaluation['n'],
             m=form.evaluation['m'],
             complete=form.evaluation['complete'],
@@ -53,9 +54,9 @@ def computation_evaluate(request):
             user=request.user,
             dbdatasets=form.cleaned_data.get('dbdatasets', None),
             algos=form.cleaned_data.get('algo', None),
-        ),
-        'dataset_html_errors': str(form['dataset'].errors),
-    }
+        )
+    )
+    evaluation_and_settings['dataset_html_errors'] = str(form['dataset'].errors)
     del evaluation_and_settings['rankings']
     return JsonResponse(evaluation_and_settings)
 
@@ -265,7 +266,7 @@ def signup(request):
         form = UserCreationFormWithMore(request.POST)
         if form.is_valid():
             user = form.save()
-            if get_user_model().objects.count() == 1:
+            if get_user_model().objects.filter(pk__gt=1).count() == 1:
                 user.is_superuser = True
                 user.is_staff = True
                 user.save()

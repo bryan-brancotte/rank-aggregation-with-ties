@@ -1,7 +1,9 @@
 from mediane import process
-from mediane  import models
+from mediane import models
+from rnt.celeryconf import app
 
 
+@app.task
 def compute_result(pk):
     try:
         task = models.ResultsToProduceDecorator.objects.get(pk=pk)

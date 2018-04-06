@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='distance',
             name='key_name',
-            field=models.CharField(max_length=16, unique=True),
+            field=models.CharField(max_length=32, unique=True),
         ),
         migrations.AlterField(
             model_name='distance',

@@ -3,9 +3,14 @@
 from __future__ import unicode_literals
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.db import migrations, models
 import django.db.models.deletion
 
+def migration_code(apps, schema_editor):
+    User = get_user_model()
+    user = User.objects.create_user(id=1, username="test", email="test@test.com", password="")
+    user.is_active = False
 
 class Migration(migrations.Migration):
 
@@ -37,4 +42,5 @@ class Migration(migrations.Migration):
                 ('job', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='mediane.Job')),
             ],
         ),
+        migrations.RunPython(migration_code, reverse_code=migrations.RunPython.noop),
     ]
