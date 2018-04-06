@@ -1,7 +1,6 @@
 from django.utils import timezone
 from django.utils.translation import ugettext
 
-from mediane import models
 from mediane.algorithms.enumeration import get_name_from
 from mediane.algorithms.lri.BioConsert import BioConsert
 from mediane.algorithms.lri.ExactAlgorithm import ExactAlgorithm
@@ -120,6 +119,7 @@ def create_computation_job(
         algorithms,
         owner,
 ):
+    from mediane import models
     job = models.Job.objects.create(
         owner=owner,
         dist=distance,

@@ -6,7 +6,6 @@ from django.utils.translation import ugettext_lazy as _, ugettext
 from django_pandas.managers import DataFrameManager
 from rest_framework.compat import MinLengthValidator
 
-from mediane import tasks
 from mediane.algorithms.enumeration import get_from as get_algo_from
 from mediane.median_ranking_tools import parse_ranking_with_ties_of_str
 from mediane.process import execute_median_rankings_computation_of_result
@@ -295,6 +294,7 @@ class Job(models.Model):
         )
 
         if compute_on_this_thread and self.status == 2:
+            from mediane import tasks
             for r in tasks_to_do.only('pk'):
                 tasks.compute_result(r.pk)
 

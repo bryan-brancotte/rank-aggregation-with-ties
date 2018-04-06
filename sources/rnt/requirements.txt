@@ -9,6 +9,6 @@ Markdown==2.6.10
 django-filter==1.1.0
 Pygments==2.2.0
 django-extensions
-pygraphviz
 python-igraph
 django-pandas
+psycopg2-binary

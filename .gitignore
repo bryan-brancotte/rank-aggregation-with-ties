@@ -106,3 +106,7 @@ ENV/
 db.sqlite3
 
 static
+
+sources/rnt/resources/local.ini
+sources/rnt/certs
+db.*.old

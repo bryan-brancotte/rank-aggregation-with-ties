@@ -14,14 +14,28 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 from django.utils.translation import ugettext, ugettext_lazy
+import configparser
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+locals_ini = [
+    os.path.join(BASE_DIR, 'resources','default.ini'),
+    os.path.join('etc', 'composeexample', 'default.ini'),
+    os.path.join(BASE_DIR, 'resources','local.ini'),
+    os.path.join('etc', 'composeexample', 'local.ini'),
+]
+config = configparser.ConfigParser()
+config.add_section('global')
+config.optionxform = str
+for local_ini in locals_ini:
+    if os.path.isfile(local_ini):
+        config.read(local_ini)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '7_+-b^u9n3qx&)id+4h0=d1$rq+&v7#-f0gbn=d!*#l%rq*n(*'
+SECRET_KEY = config['global'].get('SECRET_KEY', '7_+-b^u9n3qx&)id+4h0=d1$rq+&v7#-f0gbn=d!*#l%rq*n(*')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -37,6 +51,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_crontab',
     'rest_framework',
     'bootstrapform',
     'captcha',
@@ -80,12 +95,24 @@ WSGI_APPLICATION = 'rnt.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+if "POSTGRES_PASSWORD" in os.environ:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'postgres',
+            'USER': 'postgres',
+            'PASSWORD': config['global']['POSTGRES_PASSWORD'],
+            'HOST': 'db',
+            'PORT': 5432,
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
@@ -128,8 +155,17 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, "static/")
+STATIC_ROOT = os.path.join(BASE_DIR, '.static')
+STATIC_URL = config['global'].get('STATIC_URL','/static') + '/'
+MEDIA_ROOT = os.path.join(BASE_DIR, '.media')
+MEDIA_URL = config['global'].get('MEDIA_URL','/media') + '/'
+
+# django-crontab
+CRONJOBS = [
+    ('0 4 * * *', 'django.core.management.call_command', ['clearsessions']),
+]
+CRONTAB_LOCK_JOBS = True
+CRONTAB_COMMAND_SUFFIX = '>> /var/log/apache2/django-crontab.log'
 
 SESSION_COOKIE_AGE = 14 * 24 * 60 * 60 if DEBUG else 12 * 60 * 60
 SESSION_COOKIE_SECURE = False if DEBUG else True
