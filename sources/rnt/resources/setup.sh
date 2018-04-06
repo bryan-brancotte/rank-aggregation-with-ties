@@ -14,9 +14,11 @@ source resources/tool_shed.sh
 if [ ! -e ./resources/local.ini ]; then
     msg_info "generating local.ini (including postgresql password)"
     export POSTGRES_PASSWORD=$(python -c "import random;import string;print(''.join(random.SystemRandom().choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(40)))")
+    export RABBITMQ_DEFAULT_PASS=$(python -c "import random;import string;print(''.join(random.SystemRandom().choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(40)))")
     cat >> ./resources/local.ini <<EOF
 [global]
 POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+RABBITMQ_DEFAULT_PASS=$RABBITMQ_DEFAULT_PASS
 EOF
 else
     source resources/local.ini 2>/dev/null

@@ -15,6 +15,8 @@ import json
 import random
 import string
 
+from rnt import settings
+
 
 class DataSet(models.Model):
     name = models.CharField(
@@ -269,19 +271,19 @@ class Job(models.Model):
                 self.identifier = None
 
         # if status changed, update related tasks
-        compute_on_this_thread = False
+        trigger_computation = False
         if self.pk and self.status != Job.objects.get(pk=self.pk).status:
             if self.status == 1:
                 for r in self.result_set.filter(distance_value__isnull=True):
                     r.mark_as_todo()
             elif self.status == 2:
-                compute_on_this_thread = True
+                trigger_computation = True
             elif self.status == 6:
                 for r in self.result_set.all():
                     r.resultstoproducedecorator_set.all().delete()
 
         tasks_to_do = None
-        if compute_on_this_thread:
+        if trigger_computation:
             tasks_to_do = ResultsToProduceDecorator.objects.filter(result__job__pk=self.pk)
             if tasks_to_do.count() == 0:
                 self.status = 4
@@ -293,10 +295,14 @@ class Job(models.Model):
             update_fields=update_fields,
         )
 
-        if compute_on_this_thread and self.status == 2:
+        if trigger_computation and self.status == 2 :
             from mediane import tasks
-            for r in tasks_to_do.only('pk'):
-                tasks.compute_result(r.pk)
+            if settings.CELERY_ENABLED:
+                for r in tasks_to_do.only('pk'):
+                    tasks.compute_result.delay(pk=r.pk)
+            else:
+                for r in tasks_to_do.only('pk'):
+                    tasks.compute_result(r.pk)
 
     def update_task_count(self):
         self.task_count = self.result_set.count()

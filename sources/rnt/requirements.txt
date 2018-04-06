@@ -12,3 +12,5 @@ django-extensions
 python-igraph
 django-pandas
 psycopg2-binary
+celery
+redis

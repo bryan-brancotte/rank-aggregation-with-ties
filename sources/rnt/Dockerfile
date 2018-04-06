@@ -33,4 +33,7 @@ ENTRYPOINT ["/docker-entrypoint.sh"]
 
 COPY ./resources/django.conf /etc/apache2/sites-enabled/django.conf
 
+# create unprivileged user
+RUN adduser --disabled-password --gecos '' myuser
+
 ADD . /code/
