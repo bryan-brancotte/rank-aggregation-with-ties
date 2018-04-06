@@ -19,6 +19,7 @@ if [ ! -e ./resources/local.ini ]; then
 [global]
 POSTGRES_PASSWORD=$POSTGRES_PASSWORD
 RABBITMQ_DEFAULT_PASS=$RABBITMQ_DEFAULT_PASS
+DEBUG=True
 EOF
 else
     source resources/local.ini 2>/dev/null
