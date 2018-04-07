@@ -34,4 +34,9 @@ class DistNormAlgoAdmin(admin.ModelAdmin):
         form = super(DistNormAlgoAdmin, self).get_form(request, obj=obj, **kwargs)
         if obj and obj.key_name_is_read_only:
             form.base_fields['key_name'].disabled = True
+            for f in ['in_db_name', 'in_db_desc']:
+                try:
+                    del form.base_fields[f]
+                except:
+                    pass
         return form

@@ -1,10 +1,11 @@
+from bootstrapform.templatetags.bootstrap import bootstrap, bootstrap_inline
 from django import template
 from django.utils.safestring import mark_safe
 
 register = template.Library()
 
 
-def before_or_equals_cost_as_table(tab, elementsInR1):
+def before_or_equals_cost_as_table(tab, elementsInR1, prefix):
     return mark_safe(
         """
 <table class="table">
@@ -15,34 +16,35 @@ def before_or_equals_cost_as_table(tab, elementsInR1):
 <td>cost</td>
 </tr>
 <tr>
-<td rowspan="6">%s</td>
+<td rowspan="6">{0}</td>
 <td>A before B</td>
-<td>%s</td>
+<td id="{1}-0">{2}</td>
 </tr>
 <tr>
 <td>A after B</td>
-<td>%s</td>
+<td id="{1}-1">{3}</td>
 </tr>
 <tr>
 <td>A tied to B</td>
-<td>%s</td>
+<td id="{1}-2">{4}</td>
 </tr>
 <tr>
 <td>B is missing</td>
-<td>%s</td>
+<td id="{1}-3">{5}</td>
 </tr>
 <tr>
 <td>A is missing</td>
-<td>%s</td>
+<td id="{1}-4">{6}</td>
 </tr>
 <tr>
 <td>Both are missing</td>
-<td>%s</td>
+<td id="{1}-5">{7}</td>
 </tr>
 </tbody>
 </table>
-""" % (
+""".format(
             elementsInR1,
+            prefix,
             tab[0],
             tab[1],
             tab[2],
@@ -54,10 +56,22 @@ def before_or_equals_cost_as_table(tab, elementsInR1):
 
 
 @register.filter
+def before_cost_as_table_from_form(form):
+    fields = [bootstrap_inline(f) for f in form if f.name.startswith("id_before_")]
+    return before_cost_as_table([fields, ])
+
+
+@register.filter
 def before_cost_as_table(val):
-    return before_or_equals_cost_as_table(val[0], "A is before B")
+    return before_or_equals_cost_as_table(val[0], "A is before B", "before")
+
+
+@register.filter
+def equal_cost_as_table_from_form(form):
+    fields = [bootstrap_inline(f) for f in form if f.name.startswith("id_equal_")]
+    return equal_cost_as_table([None, fields,])
 
 
 @register.filter
 def equal_cost_as_table(val):
-    return before_or_equals_cost_as_table(val[1 ], "A is tied to B")
+    return before_or_equals_cost_as_table(val[1], "A is tied to B", "equal")

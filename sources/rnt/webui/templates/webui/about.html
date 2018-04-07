@@ -2,6 +2,9 @@
 {% block title %}About{% endblock %}
 {% block page_title %}About{% endblock %}
 {% block container-class %}container{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/octicons/4.4.0/font/octicons.min.css" integrity="sha256-pNGG0948CVwfHxxS8lVkUKftaSsMBzFSUknrKr2utfY=" crossorigin="anonymous" />
+{% endblock %}
 {% block content%}
 <div class="col-xs-12">
     <table class="table">
@@ -63,6 +66,8 @@
             <a href="https://www.lri.fr/~andrieu/papers/rank-aggregation-kemeny.pdf">[pdf]</a>
         </li>
     </ul>
-
+    <h2>Sources</h2>
+    Available on <i class="octicon octicon-mark-github"></i> GitHub at <a target="_blank"
+        href="https://github.com/bryan-brancotte/rank-aggregation-with-ties">https://github.com/bryan-brancotte/rank-aggregation-with-ties</a> under <i class="octicon octicon-law text-grey"></i> <a target="_blank" href="https://github.com/bryan-brancotte/rank-aggregation-with-ties/blob/master/LICENSE">Apache License 2.0</a>.
 </div>
 {% endblock%}

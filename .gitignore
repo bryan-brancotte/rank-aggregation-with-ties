@@ -110,3 +110,4 @@ static
 sources/rnt/resources/local.ini
 sources/rnt/certs
 db.*.old
+data/

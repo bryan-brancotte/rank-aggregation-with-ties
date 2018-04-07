@@ -80,7 +80,7 @@ msgstr ""
 msgid "is_scoring_scheme_relevant"
 msgstr ""
 
-msgid "Doas looking at the scoring scheme have a meaning ?"
+msgid "Does looking at the scoring scheme have a meaning ?"
 msgstr ""
 
 msgid "_desc"

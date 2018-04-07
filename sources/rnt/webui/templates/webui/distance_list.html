@@ -16,10 +16,10 @@
         {% for object in object_list %}
         <tr>
             <td>
-                <a href="{%url 'webui:distance_view' pk=object.pk %}">{{ object.name }}</a>
+                <a href="{%url 'webui:distance-detail' pk=object.pk %}">{{ object.name }}</a>
             </td>
             <td>
-                <a href="{%url 'webui:distance_view' pk=object.pk %}">{{ object.key_name }}</a>
+                <a href="{%url 'webui:distance-detail' pk=object.pk %}">{{ object.key_name }}</a>
             </td>
             <td>
                 {% if object.is_scoring_scheme_relevant %}

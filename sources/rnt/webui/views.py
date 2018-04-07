@@ -20,7 +20,7 @@ from mediane.process import execute_median_rankings_computation_from_rankings, \
     create_computation_job, evaluate_dataset_and_provide_stats
 from webui.decorators import ownership_required
 from webui.forms import ComputeConsensusForm, DataSetModelForm, DataSetForUploadModelForm, UserCreationFormWithMore, \
-    MyUserChangeForm, UserDeleteForm
+    MyUserChangeForm, UserDeleteForm, DistanceModelForm
 from webui.views_generic import AjaxableResponseMixin
 
 
@@ -225,6 +225,14 @@ class DistanceDetailView(DetailView):
         if obj.public or self.request.user.id == obj.owner.id:
             return super(DistanceDetailView, self).dispatch(*args, **kwargs)
         return redirect('%s?next=%s' % (reverse('webui:login'), self.request.path))
+
+
+@method_decorator(login_required, name='dispatch')
+@method_decorator(ownership_required(class_object=Distance), name='dispatch')
+class DistanceUpdate(LoginRequiredMixin, UpdateView):
+    model = Distance
+    form_class = DistanceModelForm
+    template_name = "webui/distance_update.html"
 
 
 @login_required

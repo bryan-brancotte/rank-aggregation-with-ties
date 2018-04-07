@@ -115,22 +115,40 @@ class Distance(models.Model):
     )
     is_scoring_scheme_relevant = models.BooleanField(
         verbose_name=_('is_scoring_scheme_relevant'),
-        help_text=_('Doas looking at the scoring scheme have a meaning ?'),
+        help_text=_('Does looking at the scoring scheme have a meaning ?'),
         default=False,
     )
     id_order = models.IntegerField(
         default=0
     )
+    in_db_desc = models.TextField(
+        verbose_name=_('description'),
+        null=True,
+        blank=True,
+    )
+    in_db_name = models.CharField(
+        verbose_name=_('name'),
+        max_length=32,
+        null=True,
+        blank=True,
+    )
+
+    def get_absolute_url(self):
+        return reverse('webui:distance-detail', args=[self.pk])
 
     def __str__(self):
         return self.name
 
     @property
     def name(self):
+        if self.in_db_name:
+            return self.in_db_name
         return ugettext(self.key_name + "_name")
 
     @property
     def desc(self):
+        if self.in_db_desc:
+            return self.in_db_desc
         return ugettext(self.key_name + "_desc")
 
     @property
@@ -143,7 +161,7 @@ class Distance(models.Model):
              update_fields=None):
         # try to parse the scoring scheme, causing an exception and making impossible to save invalid schema
         if self.is_scoring_scheme_relevant:
-            self.scoring_scheme
+            assert self.scoring_scheme is not None
         super(Distance, self).save(
             force_insert=force_insert,
             force_update=force_update,
