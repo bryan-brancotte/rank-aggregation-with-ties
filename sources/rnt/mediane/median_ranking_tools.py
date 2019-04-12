@@ -5,6 +5,10 @@ T = TypeVar('T')
 
 def parse_ranking_with_ties(ranking: str, converter: Callable[[str], T]) -> List[List[T]]:
     ranking = ranking.strip()
+
+    # to manage the "syn" datasets of java rank-n-ties
+    if ranking[-1] == ":":
+        ranking = ranking[:-1]
     ret = []
     st = ranking.find('[', ranking.find('[') + 1)
     en = ranking.find(']')
@@ -50,9 +54,14 @@ def parse_ranking_with_ties_of_int(ranking: str) -> List[List[int]]:
 def get_rankings_from_file(file: str) -> List[List[List[int]]]:
     rankings = []
     file_rankings = open(file, "r")
-    for ligne in file_rankings.read().split("\n"):
-        if len(ligne) > 2:
+
+    # to manage the "step" datasets of java rank-n-ties
+    ignore_lines = ["%"]
+    lignes = file_rankings.read().replace("\\\n", "")
+    for ligne in lignes.split("\n"):
+        if len(ligne) > 2 and ligne[0] not in ignore_lines:
             rankings.append(parse_ranking_with_ties_of_int(ligne))
+    file_rankings.close()
     return rankings
 
 
