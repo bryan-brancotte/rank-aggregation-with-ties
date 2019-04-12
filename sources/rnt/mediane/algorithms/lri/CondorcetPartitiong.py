@@ -57,6 +57,7 @@ class CondorcetPartitioning(MedianRanking):
 
         # TYPE igraph.clustering.VertexClustering
         scc = gr1.components()
+
         for scc_i in scc:
             if len(scc_i) == 1:
                 res.append([id_elements.get(scc_i[0])])
@@ -97,11 +98,11 @@ class CondorcetPartitioning(MedianRanking):
                             cost_before[5]])
         n = shape(positions)[0]
         m = shape(positions)[1]
-
         for i in range(n):
             graph_of_elements.add_vertex(name=str(i))
-        matrix = zeros((n, n, 3))
 
+        matrix = zeros((n, n, 3))
+        edges = []
         for e1 in range(n):
             mem = positions[e1]
             d = count_nonzero(mem == -1)
@@ -115,11 +116,12 @@ class CondorcetPartitioning(MedianRanking):
                 put_after = vdot(relative_positions, cost_after)
                 put_tied = vdot(relative_positions, cost_tied)
                 if put_before > put_after or put_before > put_tied:
-                    graph_of_elements.add_edge(e2, e1)
+                    edges.append((e2, e1))
                 if put_after > put_before or put_after > put_tied:
-                    graph_of_elements.add_edge(e1, e2)
+                    edges.append((e1, e2))
                 matrix[e1][e2] = [put_before, put_after, put_tied]
                 matrix[e2][e1] = [put_after, put_before, put_tied]
+        graph_of_elements.add_edges(edges)
         return graph_of_elements, matrix
 
     @staticmethod
