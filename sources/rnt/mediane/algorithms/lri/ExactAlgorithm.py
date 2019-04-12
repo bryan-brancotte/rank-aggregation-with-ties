@@ -433,6 +433,5 @@ class ExactAlgorithm(MedianRanking):
         try:
             import cplex
             return True
-        except:
+        except ImportError:
             return False
-
