@@ -86,7 +86,7 @@ class BioConsert(MedianRanking):
             if ranking_string not in memoi:
                 memoi.add(ranking_string)
                 # dst_init = kem.get_distance_to_a_set_of_rankings(ranking, rankings)
-                dst_ranking = self.__bio_consert(ranking_array, matrix, memoi)
+                dst_ranking = self.__bio_consert(ranking_array, matrix, memoi, len(rankings) > nb_elements)
                 # print("STOP  DST = ", dst_ranking)
 
                 if dst_ranking <= dst_min:
@@ -119,7 +119,7 @@ class BioConsert(MedianRanking):
         return res
 
     @staticmethod
-    def __bio_consert(ranking: ndarray, matrix: ndarray, memoi: set) -> float:
+    def __bio_consert(ranking: ndarray, matrix: ndarray, memoi: set, memoisation: False) -> float:
 
         sum_before = 0.0
         sum_tied = 0.0
@@ -140,43 +140,43 @@ class BioConsert(MedianRanking):
 
         improvement = True
         dst = sum_before + sum_tied / 2
+
         while improvement:
-            # print(ranking)
             improvement = False
             for element in range(n):
                 cha = zeros(max_id_bucket + 2, dtype=float)
                 add = zeros(max_id_bucket + 3, dtype=float)
-
                 bucket_elem = ranking[element]
                 alone = BioConsert._compute_delta_costs(ranking, element, matrix, max_id_bucket, cha, add)
+
                 to, diff = BioConsert._search_to_change_bucket(bucket_elem, cha, max_id_bucket)
                 if to >= 0:
                     improvement = True
                     # change
                     dst += diff
-                    # print("dst = ", dst)
                     BioConsert._change_bucket(ranking, element, bucket_elem, to, alone)
                     if alone:
                         max_id_bucket -= 1
-                    st = str(ranking)
-                    if st in memoi:
-                        return float('inf')
-                    memoi.add(st)
+                    if memoisation:
+                        st = str(ranking)
+                        if st in memoi:
+                            return float('inf')
+                        memoi.add(st)
                 else:
                     to, diff = BioConsert._search_to_add_bucket(bucket_elem, add, max_id_bucket)
                     if to >= 0:
 
                         improvement = True
                         dst += diff
-                        # print("dst = ", dst)
 
                         BioConsert._add_bucket(ranking, element, bucket_elem, to, alone)
                         if not alone:
                             max_id_bucket += 1
-                        st = str(ranking)
-                        if st in memoi:
-                            return float('inf')
-                        memoi.add(st)
+                        if memoisation:
+                            st = str(ranking)
+                            if st in memoi:
+                                return float('inf')
+                            memoi.add(st)
         return dst
 
     @staticmethod
@@ -403,10 +403,3 @@ class BioConsert(MedianRanking):
             PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE,
             GENERALIZED_KENDALL_TAU_DISTANCE_WITH_UNIFICATION
         )
-
-
-# from mediane.median_ranking_tools import get_rankings_from_file
-
-# ranki = get_rankings_from_file("/home/pierre/Bureau/breastCancer")
-# print(ranki)
-# BioConsert().compute_median_rankings(ranki, None, True)
