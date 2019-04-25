@@ -15,6 +15,8 @@ class CondorcetPartitioning(MedianRanking):
             self.alg = algorithm_to_complete
         else:
             self.alg = BioConsert(starting_algorithms=None)
+        self.nb_cc = 0
+        self.nb_bientrie = 0
 
     def compute_median_rankings(
             self,
@@ -34,6 +36,8 @@ class CondorcetPartitioning(MedianRanking):
         :raise DistanceNotHandledException when the algorithm cannot compute the consensus following the distance given
         as parameter
         """
+        self.nb_bientrie = 0
+        self.nb_cc = 0
         scoring_scheme = asarray(distance.scoring_scheme)
         if scoring_scheme[1][0] != scoring_scheme[1][1] or scoring_scheme[1][3] != scoring_scheme[1][4]:
             raise DistanceNotHandledException
@@ -58,9 +62,12 @@ class CondorcetPartitioning(MedianRanking):
         # TYPE igraph.clustering.VertexClustering
         scc = gr1.components()
 
+        self.nb_cc = len(scc)
+
         for scc_i in scc:
             if len(scc_i) == 1:
                 res.append([id_elements.get(scc_i[0])])
+                self.nb_bientrie += 1
             else:
                 all_tied = True
                 for e1, e2 in combinations(scc_i, 2):
@@ -72,6 +79,7 @@ class CondorcetPartitioning(MedianRanking):
                     for el in scc_i:
                         buck.append(id_elements.get(el))
                     res.append(buck)
+                    self.nb_bientrie += len(buck)
                 else:
                     set_scc = set(scc_i)
                     project_rankings = []
@@ -144,7 +152,7 @@ class CondorcetPartitioning(MedianRanking):
         return False
 
     def get_full_name(self):
-        return "CondorcetPartitioning"
+        return "CondorcetPartitioning"+"_"+self.alg.get_full_name()
 
     def get_handled_distances(self):
         """
