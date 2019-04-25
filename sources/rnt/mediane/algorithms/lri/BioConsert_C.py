@@ -43,7 +43,8 @@ class BioConsertC(MedianRanking):
         :raise DistanceNotHandledException when the algorithm cannot compute the consensus following the distance given
         as parameter
         """
-        rankagg_c = ctypes.CDLL("./rankaggregation.so")
+        rankagg_c = ctypes.CDLL("/home/pierre/Bureau/rank_aggregation_c/rankaggregation.so")
+
         if distance is None:
             scoring_scheme = ScoringScheme([[0., 1., .5, 0., 1., 0.], [0.5, 0.5, 0, 0.5, 0.5, 0.]]).matrix
         else:
@@ -71,7 +72,6 @@ class BioConsertC(MedianRanking):
             return [[]]
 
         (departure, dst_res) = self.__departure_rankings(rankings, positions, elem_id, distance)
-
         fct = rankagg_c.c_BioConsert
         fct.argtypes = [ctypeslib.ndpointer(dtype=int32),
                         ctypeslib.ndpointer(dtype=int32, flags=['writeable', 'contiguous', 'aligned']),
@@ -81,7 +81,6 @@ class BioConsertC(MedianRanking):
                         ctypeslib.ndpointer(dtype=float64, flags=['writeable', 'contiguous', 'aligned']),
                         ]
         fct.returntype = None
-
         fct(positions, departure, scoring_scheme[0], scoring_scheme[1], nb_elements, nb_rankings, len(dst_res), dst_res)
 
         ranking_dict = {}
@@ -130,7 +129,7 @@ class BioConsertC(MedianRanking):
         rankings_unified = Unification.rankings_to_rankings(rankings)
         kem_comp = KendallTauGeneralizedNlogN(distance)
         if len(self.starting_algorithms) == 0:
-            real_pos = positions.transpose()
+            real_pos = array(positions).transpose()
             distinct_rankings = set()
             list_distinct_id_rankings = []
 
@@ -140,18 +139,17 @@ class BioConsertC(MedianRanking):
                 ranking_array[ranking_array == -1] = amax(ranking_array) + 1
                 string_ranking = str(ranking_array)
                 if string_ranking not in distinct_rankings:
-                    distinct_rankings.add(str(ranking))
+                    distinct_rankings.add(string_ranking)
                     list_distinct_id_rankings.append(i)
                     dst_ini.append(
-                        kem_comp.get_distance_to_a_set_of_rankings(ranking, rankings_unified)[distance.id_order])
+                        kem_comp.get_distance_to_a_set_of_rankings(ranking, rankings)[distance.id_order])
 
                 i += 1
 
-            dst_ini.append(kem_comp.get_distance_to_a_set_of_rankings([[*elements_id]], rankings_unified)
+            dst_ini.append(kem_comp.get_distance_to_a_set_of_rankings([[*elements_id]], rankings)
                            [distance.id_order])
             departure = zeros((len(list_distinct_id_rankings)+1, len(elements_id)), dtype=int32)
             departure[:-1] = real_pos[asarray(list_distinct_id_rankings)]
-
         else:
             m = len(self.starting_algorithms)
             n = len(elements_id)
@@ -159,7 +157,7 @@ class BioConsertC(MedianRanking):
             id_ranking = 0
             for algo in self.starting_algorithms:
                 cons = algo.compute_median_rankings(rankings_unified, distance, True)[0]
-                dst_ini.append(kem_comp.get_distance_to_a_set_of_rankings(cons, rankings_unified)[distance.id_order])
+                dst_ini.append(kem_comp.get_distance_to_a_set_of_rankings(cons, rankings)[distance.id_order])
                 id_bucket = 0
                 for bucket in cons:
                     for element in bucket:

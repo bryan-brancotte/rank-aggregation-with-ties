@@ -73,7 +73,7 @@ class BioConsert(MedianRanking):
             matrix = self.__cost_matrix(departure[:, :-1], scoring_scheme)
         else:
             matrix = self.__cost_matrix(departure, scoring_scheme)
-
+        #print(matrix)
         result = set()
         dst_min = float('inf')
 
@@ -125,6 +125,11 @@ class BioConsert(MedianRanking):
         sum_tied = 0.0
 
         el = 0
+        max_id_bucket = amax(ranking)
+        if count_nonzero(ranking < 0) > 0:
+            max_id_bucket += 1
+            ranking[ranking < 0] = max_id_bucket
+
         for id_buck_arr in nditer(ranking):
             mat = matrix[el]
             # print("mat = ", mat)
@@ -133,14 +138,8 @@ class BioConsert(MedianRanking):
             sum_tied += np_sum(mat[where(ranking == id_buck)[0]][:, 2])
             el += 1
         n = ranking.size
-        max_id_bucket = amax(ranking)
-        if count_nonzero(ranking < 0) > 0:
-            max_id_bucket += 1
-            ranking[ranking < 0] = max_id_bucket
-
         improvement = True
         dst = sum_before + sum_tied / 2
-
         while improvement:
             improvement = False
             for element in range(n):
