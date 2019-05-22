@@ -43,7 +43,7 @@ class BioConsertC(MedianRanking):
         :raise DistanceNotHandledException when the algorithm cannot compute the consensus following the distance given
         as parameter
         """
-        rankagg_c = ctypes.CDLL("/home/pierre/Bureau/rank_aggregation_c/rankaggregation.so")
+        rankagg_c = ctypes.CDLL("rankaggregation.so")
 
         if distance is None:
             scoring_scheme = ScoringScheme([[0., 1., .5, 0., 1., 0.], [0.5, 0.5, 0, 0.5, 0.5, 0.]]).matrix
@@ -72,6 +72,7 @@ class BioConsertC(MedianRanking):
             return [[]]
 
         (departure, dst_res) = self.__departure_rankings(rankings, positions, elem_id, distance)
+
         fct = rankagg_c.c_BioConsert
         fct.argtypes = [ctypeslib.ndpointer(dtype=int32),
                         ctypeslib.ndpointer(dtype=int32, flags=['writeable', 'contiguous', 'aligned']),
@@ -141,6 +142,7 @@ class BioConsertC(MedianRanking):
                 if string_ranking not in distinct_rankings:
                     distinct_rankings.add(string_ranking)
                     list_distinct_id_rankings.append(i)
+
                     dst_ini.append(
                         kem_comp.get_distance_to_a_set_of_rankings(ranking, rankings)[distance.id_order])
 

@@ -1,7 +1,8 @@
 from mediane.algorithms.median_ranking import MedianRanking, DistanceNotHandledException
 from mediane.distances.enumeration import GENERALIZED_KENDALL_TAU_DISTANCE, GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE, \
     PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE
-from mediane.algorithms.lri.BioConsert import BioConsert
+from mediane.algorithms.lri.BioConsert_C import BioConsertC
+from mediane.algorithms.lri.ExactAlgorithm import ExactAlgorithm
 
 from typing import List, Dict, Tuple
 from itertools import combinations
@@ -10,13 +11,15 @@ from igraph import Graph
 
 
 class CondorcetPartitioning(MedianRanking):
-    def __init__(self, algorithm_to_complete=None):
+    def __init__(self, algorithm_to_complete=None, bound_for_exact=0, cores_for_exact=1):
+        self.__core_for_exact = 1
+        if cores_for_exact > 1:
+            self.__core_for_exact = cores_for_exact
         if isinstance(algorithm_to_complete, MedianRanking):
             self.alg = algorithm_to_complete
         else:
-            self.alg = BioConsert(starting_algorithms=None)
-        self.nb_cc = 0
-        self.nb_bientrie = 0
+            self.alg = BioConsertC(starting_algorithms=None)
+        self.bound_for_exact = bound_for_exact
 
     def compute_median_rankings(
             self,
@@ -36,8 +39,7 @@ class CondorcetPartitioning(MedianRanking):
         :raise DistanceNotHandledException when the algorithm cannot compute the consensus following the distance given
         as parameter
         """
-        self.nb_bientrie = 0
-        self.nb_cc = 0
+
         scoring_scheme = asarray(distance.scoring_scheme)
         if scoring_scheme[1][0] != scoring_scheme[1][1] or scoring_scheme[1][3] != scoring_scheme[1][4]:
             raise DistanceNotHandledException
@@ -62,12 +64,9 @@ class CondorcetPartitioning(MedianRanking):
         # TYPE igraph.clustering.VertexClustering
         scc = gr1.components()
 
-        self.nb_cc = len(scc)
-
         for scc_i in scc:
             if len(scc_i) == 1:
                 res.append([id_elements.get(scc_i[0])])
-                self.nb_bientrie += 1
             else:
                 all_tied = True
                 for e1, e2 in combinations(scc_i, 2):
@@ -79,7 +78,6 @@ class CondorcetPartitioning(MedianRanking):
                     for el in scc_i:
                         buck.append(id_elements.get(el))
                     res.append(buck)
-                    self.nb_bientrie += len(buck)
                 else:
                     set_scc = set(scc_i)
                     project_rankings = []
@@ -92,9 +90,15 @@ class CondorcetPartitioning(MedianRanking):
                                     project_bucket.append(elem)
                             if len(project_bucket) > 0:
                                 project_ranking.append(project_bucket)
-                        project_rankings.append(project_ranking)
-                    res.extend(self.alg.compute_median_rankings(project_rankings, distance, False)[0])
+                        if len(project_ranking) > 0:
+                            project_rankings.append(project_ranking)
+                    if len(scc_i) > self.bound_for_exact:
+                        res.extend(self.alg.compute_median_rankings(project_rankings, distance, False)[0])
 
+                    else:
+                        res.extend(ExactAlgorithm(cores=self.__core_for_exact).compute_median_rankings(project_rankings,
+                                                                                                       distance, False)
+                                   [0])
         return [res]
 
     @staticmethod
@@ -152,7 +156,7 @@ class CondorcetPartitioning(MedianRanking):
         return False
 
     def get_full_name(self):
-        return "CondorcetPartitioning"+"_"+self.alg.get_full_name()
+        return "CondorcetPartitioning"+"_"+self.alg.get_full_name()+"_exact:"+str(self.bound_for_exact)
 
     def get_handled_distances(self):
         """

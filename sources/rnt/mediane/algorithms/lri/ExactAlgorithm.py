@@ -4,9 +4,18 @@ from mediane.distances.enumeration import GENERALIZED_KENDALL_TAU_DISTANCE, GENE
     PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE
 from numpy import ndarray, array, shape, zeros, count_nonzero, vdot, asarray
 from operator import itemgetter
+from multiprocessing import cpu_count
 
 
 class ExactAlgorithm(MedianRanking):
+    def __init__(self, limit_time_sec=0, cores=1):
+        if limit_time_sec > 0:
+            self.__limit_time_sec = limit_time_sec
+        else:
+            self.__limit_time_sec = 0
+        self.__cores = 1
+        if cores > 1:
+            self.__cores = min(cores, cpu_count()-1)
 
     def compute_median_rankings(
             self,
@@ -53,10 +62,11 @@ class ExactAlgorithm(MedianRanking):
         # DEBUT ROBIN
         map_elements_cplex = {}
         my_prob = cplex.Cplex()  # initiate
-        my_prob.parameters.threads.set(1)
+        my_prob.parameters.threads.set(self.__cores)
         my_prob.set_results_stream(None)  # mute
         my_prob.parameters.mip.tolerances.mipgap.set(0.0)
-
+        if self.__limit_time_sec > 0:
+            my_prob.parameters.tuning.timelimit.set(self.__limit_time_sec)
         my_prob.objective.set_sense(my_prob.objective.sense.minimize)  # we want to minimize the objective function
 
         # indicator_i = []
