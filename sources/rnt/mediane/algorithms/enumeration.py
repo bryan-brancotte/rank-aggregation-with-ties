@@ -6,7 +6,7 @@ from mediane.algorithms.fagin.med_rank import MedRank
 from mediane.algorithms.misc.borda_count import BordaCount
 from mediane.algorithms.ailon.kwiksort.kwiksort_random import KwikSortRandom
 from mediane.algorithms.misc.CopelandMethod import CopelandMethod
-from mediane.algorithms.lri.BioConsert import BioConsert
+from mediane.algorithms.lri.BioConsert_C import BioConsertC
 from mediane.algorithms.lri.BioCo import BioCo
 from mediane.algorithms.lri.CondorcetPartitiong import CondorcetPartitioning
 from mediane.algorithms.lri.ExactAlgorithm import ExactAlgorithm
@@ -21,7 +21,7 @@ class AlgorithmEnumeration:
         MedRank,
         KwikSortRandom,
         CopelandMethod,
-        BioConsert,
+        BioConsertC,
         BioCo,
         CondorcetPartitioning,
         RepeatChoice,
@@ -64,7 +64,7 @@ def get_median_ranking_algorithms():
         MedRank,
         KwikSortRandom,
         CopelandMethod,
-        BioConsert,
+        BioConsertC,
         BioCo,
         CondorcetPartitioning,
         RepeatChoice,
