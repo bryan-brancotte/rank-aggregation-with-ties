@@ -1,8 +1,6 @@
 from mediane.algorithms.median_ranking import MedianRanking, DistanceNotHandledException
-from mediane.distances.enumeration import GENERALIZED_KENDALL_TAU_DISTANCE, GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE, \
-    PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE
-from mediane.algorithms.lri.BioConsert_C import BioConsertC
-from mediane.algorithms.lri.ExactAlgorithm import ExactAlgorithm
+from mediane.distances.enumeration import GENERALIZED_KENDALL_TAU_DISTANCE, GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE, PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE
+from mediane.algorithms.lri.BioConsert import BioConsert
 
 from typing import List, Dict, Tuple
 from itertools import combinations
@@ -18,7 +16,7 @@ class CondorcetPartitioning(MedianRanking):
         if isinstance(algorithm_to_complete, MedianRanking):
             self.alg = algorithm_to_complete
         else:
-            self.alg = BioConsertC(starting_algorithms=None)
+            self.alg = BioConsert(starting_algorithms=None)
         self.bound_for_exact = bound_for_exact
 
     def compute_median_rankings(
@@ -39,7 +37,7 @@ class CondorcetPartitioning(MedianRanking):
         :raise DistanceNotHandledException when the algorithm cannot compute the consensus following the distance given
         as parameter
         """
-
+        
         scoring_scheme = asarray(distance.scoring_scheme)
         if scoring_scheme[1][0] != scoring_scheme[1][1] or scoring_scheme[1][3] != scoring_scheme[1][4]:
             raise DistanceNotHandledException
@@ -96,9 +94,7 @@ class CondorcetPartitioning(MedianRanking):
                         res.extend(self.alg.compute_median_rankings(project_rankings, distance, False)[0])
 
                     else:
-                        res.extend(ExactAlgorithm(cores=self.__core_for_exact).compute_median_rankings(project_rankings,
-                                                                                                       distance, False)
-                                   [0])
+                        res.extend(self.alg.compute_median_rankings(project_rankings, distance,False)[0])
         return [res]
 
     @staticmethod
@@ -156,7 +152,7 @@ class CondorcetPartitioning(MedianRanking):
         return False
 
     def get_full_name(self):
-        return "CondorcetPartitioning"+"_"+self.alg.get_full_name()+"_exact:"+str(self.bound_for_exact)
+        return "CondorcetPartitioning"+"_"+self.alg.get_full_name()
 
     def get_handled_distances(self):
         """
