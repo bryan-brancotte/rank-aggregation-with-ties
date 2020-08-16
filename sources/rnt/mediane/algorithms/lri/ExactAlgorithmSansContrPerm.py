@@ -158,6 +158,7 @@ class ExactAlgorithmBis(MedianRanking):
                             rows.append([[i_tie_j, j_tie_k, i_tie_k], [2.0, 2.0, -1.0]])
 
         # if tie is not the single best choice for any pair x,y, then there is a permutation median
+
         if not ties_must_be_checked:
             my_sense += "E" * int(nb_elem*(nb_elem-1)/2)
             for i in range(0, nb_elem - 1):
@@ -236,7 +237,7 @@ class ExactAlgorithmBis(MedianRanking):
                 put_tied = vdot(relative_positions, cost_tied)
                 matrix[e1][e2] = [put_before, put_after, put_tied]
                 matrix[e2][e1] = [put_after, put_before, put_tied]
-                if put_tied < put_after and put_tied < put_before:
+                if put_tied < put_after and put_before < put_before:
                     ties_must_be_checked = True
 
         return matrix, ties_must_be_checked
