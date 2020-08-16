@@ -11,7 +11,7 @@ from mediane.algorithms.lri.BioCo import BioCo
 from mediane.algorithms.lri.CondorcetPartitiong import CondorcetPartitioning
 from mediane.algorithms.lri.ExactAlgorithm import ExactAlgorithm
 from mediane.algorithms.lri.ExactAlgorithm_preprocessing import ExactAlgorithmPreprocessing
-
+from mediane.algorithms.Schulze import Schulze
 
 class AlgorithmEnumeration:
     __tuple_list = None
@@ -26,7 +26,8 @@ class AlgorithmEnumeration:
         CondorcetPartitioning,
         RepeatChoice,
         ExactAlgorithm,
-        ExactAlgorithmPreprocessing
+        ExactAlgorithmPreprocessing,
+        Schulze
     ]
 
     def __init__(self):
@@ -70,6 +71,7 @@ def get_median_ranking_algorithms():
         RepeatChoice,
         ExactAlgorithm,
         ExactAlgorithmPreprocessing
+        Schulze
     ]
 
 
