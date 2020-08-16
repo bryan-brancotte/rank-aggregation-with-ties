@@ -1,6 +1,6 @@
 from typing import Set, List, Dict
 from os import listdir, mkdir
-from random import randint, seed
+from random import randint  # seed
 import numpy as np
 from median_ranking_tools import get_rankings_from_file
 
@@ -55,15 +55,16 @@ def remove_element(ranking: np.ndarray, elem: int):
     ranking[elem] = -1
 
 
-def put_element_end(ranking: np.ndarray, elem: int):
-    ranking[elem] = np.max(ranking) + 1
+def put_element_first(ranking: np.ndarray, elem: int):
+    ranking[ranking >= 0] += 1
+    ranking[elem] = 0
 
 
 def step_element_incomplete(ranking: np.ndarray, elem: int, missing_elements: Set):
     alea = randint(1, 5)
     if elem in missing_elements:
         if alea == 5:
-            put_element_end(ranking, elem)
+            put_element_first(ranking, elem)
             missing_elements.remove(elem)
     else:
         if alea == 1:
@@ -208,21 +209,46 @@ def get_positions(rankings: List[List[List[int]]], elements_id: Dict) -> np.ndar
 #        # create_dataset(nb_elements=50, nb_rankings=10, steps=steps_wanted)
 #        create_dataset(nb_elements=35, nb_rankings=11, steps=step_wanted)
 
+"""
+for toto in range(4, 10):
+    path = "/home/pierre/Bureau/expe2/"+str(toto)+"/"
 
-seed(1)
-path = "/home/pierre/Bureau/Doctorat/Datasets/notes_syn_2/steps/"
+    for id_jdd in range(100):
+        print(id_jdd)
+        id_output = "dat" + '{0:03}'.format(id_jdd)
+        for st in range(300, 3001, 300):
+            old_rankings = get_rankings_from_file(path + "step="+str(st-300)+"/datasets/" + id_output)
+
+            new_rankings = create_dataset_from_rankings(rankings=old_rankings, steps=300, complete=False)
+
+            f = open(path + "step="+str(st)+"/datasets/" + id_output, "w")
+            for ranking_new in new_rankings:
+                f.write(str(ranking_new))
+                f.write("\n")
+            f.close()
+"""
+
+"""
+
+path = "/home/pierre/Bureau/Doctorat/Datasets/notes_syn_2/steps_add_before/"
 
 for id_jdd in range(1, 101):
     print(id_jdd)
     id_output = "dat" + '{0:03}'.format(id_jdd)
-    for st in range(100, 5001, 100):
-        old_rankings = get_rankings_from_file(path + "step"+str(st-100)+"/jdd_classements/" + id_output)
+    for st in range(300, 301, 300):
+        old_rankings = []
+        for id_ranking in range(17):
+            ranking = []
 
-        new_rankings = create_dataset_from_rankings(rankings=old_rankings, steps=100, complete=False)
+            for i in range(300):
+                ranking.append([i])
+            old_rankings.append(ranking)
 
-        f = open(path + "step"+str(st)+"/jdd_classements/" + id_output, "w")
+        new_rankings = create_dataset_from_rankings(rankings=old_rankings, steps=600000, complete=False)
+
+        f = open("/home/pierre/Bureau/perm_st600000/"+id_output, "w")
         for ranking_new in new_rankings:
             f.write(str(ranking_new))
             f.write("\n")
         f.close()
-
+"""

@@ -41,8 +41,7 @@ SECRET_KEY = config['global'].get('SECRET_KEY', '7_+-b^u9n3qx&)id+4h0=d1$rq+&v7#
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config['global'].get('DEBUG', 'true').lower() == 'true'
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ALLOWED_HOSTS = ['0.0.0.0', 'localhost']
 # Application definition
 
 INSTALLED_APPS = [

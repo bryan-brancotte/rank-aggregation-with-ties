@@ -1,14 +1,16 @@
 from typing import Dict, List
 from mediane.distances.distance_calculator import DistanceCalculator
 from mediane.distances.kemeny_computation import KemenyComputingFactory
+from mediane.distances.ScoringScheme import ScoringScheme
 
 from numpy import vdot, asarray
 
 
 class KendallTauGeneralizedNlogN(DistanceCalculator):
 
-    def __init__(self, distance: 'mediane.models.Distance'):
+    def __init__(self, distance: 'mediane.models.Distance', sc=ScoringScheme.get_scoring_scheme_when_no_distance()):
         self.distance = distance
+        self.sc = sc
 
     def get_distance_to_an_other_ranking(
             self,
@@ -31,10 +33,16 @@ class KendallTauGeneralizedNlogN(DistanceCalculator):
         (vect_before, vect_tied) = KemenyComputingFactory.get_before_tied_counting(elements_r1, size_buckets, ranking,
                                                                                    id_max)
         res = {}
-        coeffs = asarray(self.distance.scoring_scheme)
+        id_order = 0
+        if self.distance is None:
+            coeffs = self.sc.matrix
+        else:
+            coeffs = asarray(self.distance.scoring_scheme)
+            id_order = self.distance.id_order
 
         dst = abs(vdot(coeffs[0], vect_before)) + abs(vdot(coeffs[1], vect_tied))
-        res[self.distance.id_order] = dst
+
+        res[id_order] = dst
         return res
 
     def get_distance_to_a_set_of_rankings(
@@ -43,9 +51,13 @@ class KendallTauGeneralizedNlogN(DistanceCalculator):
             rankings: List[List[List[int]]],
     ) -> Dict[int, float]:
         dst = 0
+        if self.distance is None:
+            id_order = 0
+        else:
+            id_order = self.distance.id_order
         for r in rankings:
-            dst += self.get_distance_to_an_other_ranking(c, r)[self.distance.id_order]
+            dst += self.get_distance_to_an_other_ranking(c, r)[id_order]
 
         return {
-            self.distance.id_order: dst
+            id_order: dst
         }
