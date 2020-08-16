@@ -1,4 +1,4 @@
-from mediane.algorithms.median_ranking import MedianRanking, DistanceNotHandledException
+from mediane.algorithms.median_ranking import MedianRanking  # , DistanceNotHandledException
 from mediane.distances.enumeration import GENERALIZED_KENDALL_TAU_DISTANCE, GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE, \
     PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE, GENERALIZED_KENDALL_TAU_DISTANCE_WITH_UNIFICATION
 from typing import List
@@ -26,19 +26,17 @@ class Schulze(MedianRanking):
         :raise DistanceNotHandledException when the algorithm cannot compute the consensus following the distance given
         as parameter
         """
-
-        scoring_scheme = np.asarray(distance.scoring_scheme)
-        if scoring_scheme[1][0] != scoring_scheme[1][1] or scoring_scheme[1][3] != scoring_scheme[1][4]:
-            raise DistanceNotHandledException
-        elements_id, id_elements, positions = self.prepare_internal_vars(rankings)
-        matrix_pairwise_pref = self.pairwise_preferences(positions, len(elements_id), scoring_scheme[0])
-        # print("matrix_pairwise_pref : \n{}".format(matrix_pairwise_pref))
-        var = self.link_strength(matrix_pairwise_pref, elements, 'margin')
-        # print(var[0])
-        matrix_p = self.strength_strongest_path(var[0], var[1], elements)
-        # print("\nok\n{}".format(Matrix_P))
-        final_scores = self.binary_relation(matrix_p, elements)
-        consensus = self.compute_consensus(elements, final_scores)
+        all_elements = []
+        consensus = [all_elements]
+        elements = set()
+        for ranking in rankings:
+            for bucket in ranking:
+                for element in bucket:
+                    elements.add(element)
+        if len(elements) == 0:
+            return []
+        for element in elements:
+            all_elements.append(element)
         return [consensus]
 
     @staticmethod
