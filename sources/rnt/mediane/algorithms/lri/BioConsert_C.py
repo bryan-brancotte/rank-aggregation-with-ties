@@ -29,7 +29,9 @@ class BioConsertC(MedianRanking):
             self,
             rankings: List[List[List[int]]],
             distance,
-            return_at_most_one_ranking: bool = False) -> List[List[List[int]]]:
+            return_at_most_one_ranking: bool = False,
+            sc=ScoringScheme.get_scoring_scheme_when_no_distance())-> List[List[List[int]]]:
+
         """
         :param rankings: A set of rankings
         :type rankings: list
@@ -37,19 +39,20 @@ class BioConsertC(MedianRanking):
         :type distance: Distance
         :param return_at_most_one_ranking: the algorithm should not return more than one ranking
         :type return_at_most_one_ranking: bool
+        :param sc: a scoring scheme
+        :type sc: ScoringScheme
         :return one or more consensus if the underlying algorithm can find multiple solution as good as each other.
         If the algorithm is not able to provide multiple consensus, or if return_at_most_one_ranking is True then, it
         should return a list made of the only / the first consensus found
         :raise DistanceNotHandledException when the algorithm cannot compute the consensus following the distance given
         as parameter
         """
-        rankagg_c = ctypes.CDLL("rankaggregation.so")
+        rankagg_c = ctypes.CDLL("/home/pierre/Bureau/rank_aggregation_c/rankaggregation.so")
 
         if distance is None:
-            scoring_scheme = ScoringScheme([[0., 1., .5, 0., 1., 0.], [0.5, 0.5, 0, 0.5, 0.5, 0.]]).matrix
+            scoring_scheme = sc.matrix
         else:
             scoring_scheme = asarray(distance.scoring_scheme)
-
         if scoring_scheme[1][0] != scoring_scheme[1][1] or scoring_scheme[1][3] != scoring_scheme[1][4]:
             raise DistanceNotHandledException
         res = []
@@ -71,7 +74,7 @@ class BioConsertC(MedianRanking):
         if nb_elements == 0:
             return [[]]
 
-        (departure, dst_res) = self.__departure_rankings(rankings, positions, elem_id, distance)
+        (departure, dst_res) = self.__departure_rankings(rankings, positions, elem_id, distance, sc)
 
         fct = rankagg_c.c_BioConsert
         fct.argtypes = [ctypeslib.ndpointer(dtype=int32),
@@ -124,11 +127,15 @@ class BioConsertC(MedianRanking):
             id_ranking += 1
         return positions
 
-    def __departure_rankings(self, rankings: List[List[List[int]]], positions: ndarray, elements_id: Dict, distance) \
-            -> Tuple[ndarray, ndarray]:
+    def __departure_rankings(self, rankings: List[List[List[int]]], positions: ndarray, elements_id: Dict, distance,
+                             sc: ScoringScheme) -> Tuple[ndarray, ndarray]:
+        if distance is None:
+            dst_id = 0
+        else:
+            dst_id = distance.id_order
         dst_ini = []
         rankings_unified = Unification.rankings_to_rankings(rankings)
-        kem_comp = KendallTauGeneralizedNlogN(distance)
+        kem_comp = KendallTauGeneralizedNlogN(distance, sc)
         if len(self.starting_algorithms) == 0:
             real_pos = array(positions).transpose()
             distinct_rankings = set()
@@ -144,12 +151,12 @@ class BioConsertC(MedianRanking):
                     list_distinct_id_rankings.append(i)
 
                     dst_ini.append(
-                        kem_comp.get_distance_to_a_set_of_rankings(ranking, rankings)[distance.id_order])
+                        kem_comp.get_distance_to_a_set_of_rankings(ranking, rankings)[dst_id])
 
                 i += 1
 
             dst_ini.append(kem_comp.get_distance_to_a_set_of_rankings([[*elements_id]], rankings)
-                           [distance.id_order])
+                           [dst_id])
             departure = zeros((len(list_distinct_id_rankings)+1, len(elements_id)), dtype=int32)
             departure[:-1] = real_pos[asarray(list_distinct_id_rankings)]
         else:
@@ -180,7 +187,6 @@ class BioConsertC(MedianRanking):
 
     def get_handled_distances(self):
         """
-
         :return: a list of distances from distance_enumeration
         """
         return (

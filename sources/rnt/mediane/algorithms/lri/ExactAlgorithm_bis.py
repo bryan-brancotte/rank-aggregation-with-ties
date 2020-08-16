@@ -7,7 +7,7 @@ from operator import itemgetter
 from multiprocessing import cpu_count
 
 
-class ExactAlgorithm(MedianRanking):
+class ExactAlgorithmRobin(MedianRanking):
     def __init__(self, limit_time_sec=0, cores=1):
         if limit_time_sec > 0:
             self.__limit_time_sec = limit_time_sec
@@ -52,7 +52,7 @@ class ExactAlgorithm(MedianRanking):
         if nb_elements == 0:
             return [[]]
 
-        positions = ExactAlgorithm.__positions(rankings, elem_id)
+        positions = ExactAlgorithmRobin.__positions(rankings, elem_id)
         if distance is None:
             scoring_scheme = [[0, 1.0, 1.0, 0, 0, 0], [[1.0, 1.0, 0, 0, 0, 0]]]
         else:
@@ -60,6 +60,7 @@ class ExactAlgorithm(MedianRanking):
         mat_score = self.__cost_matrix(positions, asarray(scoring_scheme))
 
         # DEBUT ROBIN
+
         map_elements_cplex = {}
         my_prob = cplex.Cplex()  # initiate
         my_prob.parameters.threads.set(self.__cores)
@@ -341,10 +342,8 @@ class ExactAlgorithm(MedianRanking):
 
         my_prob.linear_constraints.add(lin_expr=rows, senses=my_sense, rhs=my_rhs, names=my_rownames)
 
-        # my_prob.write("/home/pierre/Bureau/cplex_test.lp")
-
-        # start = my_prob.get_dettime()
         my_prob.solve()  # solve
+
         # end = my_prob.get_dettime()
         # elapsed = end - start
         # print(" elapsed det time: %s" % elapsed)
@@ -361,7 +360,6 @@ class ExactAlgorithm(MedianRanking):
         count_after = {}
         for i in range(nb_elements):
             count_after[i] = 0
-
         for var in range(numcols):
             if abs(x[var] - 1) < 0.001:
                 tple = map_elements_cplex[var]

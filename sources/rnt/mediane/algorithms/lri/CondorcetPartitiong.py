@@ -1,7 +1,9 @@
 from mediane.algorithms.median_ranking import MedianRanking, DistanceNotHandledException
-from mediane.distances.enumeration import GENERALIZED_KENDALL_TAU_DISTANCE, GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE, PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE
-from mediane.algorithms.lri.BioConsert import BioConsert
-
+from mediane.distances.enumeration import GENERALIZED_KENDALL_TAU_DISTANCE, GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE, \
+    PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE
+from mediane.algorithms.lri.BioConsert_C import BioConsertC
+from mediane.algorithms.lri.ExactAlgorithm_bis import ExactAlgorithmRobin
+from mediane.distances.ScoringScheme import ScoringScheme
 from typing import List, Dict, Tuple
 from itertools import combinations
 from numpy import vdot, ndarray, count_nonzero, shape, array, zeros, asarray
@@ -9,21 +11,19 @@ from igraph import Graph
 
 
 class CondorcetPartitioning(MedianRanking):
-    def __init__(self, algorithm_to_complete=None, bound_for_exact=0, cores_for_exact=1):
-        self.__core_for_exact = 1
-        if cores_for_exact > 1:
-            self.__core_for_exact = cores_for_exact
+    def __init__(self, algorithm_to_complete=None, bound_for_exact=0):
         if isinstance(algorithm_to_complete, MedianRanking):
             self.alg = algorithm_to_complete
         else:
-            self.alg = BioConsert(starting_algorithms=None)
+            self.alg = BioConsertC(starting_algorithms=None)
         self.bound_for_exact = bound_for_exact
 
     def compute_median_rankings(
             self,
             rankings: List[List[List[int]]],
             distance,
-            return_at_most_one_ranking: bool = False)-> List[List[List[int]]]:
+            return_at_most_one_ranking: bool = False,
+            sc=ScoringScheme.get_scoring_scheme_when_no_distance())-> List[List[List[int]]]:
         """
         :param rankings: A set of rankings
         :type rankings: list
@@ -31,6 +31,8 @@ class CondorcetPartitioning(MedianRanking):
         :type distance: Distance
         :param return_at_most_one_ranking: the algorithm should not return more than one ranking
         :type return_at_most_one_ranking: bool
+        :param sc: a scoring scheme
+        :type sc: ScoringScheme
         :return one or more consensus if the underlying algorithm can find multiple solution as good as each other.
         If the algorithm is not able to provide multiple consensus, or if return_at_most_one_ranking is True then, it
         should return a list made of the only / the first consensus found
@@ -38,13 +40,18 @@ class CondorcetPartitioning(MedianRanking):
         as parameter
         """
         
-        scoring_scheme = asarray(distance.scoring_scheme)
+        if distance is None:
+            scoring_scheme = sc.matrix
+        else:
+            scoring_scheme = asarray(distance.scoring_scheme)
+
         if scoring_scheme[1][0] != scoring_scheme[1][1] or scoring_scheme[1][3] != scoring_scheme[1][4]:
             raise DistanceNotHandledException
         res = []
         elem_id = {}
         id_elements = {}
         id_elem = 0
+        # print("Debut hash")
         for ranking in rankings:
             for bucket in ranking:
                 for element in bucket:
@@ -52,16 +59,17 @@ class CondorcetPartitioning(MedianRanking):
                         elem_id[element] = id_elem
                         id_elements[id_elem] = element
                         id_elem += 1
+        # print("fin hash")
         # nb_elements = len(elem_id)
 
         positions = CondorcetPartitioning.__positions(rankings, elem_id)
 
         # TYPE igraph.Graph
         gr1, mat_score = self.__graph_of_elements(positions, scoring_scheme)
-
+        # print("fin graphe")
         # TYPE igraph.clustering.VertexClustering
         scc = gr1.components()
-
+        # print("fin composantes")
         for scc_i in scc:
             if len(scc_i) == 1:
                 res.append([id_elements.get(scc_i[0])])
@@ -91,10 +99,9 @@ class CondorcetPartitioning(MedianRanking):
                         if len(project_ranking) > 0:
                             project_rankings.append(project_ranking)
                     if len(scc_i) > self.bound_for_exact:
-                        res.extend(self.alg.compute_median_rankings(project_rankings, distance, False)[0])
-
+                        res.extend(self.alg.compute_median_rankings(project_rankings, distance, True)[0])
                     else:
-                        res.extend(self.alg.compute_median_rankings(project_rankings, distance,False)[0])
+                        res.extend(ExactAlgorithmRobin().compute_median_rankings(project_rankings, distance, True)[0])
         return [res]
 
     @staticmethod
@@ -136,6 +143,7 @@ class CondorcetPartitioning(MedianRanking):
     def __positions(rankings: List[List[List[int]]], elements_id: Dict) -> ndarray:
         positions = zeros((len(elements_id), len(rankings)), dtype=int) - 1
         id_ranking = 0
+        # print("debut positions")
         for ranking in rankings:
             id_bucket = 0
             for bucket in ranking:
@@ -143,6 +151,8 @@ class CondorcetPartitioning(MedianRanking):
                     positions[elements_id.get(element)][id_ranking] = id_bucket
                 id_bucket += 1
             id_ranking += 1
+        # print("fin positions")
+
         return positions
 
     def is_breaking_ties_arbitrarily(self):

@@ -6,7 +6,7 @@ from numpy import ndarray, array, shape, zeros, count_nonzero, vdot, asarray
 from operator import itemgetter
 
 
-class ExactAlgorithmBis(MedianRanking):
+class ExactAlgorithm(MedianRanking):
     def __init__(self, limit_time_sec=0, scoring_scheme=None):
         if limit_time_sec > 0:
             self.__limit_time_sec = limit_time_sec
@@ -47,7 +47,7 @@ class ExactAlgorithmBis(MedianRanking):
         if nb_elem == 0:
             return [[]]
 
-        positions = ExactAlgorithmBis.__positions(rankings, elem_id)
+        positions = ExactAlgorithm.__positions(rankings, elem_id)
         if distance is None:
             if self.__scoring_scheme is None:
                 scoring_scheme = [[0., 1., 1., 0., 1., 0.], [1., 1., 0., 1., 1., 0.]]
@@ -179,11 +179,11 @@ class ExactAlgorithmBis(MedianRanking):
             nb_optimal_solutions = my_prob.solution.pool.get_num()
             for i in range(nb_optimal_solutions):
                 names = my_prob.solution.pool.get_values(i)
-                medianes.append(ExactAlgorithmBis.__create_consensus(nb_elem, names, map_elements_cplex, id_elements))
+                medianes.append(ExactAlgorithm.__create_consensus(nb_elem, names, map_elements_cplex, id_elements))
         else:
             my_prob.solve()
             x = my_prob.solution.get_values()
-            medianes.append(ExactAlgorithmBis.__create_consensus(nb_elem, x, map_elements_cplex, id_elements))
+            medianes.append(ExactAlgorithm.__create_consensus(nb_elem, x, map_elements_cplex, id_elements))
 
         return medianes
 

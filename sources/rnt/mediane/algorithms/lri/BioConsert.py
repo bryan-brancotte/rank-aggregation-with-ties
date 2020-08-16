@@ -43,15 +43,13 @@ class BioConsert(MedianRanking):
         as parameter
         """
         if distance is None:
-            scoring_scheme = ScoringScheme([[0., 1., .5, 0., 1., 0.], [0.5, 0.5, 0, 0.5, 0.5, 0.]]).matrix
+            scoring_scheme = ScoringScheme([[0., 1., .5, 0., 0., 0.], [0.5, 0.5, 0, 0.0, 0.0, 0.]]).matrix
         else:
             scoring_scheme = asarray(distance.scoring_scheme)
 
         if scoring_scheme[1][0] != scoring_scheme[1][1] or scoring_scheme[1][3] != scoring_scheme[1][4]:
             raise DistanceNotHandledException
         res = []
-        # kem = KemenyComputingFactory(scoring_scheme=self.scoring_scheme)
-        # kem = KendallTauGeneralizedNlogN()
         elem_id = {}
         id_elements = {}
         id_elem = 0
@@ -70,10 +68,13 @@ class BioConsert(MedianRanking):
         departure = self.__departure_rankings(rankings, elem_id, distance)
 
         if len(self.starting_algorithms) == 0:
+            # remove last column
+            # if no starting alg, then the departure rankings are each input ranking plus ranking with
+            # all tied. This last one is removed here to compute the cost_matrix
             matrix = self.__cost_matrix(departure[:, :-1], scoring_scheme)
         else:
             matrix = self.__cost_matrix(departure, scoring_scheme)
-        #print(matrix)
+
         result = set()
         dst_min = float('inf')
 
@@ -97,24 +98,26 @@ class BioConsert(MedianRanking):
             id_ranking += 1
 
         ranking_dict = {}
-
+        already_done = set()
         for id_ranking in result:
             to_be_translated = departure[:, id_ranking]
-            ranking_dict.clear()
-            el = 0
-            for id_bucket_arr in nditer(to_be_translated):
-                id_bucket = id_bucket_arr.item()
-                if id_bucket not in ranking_dict:
-                    ranking_dict[id_bucket] = [id_elements.get(el)]
-                else:
-                    ranking_dict[id_bucket].append(id_elements.get(el))
-                el += 1
+            if str(to_be_translated) not in already_done:
+                already_done.add(str(to_be_translated))
+                ranking_dict.clear()
+                el = 0
+                for id_bucket_arr in nditer(to_be_translated):
+                    id_bucket = id_bucket_arr.item()
+                    if id_bucket not in ranking_dict:
+                        ranking_dict[id_bucket] = [id_elements.get(el)]
+                    else:
+                        ranking_dict[id_bucket].append(id_elements.get(el))
+                    el += 1
 
-            ranking_list = []
-            nb_buckets_ranking_i = len(ranking_dict)
-            for id_bucket in range(nb_buckets_ranking_i):
-                ranking_list.append(ranking_dict.get(id_bucket))
-            res.append(ranking_list)
+                ranking_list = []
+                nb_buckets_ranking_i = len(ranking_dict)
+                for id_bucket in range(nb_buckets_ranking_i):
+                    ranking_list.append(ranking_dict.get(id_bucket))
+                res.append(ranking_list)
 
         return res
 

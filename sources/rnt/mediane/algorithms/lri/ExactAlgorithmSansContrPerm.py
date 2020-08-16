@@ -1,4 +1,4 @@
-from typing import List, Dict, Tuple
+from typing import List, Dict
 from mediane.algorithms.median_ranking import MedianRanking
 from mediane.distances.enumeration import GENERALIZED_KENDALL_TAU_DISTANCE, GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE, \
     PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE
@@ -6,7 +6,7 @@ from numpy import ndarray, array, shape, zeros, count_nonzero, vdot, asarray
 from operator import itemgetter
 
 
-class ExactAlgorithmBis(MedianRanking):
+class ExactAlgorithmBisSansContrPerm(MedianRanking):
     def __init__(self, limit_time_sec=0, scoring_scheme=None):
         if limit_time_sec > 0:
             self.__limit_time_sec = limit_time_sec
@@ -47,7 +47,7 @@ class ExactAlgorithmBis(MedianRanking):
         if nb_elem == 0:
             return [[]]
 
-        positions = ExactAlgorithmBis.__positions(rankings, elem_id)
+        positions = ExactAlgorithmBisSansContrPerm.__positions(rankings, elem_id)
         if distance is None:
             if self.__scoring_scheme is None:
                 scoring_scheme = [[0., 1., 1., 0., 1., 0.], [1., 1., 0., 1., 1., 0.]]
@@ -55,7 +55,7 @@ class ExactAlgorithmBis(MedianRanking):
                 scoring_scheme = self.__scoring_scheme
         else:
             scoring_scheme = distance.scoring_scheme
-        mat_score, ties_must_be_checked = self.__cost_matrix(positions, asarray(scoring_scheme))
+        mat_score = self.__cost_matrix(positions, asarray(scoring_scheme))
         map_elements_cplex = {}
         my_prob = cplex.Cplex()  # initiate
         my_prob.set_results_stream(None)  # mute
@@ -159,18 +159,6 @@ class ExactAlgorithmBis(MedianRanking):
 
         # if tie is not the single best choice for any pair x,y, then there is a permutation median
 
-        if not ties_must_be_checked:
-            my_sense += "E" * int(nb_elem*(nb_elem-1)/2)
-            for i in range(0, nb_elem - 1):
-                for j in range(i + 1, nb_elem):
-                    if not i == j:
-                        s = "c%s" % count
-                        count += 1
-                        my_rhs.append(0)
-                        my_rownames.append(s)
-                        row = [["t_%s_%s" % (i, j)], [1]]
-                        rows.append(row)
-
         my_prob.linear_constraints.add(lin_expr=rows, senses=my_sense, rhs=my_rhs, names=my_rownames)
         medianes = []
 
@@ -180,11 +168,11 @@ class ExactAlgorithmBis(MedianRanking):
             nb_optimal_solutions = my_prob.solution.pool.get_num()
             for i in range(nb_optimal_solutions):
                 names = my_prob.solution.pool.get_values(i)
-                medianes.append(ExactAlgorithmBis.__create_consensus(nb_elem, names, map_elements_cplex, id_elements))
+                medianes.append(ExactAlgorithmBisSansContrPerm.__create_consensus(nb_elem, names, map_elements_cplex, id_elements))
         else:
             my_prob.solve()
             x = my_prob.solution.get_values()
-            medianes.append(ExactAlgorithmBis.__create_consensus(nb_elem, x, map_elements_cplex, id_elements))
+            medianes.append(ExactAlgorithmBisSansContrPerm.__create_consensus(nb_elem, x, map_elements_cplex, id_elements))
 
         return medianes
 
@@ -213,7 +201,7 @@ class ExactAlgorithmBis(MedianRanking):
         return ranking
 
     @staticmethod
-    def __cost_matrix(positions: ndarray, matrix_scoring_scheme: ndarray) -> Tuple[ndarray, bool]:
+    def __cost_matrix(positions: ndarray, matrix_scoring_scheme: ndarray) -> ndarray:
         cost_before = matrix_scoring_scheme[0]
         cost_tied = matrix_scoring_scheme[1]
         cost_after = array([cost_before[1], cost_before[0], cost_before[2], cost_before[4], cost_before[3],
@@ -222,7 +210,6 @@ class ExactAlgorithmBis(MedianRanking):
         m = shape(positions)[1]
 
         matrix = zeros((n, n, 3))
-        ties_must_be_checked = False
         for e1 in range(n):
             mem = positions[e1]
             d = count_nonzero(mem == -1)
@@ -237,10 +224,8 @@ class ExactAlgorithmBis(MedianRanking):
                 put_tied = vdot(relative_positions, cost_tied)
                 matrix[e1][e2] = [put_before, put_after, put_tied]
                 matrix[e2][e1] = [put_after, put_before, put_tied]
-                if put_tied < put_after and put_before < put_before:
-                    ties_must_be_checked = True
 
-        return matrix, ties_must_be_checked
+        return matrix
 
     @staticmethod
     def __positions(rankings: List[List[List[int]]], elements_id: Dict) -> ndarray:
