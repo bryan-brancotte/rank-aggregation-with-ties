@@ -7,7 +7,7 @@ from operator import itemgetter
 from multiprocessing import cpu_count
 
 
-class ExactAlgorithmRobin(MedianRanking):
+class ExactAlgorithmBis(MedianRanking):
     def __init__(self, limit_time_sec=0, cores=1):
         if limit_time_sec > 0:
             self.__limit_time_sec = limit_time_sec
@@ -52,7 +52,7 @@ class ExactAlgorithmRobin(MedianRanking):
         if nb_elements == 0:
             return [[]]
 
-        positions = ExactAlgorithmRobin.__positions(rankings, elem_id)
+        positions = ExactAlgorithmBis.__positions(rankings, elem_id)
         if distance is None:
             scoring_scheme = [[0, 1.0, 1.0, 0, 0, 0], [[1.0, 1.0, 0, 0, 0, 0]]]
         else:

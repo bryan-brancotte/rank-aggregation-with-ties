@@ -2,7 +2,7 @@ from mediane.algorithms.median_ranking import MedianRanking, DistanceNotHandledE
 from mediane.distances.enumeration import GENERALIZED_KENDALL_TAU_DISTANCE, GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE, \
     PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE
 from mediane.algorithms.lri.BioConsert_C import BioConsertC
-from mediane.algorithms.lri.ExactAlgorithm_bis import ExactAlgorithmRobin
+from mediane.algorithms.lri.ExactAlgorithm_bis import ExactAlgorithmBis
 from mediane.distances.ScoringScheme import ScoringScheme
 from typing import List, Dict, Tuple
 from itertools import combinations
@@ -101,7 +101,7 @@ class CondorcetPartitioning(MedianRanking):
                     if len(scc_i) > self.bound_for_exact:
                         res.extend(self.alg.compute_median_rankings(project_rankings, distance, True)[0])
                     else:
-                        res.extend(ExactAlgorithmRobin().compute_median_rankings(project_rankings, distance, True)[0])
+                        res.extend(ExactAlgorithmBis().compute_median_rankings(project_rankings, distance, True)[0])
         return [res]
 
     @staticmethod
