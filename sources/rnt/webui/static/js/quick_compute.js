@@ -162,7 +162,7 @@ function compute_consensus_from_dataset(form, callback){
                     },
                     {
                         data: "distance",
-                        title: "Distance",
+                        title: "Kemeny score",
                     },
                     {
                         data: "consensus",
@@ -231,7 +231,7 @@ stack_onload(function () {
     $(".param-host").parent()
     .each(function() {
         var v = $(this);
-        $(v).collapse(getCookie($(v).attr("id"),"hide"),);
+        $(v).collapse(getCookie($(v).attr("id"),"hide"));
     });
     $('#accordion .panel-collapse')
     .each(function() {
