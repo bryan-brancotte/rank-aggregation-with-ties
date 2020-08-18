@@ -29,8 +29,7 @@ class BioConsertC(MedianRanking):
             self,
             rankings: List[List[List[int]]],
             distance,
-            return_at_most_one_ranking: bool = False,
-            sc=ScoringScheme.get_scoring_scheme_when_no_distance())-> List[List[List[int]]]:
+            return_at_most_one_ranking: bool = False)-> List[List[List[int]]]:
 
         """
         :param rankings: A set of rankings
@@ -47,14 +46,15 @@ class BioConsertC(MedianRanking):
         :raise DistanceNotHandledException when the algorithm cannot compute the consensus following the distance given
         as parameter
         """
-        rankagg_c = ctypes.CDLL("/home/pierre/Bureau/rank_aggregation_c/rankaggregation.so")
-
+        rankagg_c = ctypes.CDLL("/home/pierre/workspace/rank-aggregation-with-ties/sources/rnt/mediane/algorithms/lri/rankaggregation.so")
+        sc = None
         if distance is None:
-            scoring_scheme = sc.matrix
+            sc = ScoringScheme.get_scoring_scheme_when_no_distance()
+            scoring_scheme = asarray(sc.matrix)
         else:
             scoring_scheme = asarray(distance.scoring_scheme)
-        if scoring_scheme[1][0] != scoring_scheme[1][1] or scoring_scheme[1][3] != scoring_scheme[1][4]:
-            raise DistanceNotHandledException
+        #if scoring_scheme[1][0] != scoring_scheme[1][1] or scoring_scheme[1][3] != scoring_scheme[1][4]:
+        #    raise DistanceNotHandledException
         res = []
         elem_id = {}
         id_elements = {}
