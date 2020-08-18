@@ -22,8 +22,7 @@ class CondorcetPartitioning(MedianRanking):
             self,
             rankings: List[List[List[int]]],
             distance,
-            return_at_most_one_ranking: bool = False,
-            sc=ScoringScheme.get_scoring_scheme_when_no_distance())-> List[List[List[int]]]:
+            return_at_most_one_ranking: bool = False)-> List[List[List[int]]]:
         """
         :param rankings: A set of rankings
         :type rankings: list
@@ -31,22 +30,21 @@ class CondorcetPartitioning(MedianRanking):
         :type distance: Distance
         :param return_at_most_one_ranking: the algorithm should not return more than one ranking
         :type return_at_most_one_ranking: bool
-        :param sc: a scoring scheme
-        :type sc: ScoringScheme
         :return one or more consensus if the underlying algorithm can find multiple solution as good as each other.
         If the algorithm is not able to provide multiple consensus, or if return_at_most_one_ranking is True then, it
         should return a list made of the only / the first consensus found
         :raise DistanceNotHandledException when the algorithm cannot compute the consensus following the distance given
         as parameter
         """
-        
+        sc = None
         if distance is None:
-            scoring_scheme = sc.matrix
+            sc = ScoringScheme.get_scoring_scheme_when_no_distance()
+            scoring_scheme = asarray(sc.matrix)
         else:
             scoring_scheme = asarray(distance.scoring_scheme)
 
-        if scoring_scheme[1][0] != scoring_scheme[1][1] or scoring_scheme[1][3] != scoring_scheme[1][4]:
-            raise DistanceNotHandledException
+        # if scoring_scheme[1][0] != scoring_scheme[1][1] or scoring_scheme[1][3] != scoring_scheme[1][4]:
+        #    raise DistanceNotHandledException
         res = []
         elem_id = {}
         id_elements = {}
@@ -162,7 +160,7 @@ class CondorcetPartitioning(MedianRanking):
         return False
 
     def get_full_name(self):
-        return "CondorcetPartitioning"+"_"+self.alg.get_full_name()
+        return "CondorcetPartitioning"
 
     def get_handled_distances(self):
         """
