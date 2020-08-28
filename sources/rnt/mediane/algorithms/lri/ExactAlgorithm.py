@@ -153,7 +153,7 @@ class ExactAlgorithm(MedianRanking):
                                 i_tie_k = "t_%s_%s" % (k, i)
 
                             my_rownames.append("c%s" % count)
-                            my_rhs.append(2)
+                            my_rhs.append(3)
                             count += 1
                             rows.append([[i_tie_j, j_tie_k, i_tie_k], [2.0, 2.0, -1.0]])
 
