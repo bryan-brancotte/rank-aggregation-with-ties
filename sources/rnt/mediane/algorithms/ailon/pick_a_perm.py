@@ -13,7 +13,7 @@ class PickAPerm(MedianRanking):
             self,
             rankings: List[List[List[int]]],
             distance,
-            return_at_most_one_ranking: bool = False)-> List[List[List[int]]]:
+            return_at_most_one_ranking: bool = False) -> List[List[List[int]]]:
         """
         :param rankings: A set of rankings
         :type rankings: list

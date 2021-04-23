@@ -42,10 +42,8 @@ class BioConsert(MedianRanking):
         :raise DistanceNotHandledException when the algorithm cannot compute the consensus following the distance given
         as parameter
         """
-        if distance is None:
-            scoring_scheme = ScoringScheme([[0., 1., .5, 0., 0., 0.], [0.5, 0.5, 0, 0.0, 0.0, 0.]]).matrix
-        else:
-            scoring_scheme = asarray(distance.scoring_scheme)
+
+        scoring_scheme = asarray(distance.scoring_scheme)
 
         if scoring_scheme[1][0] != scoring_scheme[1][1] or scoring_scheme[1][3] != scoring_scheme[1][4]:
             raise DistanceNotHandledException

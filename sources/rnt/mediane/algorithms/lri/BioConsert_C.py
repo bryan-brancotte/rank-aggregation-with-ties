@@ -29,7 +29,7 @@ class BioConsertC(MedianRanking):
             self,
             rankings: List[List[List[int]]],
             distance,
-            return_at_most_one_ranking: bool = False)-> List[List[List[int]]]:
+            return_at_most_one_ranking: bool = False) -> List[List[List[int]]]:
 
         """
         :param rankings: A set of rankings
@@ -53,8 +53,8 @@ class BioConsertC(MedianRanking):
             scoring_scheme = asarray(sc.matrix)
         else:
             scoring_scheme = asarray(distance.scoring_scheme)
-        #if scoring_scheme[1][0] != scoring_scheme[1][1] or scoring_scheme[1][3] != scoring_scheme[1][4]:
-        #    raise DistanceNotHandledException
+        if scoring_scheme[1][0] != scoring_scheme[1][1] or scoring_scheme[1][3] != scoring_scheme[1][4]:
+            raise DistanceNotHandledException
         res = []
         elem_id = {}
         id_elements = {}
@@ -74,7 +74,7 @@ class BioConsertC(MedianRanking):
         if nb_elements == 0:
             return [[]]
 
-        (departure, dst_res) = self.__departure_rankings(rankings, positions, elem_id, distance, sc)
+        (departure, dst_res) = self.__departure_rankings(rankings, positions, elem_id, distance)
 
         fct = rankagg_c.c_BioConsert
         fct.argtypes = [ctypeslib.ndpointer(dtype=int32),
@@ -127,15 +127,13 @@ class BioConsertC(MedianRanking):
             id_ranking += 1
         return positions
 
-    def __departure_rankings(self, rankings: List[List[List[int]]], positions: ndarray, elements_id: Dict, distance,
-                             sc: ScoringScheme) -> Tuple[ndarray, ndarray]:
-        if distance is None:
-            dst_id = 0
-        else:
-            dst_id = distance.id_order
+    def __departure_rankings(self, rankings: List[List[List[int]]], positions: ndarray, elements_id: Dict, distance) \
+            -> Tuple[ndarray, ndarray]:
+
+        dst_id = distance.id_order
         dst_ini = []
         rankings_unified = Unification.rankings_to_rankings(rankings)
-        kem_comp = KendallTauGeneralizedNlogN(distance, sc)
+        kem_comp = KendallTauGeneralizedNlogN(distance)
         if len(self.starting_algorithms) == 0:
             real_pos = array(positions).transpose()
             distinct_rankings = set()

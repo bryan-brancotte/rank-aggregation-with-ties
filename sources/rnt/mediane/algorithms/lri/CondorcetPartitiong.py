@@ -3,7 +3,6 @@ from mediane.distances.enumeration import GENERALIZED_KENDALL_TAU_DISTANCE, GENE
     PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE
 from mediane.algorithms.lri.BioConsert_C import BioConsertC
 from mediane.algorithms.lri.ExactAlgorithm_bis import ExactAlgorithmBis
-from mediane.distances.ScoringScheme import ScoringScheme
 from typing import List, Dict, Tuple
 from itertools import combinations
 from numpy import vdot, ndarray, count_nonzero, shape, array, zeros, asarray
@@ -22,7 +21,7 @@ class CondorcetPartitioning(MedianRanking):
             self,
             rankings: List[List[List[int]]],
             distance,
-            return_at_most_one_ranking: bool = False)-> List[List[List[int]]]:
+            return_at_most_one_ranking: bool = False) -> List[List[List[int]]]:
         """
         :param rankings: A set of rankings
         :type rankings: list
@@ -36,15 +35,10 @@ class CondorcetPartitioning(MedianRanking):
         :raise DistanceNotHandledException when the algorithm cannot compute the consensus following the distance given
         as parameter
         """
-        sc = None
-        if distance is None:
-            sc = ScoringScheme.get_scoring_scheme_when_no_distance()
-            scoring_scheme = asarray(sc.matrix)
-        else:
-            scoring_scheme = asarray(distance.scoring_scheme)
+        scoring_scheme = asarray(distance.scoring_scheme)
 
-        # if scoring_scheme[1][0] != scoring_scheme[1][1] or scoring_scheme[1][3] != scoring_scheme[1][4]:
-        #    raise DistanceNotHandledException
+        if scoring_scheme[1][0] != scoring_scheme[1][1] or scoring_scheme[1][3] != scoring_scheme[1][4]:
+            raise DistanceNotHandledException
         res = []
         elem_id = {}
         id_elements = {}

@@ -2,7 +2,6 @@ import operator
 from typing import List, Dict
 from numpy import vdot, ndarray, count_nonzero, shape, array, zeros, asarray
 from mediane.algorithms.median_ranking import MedianRanking, DistanceNotHandledException
-from mediane.distances.ScoringScheme import ScoringScheme
 from mediane.distances.enumeration import GENERALIZED_KENDALL_TAU_DISTANCE_WITH_UNIFICATION, \
     GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE, GENERALIZED_KENDALL_TAU_DISTANCE, \
     PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE
@@ -30,9 +29,6 @@ class CopelandMethod(MedianRanking):
         as parameter
         """
         scoring_scheme = asarray(distance.scoring_scheme)
-
-        if scoring_scheme[1][0] != scoring_scheme[1][1] or scoring_scheme[1][3] != scoring_scheme[1][4]:
-            raise DistanceNotHandledException
 
         res = []
         elem_id = {}

@@ -31,10 +31,7 @@ class BetzlerPartitionNonDirty(MedianRanking):
         as parameter
         """
 
-        if distance is None:
-            scoring_scheme = ScoringScheme([[0., 1., .5, 0., 1., 0.], [0.5, 0.5, 0, 0.5, 0.5, 0.]]).matrix
-        else:
-            scoring_scheme = asarray(distance.scoring_scheme)
+        scoring_scheme = asarray(distance.scoring_scheme)
 
         if scoring_scheme[1][0] != scoring_scheme[1][1] or scoring_scheme[1][3] != scoring_scheme[1][4]:
             raise DistanceNotHandledException
@@ -142,17 +139,3 @@ class BetzlerPartitionNonDirty(MedianRanking):
             PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE,
             GENERALIZED_KENDALL_TAU_DISTANCE_WITH_UNIFICATION
         )
-
-
-import os
-from mediane import median_ranking_tools
-
-dossier = "/home/pierre/Bureau/Doctorat/Datasets/mesh/datasets_big_parsed/"
-for fichier in os.listdir(dossier):
-    st = fichier+"->"
-    algo = BetzlerPartitionNonDirty()
-    rankings_dataset = median_ranking_tools.get_rankings_from_file(dossier+fichier)
-    cons = algo.compute_median_rankings(rankings_dataset, None, False)[0]
-    for part in cons:
-        st += str(len(part))+";"
-    print(st)

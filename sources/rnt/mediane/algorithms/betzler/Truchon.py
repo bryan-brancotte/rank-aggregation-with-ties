@@ -113,15 +113,3 @@ class Truchon(MedianRanking):
         """
         return [GENERALIZED_KENDALL_TAU_DISTANCE, GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE,
                 PSEUDO_METRIC_BASED_ON_GENERALIZED_INDUCED_KENDALL_TAU_DISTANCE]
-
-import os
-from mediane import median_ranking_tools
-dossier = "/home/pierre/Bureau/Doctorat/Datasets/mesh/datasets_big_parsed/"
-for fichier in os.listdir(dossier):
-    st = fichier+"->"
-    algo = Truchon()
-    rankings_dataset = median_ranking_tools.get_rankings_from_file(dossier+fichier)
-    cons = algo.compute_median_rankings(rankings_dataset, None, False)[0]
-    for part in cons:
-        st += str(len(part))+";"
-    print(st)

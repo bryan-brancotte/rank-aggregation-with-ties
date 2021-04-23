@@ -18,7 +18,7 @@ class ExactAlgorithm(MedianRanking):
             self,
             rankings: List[List[List[int]]],
             distance,
-            return_at_most_one_ranking: bool = False)-> List[List[List[int]]]:
+            return_at_most_one_ranking: bool = False) -> List[List[List[int]]]:
         import cplex
         """
         :param rankings: A set of rankings
