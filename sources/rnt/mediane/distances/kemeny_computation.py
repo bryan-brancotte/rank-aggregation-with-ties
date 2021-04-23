@@ -85,7 +85,6 @@ class KemenyComputingFactory:
             vect_tied[5] += size_ties_r1_both_missing_in_r2 * (size_ties_r1_both_missing_in_r2 - 1) / 2
             vect_before[5] += size_ties_r1_both_missing_in_r2 * tot_missing_r2
             vect_tied[3] += (size_buckets[id_ties] - size_ties_r1_both_missing_in_r2)*size_ties_r1_both_missing_in_r2
-
         KemenyComputingFactory.__inversions(ranking2, 1, len(ranking2), vect_before, vect_tied, id_max)
         res = (vect_before, vect_tied)
         return res
@@ -111,7 +110,7 @@ class KemenyComputingFactory:
 
     @staticmethod
     def __inversions(ranking: Dict, left: int, right: int, vect1: ndarray, vect2: ndarray, id_max: int):
-        if right == left:
+        if right <= left:
             return KemenyComputingFactory.__manage_bucket(ranking.get(right), vect1, vect2, id_max)
         else:
             middle = (right - left) // 2
@@ -184,6 +183,8 @@ class KemenyComputingFactory:
 
     @staticmethod
     def __manage_bucket(bucket: List[int], vect_before: ndarray, vect_tied: ndarray, id_max: int) -> ndarray:
+        if bucket == None:
+            return asarray([])
         h = {}
         n = 0
         not_in_r1 = 0

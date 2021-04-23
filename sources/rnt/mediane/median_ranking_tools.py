@@ -1,4 +1,4 @@
-from typing import Callable, List, TypeVar
+from typing import Callable, List, TypeVar, Tuple, Iterable
 
 T = TypeVar('T')
 
@@ -7,8 +7,10 @@ def parse_ranking_with_ties(ranking: str, converter: Callable[[str], T]) -> List
     ranking = ranking.strip()
 
     # to manage the "syn" datasets of java rank-n-ties
-    if ranking[-1] == ":":
-        ranking = ranking[:-1]
+    # if ranking[-1] == ":":
+    #    ranking = ranking[:-1]
+    if ranking[ranking.find('['):ranking.rfind(']')+1] == "[]":
+        return []
     ret = []
     st = ranking.find('[', ranking.find('[') + 1)
     en = ranking.find(']')
@@ -66,4 +68,7 @@ def get_rankings_from_file(file: str) -> List[List[List[int]]]:
 
 
 def dump_ranking_with_ties_to_str(ranking: List[List[int or str]]) -> str:
-    return '[' + ','.join(['[' + ','.join([str(e) for e in b]) + ']' for b in ranking]) + ']'
+    if len(ranking) == 0:
+        return "[]"
+    else:
+        return '[' + ','.join(['[' + ','.join([str(e) for e in b]) + ']' for b in ranking]) + ']'
