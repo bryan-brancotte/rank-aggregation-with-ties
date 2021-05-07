@@ -5,7 +5,7 @@ from django.db.models.query_utils import Q
 from rest_framework import mixins
 from rest_framework import status
 from rest_framework import viewsets
-from rest_framework.decorators import list_route, detail_route
+from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from mediane.models import DataSet, Job, ResultsToProduceDecorator, Result, Algorithm
@@ -52,7 +52,7 @@ class DataSetViewSet(mixins.CreateModelMixin,
             return Response(status=status.HTTP_403_FORBIDDEN)
         return super().destroy(request, *args, **kwargs)
 
-    @list_route(methods=['get', ], url_path='detailed')
+    @action(detail=False, methods=['get', ], url_path='detailed')
     def list_detailed(self, request):
         queryset = self.get_queryset()
         serializer = DataSetSerializer(queryset, many=True)
@@ -89,7 +89,7 @@ class JobViewSet(mixins.RetrieveModelMixin,
             return Response(status=status.HTTP_400_BAD_REQUEST)
         return super().update(request=request, *args, **kwargs)
 
-    @detail_route(methods=['get', ], url_path='progress')
+    @action(detail=True, methods=['get', ], url_path='progress')
     def progress(self, request, identifier=None):
         job = self.get_queryset().get(identifier=identifier)
         tasks = ResultsToProduceDecorator.objects.filter(result__job__pk=job.pk)
@@ -100,31 +100,31 @@ class JobViewSet(mixins.RetrieveModelMixin,
             total=job.result_set.count(),
         ))
 
-    @detail_route(methods=['get', ], url_path='results')
+    @action(detail=True, methods=['get', ], url_path='results')
     def results(self, request, identifier=None):
         job = self.get_queryset().get(identifier=identifier)
         serializer = ResultSerializer(job.result_set, many=True)
         return Response(serializer.data)
 
-    @detail_route(methods=['get', ], url_path='results_with_consensus')
+    @action(detail=True, methods=['get', ], url_path='results_with_consensus')
     def results_with_consensus(self, request, identifier=None):
         job = self.get_queryset().get(identifier=identifier)
         serializer = ResultSerializer(job.result_set, many=True, include_consensuses=True)
         return Response(serializer.data)
 
-    @detail_route(methods=['get', ], url_path='results_detailed')
+    @action(detail=True, methods=['get', ], url_path='results_detailed')
     def results_detailed(self, request, identifier=None):
         job = self.get_queryset().get(identifier=identifier)
         serializer = ResultSerializer(job.result_set, many=True, detailed_dataset=True)
         return Response(serializer.data)
 
-    @detail_route(methods=['get', ], url_path='results_detailed_with_consensus')
+    @action(detail=True, methods=['get', ], url_path='results_detailed_with_consensus')
     def results_detailed_with_consensus(self, request, identifier=None):
         job = self.get_queryset().get(identifier=identifier)
         serializer = ResultSerializer(job.result_set, many=True, include_consensuses=True, detailed_dataset=True)
         return Response(serializer.data)
 
-    @detail_route(methods=['get', ], url_path='aggregated_results')
+    @action(detail=True, methods=['get', ], url_path='aggregated_results')
     def aggregated_results(self, request, identifier=None):
         """
         Return description (count, mean, std, min, 25%, 50%, 75%, max) of numerical column groupedby column algorithm,

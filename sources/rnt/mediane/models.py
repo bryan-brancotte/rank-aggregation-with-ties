@@ -1,11 +1,11 @@
 from django.contrib.auth import get_user_model
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _, ugettext
 from django_pandas.managers import DataFrameManager
-from rest_framework.compat import MinLengthValidator
-
+# from rest_framework.compat import MinLengthValidator
+from django.core import validators
 from mediane.algorithms.enumeration import get_from as get_algo_from
 from mediane.median_ranking_tools import parse_ranking_with_ties_of_str
 from mediane.process import execute_median_rankings_computation_of_result
@@ -50,6 +50,7 @@ class DataSet(models.Model):
     owner = models.ForeignKey(
         get_user_model(),
         help_text=_('The user who can see, edit and delete it'),
+        on_delete=models.PROTECT
     )
     public = models.BooleanField(
         help_text=_('Can the dataset appear in the public database?'),
@@ -102,6 +103,7 @@ class Distance(models.Model):
     owner = models.ForeignKey(
         get_user_model(),
         help_text=_('The user who can see, edit and delete it'),
+        on_delete=models.PROTECT
     )
     public = models.BooleanField(
         help_text=_('Can it be seen by everyone?'),
@@ -259,7 +261,7 @@ class Job(models.Model):
     )
     identifier = models.CharField(
         max_length=32,
-        validators=[MinLengthValidator(32), ],
+        validators=[validators.MinLengthValidator(32), ],
     )
     task_count = models.IntegerField(
         verbose_name=_('task_count'),
